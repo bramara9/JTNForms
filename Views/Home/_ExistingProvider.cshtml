@@ -1,0 +1,286 @@
+﻿@model ExistingProvider
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+<div style="padding-bottom:100px;">
+    @*<form id="existingProvider" asp-action="" method="post">*@
+    <form id="existingProvider" asp-action="ExistingProvider">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group row" style="font:bold;font-family:Arial;text-decoration:underline;color:#0d6efd">
+            Current or Existing Provider Information Change Form
+
+        </div>
+        <div class="form-group row">
+            <div class="col-lg-4">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="Date" class="control-label"></label>
+                <input asp-for="Date" class="form-control" />
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="OfficePracticeContactPerson" class="control-label"></label>
+                <input asp-for="OfficePracticeContactPerson" class="form-control" />
+                <span asp-validation-for="OfficePracticeContactPerson" class="text-danger"></span>
+            </div>
+
+        </div>
+        <div class="form-group row">
+            <div class="col-lg-4">
+                <label asp-for="Phone" class="control-label"></label>
+                <input asp-for="Phone" class="form-control" />
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="FaxCompletedForm" class="control-label"></label>
+                <input class="form-control" asp-for="FaxCompletedForm" type="text" />
+                <span asp-validation-for="FaxCompletedForm" class="text-danger"></span>
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="EmailAddress" class="control-label"></label>
+                <input asp-for="EmailAddress" class="form-control" />
+                <span asp-validation-for="EmailAddress" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-lg-4">
+                <label asp-for="ProviderName" class="control-label"></label>
+                <input asp-for="ProviderName" class="form-control" />
+                <span asp-validation-for="ProviderName" class="text-danger"></span>
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="NPI" class="control-label"></label>
+                <input class="form-control" asp-for="NPI" type="text" />
+                <span asp-validation-for="NPI" class="text-danger"></span>
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="GroupPracticeName" class="control-label"></label>
+                <input asp-for="GroupPracticeName" class="form-control" />
+                <span asp-validation-for="GroupPracticeName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-lg-4">
+                <label asp-for="TaxIdentificationNumber" class="control-label"></label>
+                <input asp-for="TaxIdentificationNumber" class="form-control" />
+                <span asp-validation-for="TaxIdentificationNumber" class="text-danger"></span>
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="EffectiveDateWithPractice" class="control-label"></label>
+                <input class="form-control" asp-for="EffectiveDateWithPractice" />
+                <span asp-validation-for="EffectiveDateWithPractice" class="text-danger"></span>
+            </div>
+
+        </div>
+        <div class="form-group row" style="font:bold;font-family:Arial;text-decoration:underline;color:#0d6efd">
+            Provider Changes
+
+        </div>
+        <div class="form-group row">
+            <div class="col-lg-4">
+                <label asp-for="AcceptingNew" class="control-label"></label>
+                <input asp-for="AcceptingNew" class="form-control" />
+                <span asp-validation-for="AcceptingNew" class="text-danger"></span>
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="ClosedtoNewAsOf" class="control-label"></label>
+                <input class="form-control" asp-for="ClosedtoNewAsOf" type="text" />
+                <span asp-validation-for="ClosedtoNewAsOf" class="text-danger"></span>
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="PracticeGroupName" class="control-label"></label>
+                <input asp-for="PracticeGroupName" class="form-control" />
+                <span asp-validation-for="PracticeGroupName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-lg-4">
+                <label asp-for="NewTaxIDNumber" class="control-label"></label>
+                <input asp-for="NewTaxIDNumber" class="form-control" />
+                <span asp-validation-for="NewTaxIDNumber" class="text-danger"></span>
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="NewEffectiveDate" class="control-label"></label>
+                <input class="form-control" asp-for="NewEffectiveDate" />
+                <span asp-validation-for="NewEffectiveDate" class="text-danger"></span>
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="DeleteTaxIDNumber" class="control-label"></label>
+                <input asp-for="DeleteTaxIDNumber" class="form-control" />
+                <span asp-validation-for="DeleteTaxIDNumber" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-lg-4">
+                <label asp-for="FirstEffectiveDate" class="control-label"></label>
+                <input asp-for="FirstEffectiveDate" class="form-control" />
+                <span asp-validation-for="FirstEffectiveDate" class="text-danger"></span>
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="SecondTaxIDNumber" class="control-label"></label>
+                <input class="form-control" asp-for="SecondTaxIDNumber" />
+                <span asp-validation-for="SecondTaxIDNumber" class="text-danger"></span>
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="SecondEffectiveDate" class="control-label"></label>
+                <input asp-for="SecondEffectiveDate" class="form-control" />
+                <span asp-validation-for="SecondEffectiveDate" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group row" style="font:bold;font-family:Arial;text-decoration:underline;color:#0d6efd">
+            Location Changes
+        </div>
+        <div class="form-group row">
+            <b>Note:</b> All locations will be published, unless otherwise indicated.
+        </div>
+        <div class="form-group row">
+            <div class="col-lg-4">
+                <label asp-for="IsDeleteAllPrevAdd" class="control-label"></label>
+                <input asp-for="IsDeleteAllPrevAdd" type="checkbox" class="form-check-input" />
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="IsDeleteOnlyThisAddress" class="control-label"></label>
+                <input asp-for="IsDeleteOnlyThisAddress" type="checkbox" class="form-check-input" />
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="SecondEffectiveDate" class="control-label"></label>
+                <input asp-for="SecondEffectiveDate" class="form-control" />
+                <span asp-validation-for="SecondEffectiveDate" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-lg-4">
+                <label asp-for="IsProviderDirectory" class="control-label"></label>
+                <br />
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" asp-for="IsProviderDirectory" type="radio" value="true" checked />
+                    <label class="form-check-label" asp-for="IsProviderDirectory">Yes</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" asp-for="IsProviderDirectory" type="radio" value="false" />
+                    <label class="form-check-label" asp-for="IsProviderDirectory">No</label>
+                </div>
+                <span asp-validation-for="IsProviderDirectory" class="text-danger"></span>
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="Effective" class="control-label"></label>
+                <input asp-for="Effective" class="form-control" />
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="PrevPhone" class="control-label"></label>
+                <input asp-for="PrevPhone" class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-lg-4">
+                <label asp-for="Fax" class="control-label"></label>
+                <input asp-for="Fax" class="form-control" />
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="FirstPhysicalAdd" class="control-label"></label>
+                <input asp-for="FirstPhysicalAdd" class="form-control" />
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="IsFirstProviderDirectory" class="control-label"></label>
+                <br />
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" asp-for="IsFirstProviderDirectory" type="radio" value="true" checked />
+                    <label class="form-check-label" asp-for="IsFirstProviderDirectory">Yes</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" asp-for="IsFirstProviderDirectory" type="radio" value="false" />
+                    <label class="form-check-label" asp-for="IsFirstProviderDirectory">No</label>
+                </div>
+                <span asp-validation-for="IsFirstProviderDirectory" class="text-danger"></span>
+            </div>
+
+        </div>
+        <div class="form-group row">
+            <div class="col-lg-4">
+                <label asp-for="FirstEffective" class="control-label"></label>
+                <input asp-for="FirstEffective" class="form-control" />
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="FirstPrevPhone" class="control-label"></label>
+                <input asp-for="FirstPrevPhone" class="form-control" />
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="FirstFax" class="control-label"></label>
+                <input asp-for="FirstFax" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group row">
+           
+            <div class="col-lg-4">
+                <label asp-for="SecondhysicalAdd" class="control-label"></label>
+                <input asp-for="SecondhysicalAdd" class="form-control" />
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="IsSecondProviderDirectory" class="control-label"></label>
+                <br />
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" asp-for="IsSecondProviderDirectory" type="radio" value="true" checked />
+                    <label class="form-check-label" asp-for="IsSecondProviderDirectory">Yes</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" asp-for="IsSecondProviderDirectory" type="radio" value="false" />
+                    <label class="form-check-label" asp-for="IsSecondProviderDirectory">No</label>
+                </div>
+                <span asp-validation-for="IsSecondProviderDirectory" class="text-danger"></span>
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="SecondEffective" class="control-label"></label>
+                <input asp-for="SecondEffective" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-lg-4">
+                <label asp-for="SecondPrevPhone" class="control-label"></label>
+                <input asp-for="SecondPrevPhone" class="form-control" />
+            </div>
+            <div class="col-lg-4">
+                <label asp-for="SecondFax" class="control-label"></label>
+                <input asp-for="SecondFax" class="form-control" />
+            </div>
+        </div>
+        <br />
+        <div class="form-group">
+            <button type="submit"  class="btn btn-primary">Submit</button>
+            @* <input type="button" class="btn btn-primary" value="Submit" onclick="ExistingProviderSave()" />*@
+        </div>
+
+    </form>
+
+    <script type="text/javascript">
+        function ExistingProviderSave() {
+            var data = $('#existingProvider').serialize();
+            var $form = $('#existingProvider');
+            if ($form.validate()) {
+
+                alert("Not validated");
+            }
+            var data = $("#existingProvider").serialize();
+            console.log(data);
+            alert(data);
+            $.ajax({
+                type: 'POST',
+                url: '/Home/ExistingProvider',
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8', // when we use .serialize() this generates the data in query string format. this needs the default contentType (default content type is: contentType: 'application/x-www-form-urlencoded; charset=UTF-8') so it is optional, you can remove it
+                data: data,
+                success: function (result) {
+                    alert('Successfully received Data ');
+                    console.log(result);
+                },
+                error: function () {
+                    alert('Failed to receive the Data');
+                    console.log('Failed ');
+                }
+            })
+        }
+
+    </script>
+</div>

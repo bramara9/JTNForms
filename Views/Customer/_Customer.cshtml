@@ -1,0 +1,45 @@
+﻿@using JTNForms.DataModels;
+@model Customer
+
+<form id="frm" asp-controller="Customer">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group row">
+        <div class="col-lg-10">
+            <div class="col-md-12 input-group">
+                <div class="col-md-5 form-control"> <label> First Name:</label>  <input class="form-check-label" asp-for="@Model.FirstName" type="text" />  </div>
+                <div class="col-md-5 form-control">
+                    <label> Last Name:</label>    <input class="form-check-label" asp-for="@Model.LastName" type="text" />
+                </div>
+            </div>
+            <div class="col-md-12 input-group">
+                <div class="col-md-5 form-control"> <label> Email Address:</label>  <input class="form-check-label" asp-for="@Model.EmailAddress" type="text" />  </div>
+                <div class="col-md-5 form-control">
+                    <label> Phone Number:</label>    <input class="form-check-label" asp-for="@Model.PhoneNumber" type="text" />
+                </div>
+            </div>
+            <div class="col-md-12 input-group">
+                <div class="col-md-5 form-control"> <label> Address:</label>  <input class="form-check-label" asp-for="@Model.Address" type="text" />  </div>
+                <div class="col-md-5 form-control">
+                    <label> Address2:</label>    <input class="form-check-label" asp-for="@Model.Address2" type="text" />
+                </div>
+            </div>
+            <div class="col-md-12 input-group">
+                <div class="col-md-5 form-control"> <label> State:</label>  <input class="form-check-label" asp-for="@Model.State" type="text" />  </div>
+                <div class="col-md-5 form-control">
+                    <label> Zip:</label>    <input class="form-check-label" asp-for="@Model.Zip" type="text" />
+                </div>
+            </div>
+            <div class="col-md-12 input-group">
+                <div class="col-md-5 form-control"> <label> Community:</label>  <input class="form-check-label" asp-for="@Model.Community" type="text" />  </div>
+                <div class="col-md-5 form-control">
+                    <label> Customer Status:</label>    <select class="form-check-label" asp-for="@Model.CustomerStatus" type="text" />
+                </div>
+            </div>
+            <span asp-validation-for="@Model.FirstName" class="text-danger"></span>
+        </div>
+    </div> <br />
+    <div class="form-group">
+        <input id="btnSave" type="submit" class="btn btn-primary" value="Save" asp-action="Add" />
+    </div>
+    <br />
+</form>

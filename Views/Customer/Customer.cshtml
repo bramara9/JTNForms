@@ -1,0 +1,59 @@
+﻿@using JTNForms.DataModels;
+@model Customer
+
+
+<tr>
+    <td>
+        @Model.FirstName
+    </td>
+    <td>
+        @Model.LastName
+    </td>
+    <td>
+        @Model.EmailAddress
+    </td>
+    <td>
+        @Model.PhoneNumber
+    </td>
+    <td>
+        @Model.Community
+    </td>
+</tr>
+<div class="form-group row">
+        <div class="col-md-12 input-group">
+            <div class="col-md-5 form-control">
+            <label> First Name:</label>         @Model.FirstName
+        </div>
+            <div class="col-md-5 form-control">
+                <label> Last Name:</label>   @Model.LastName
+            </div>
+        </div>
+        <div class="col-md-12 input-group">
+        <div class="col-md-5 form-control"> <label> Email Address:</label> @Model.EmailAddress  </div>
+            <div class="col-md-5 form-control">
+                <label> Phone Number:</label>  @Model.PhoneNumber
+            </div>
+        </div>
+        <div class="col-md-12 input-group">
+        <div class="col-md-5 form-control"> <label> Address:</label> @Model.Address  </div>
+            <div class="col-md-5 form-control">
+                <label> Address2:</label>  @Model.Address2
+            </div>
+        </div>
+        <div class="col-md-12 input-group">
+            <div class="col-md-5 form-control"> <label> State:</label>  @Model.State</div>
+            <div class="col-md-5 form-control">
+                <label> Zip:</label>   @Model.Zip
+            </div>
+        </div>
+        <div class="col-md-12 input-group">
+        <div class="col-md-5 form-control"> <label> Community:</label> @Model.Community  </div>
+            <div class="col-md-5 form-control">
+                <label> Customer Status:</label> @Model.CustomerStatus 
+            </div>
+        </div>
+    </div>
+<br />
+<div class="form-group">
+    @Html.ActionLink("Add Measurement", "Add", "Measurement",  new {customerId=@Model.Id})
+</div>

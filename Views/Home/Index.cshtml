@@ -1,0 +1,50 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@*<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>*@
+
+<div class="container">
+    <table>
+        <tr>
+            <td>
+                <input type="radio" name="providerRadio" value="1" checked>Existing Provider
+                <input type="radio" name="providerRadio" value="2">Provider Request
+            </td>
+        </tr>
+    </table>
+
+    <div style="float:left;padding:20px;width:100%;">
+        <div id="divExistingProvider" style="display:block">
+            @await Html.PartialAsync("_ExistingProvider")
+        </div>
+        <div id="divProviderRequest" style="display:none">
+            @{
+                @await Html.PartialAsync("_ProviderRequest")
+            }
+        </div>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js" type="text/javascript"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("input[name='providerRadio']").change(function () {
+                if ($(this).val() === "1") {
+                    $("#divProviderRequest").hide();
+                    $("#divExistingProvider").show();
+
+                } else {
+                    $("#divProviderRequest").show();
+                    $("#divExistingProvider").hide();
+                }
+            })
+        });
+
+    </script>
+
+</div>

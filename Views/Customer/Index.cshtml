@@ -1,0 +1,57 @@
+﻿@using JTNForms.DataModels;
+@model List<Customer>
+
+@Html.Partial("_Customer" , new Customer())
+
+<table id="MultiAddUserTable" class="table">
+    <tr>
+        <th>FirstName</th>
+        <th>LastName</th>
+        <th>Email Address</th>
+        <th>Phone Number</th>
+        <th>Community</th>
+    </tr>
+    @if (Model != null)
+    {
+        @for (int i = 0; i < Model.Count(); i++)
+        {
+            <tr>
+                <td>
+                    @Model[i].FirstName
+                </td>
+                <td>
+                    @Model[i].LastName
+                </td>
+                <td>
+                    @Model[i].EmailAddress
+                </td>
+                <td>
+                    @Model[i].PhoneNumber
+                </td>
+                <td>
+                    @Model[i].Community
+                </td>
+                <td>
+                    <input id="@Model[i].Id" type="button" onclick="Test(this)" class="button1" value="View" />
+                </td>
+            </tr>
+        }
+    }
+</table>
+
+
+<script type="text/javascript">
+
+    function Test(item) {
+        var itemId = item.id;
+        var url = '@Url.Action("Customer", "Customer")';
+        var data = { Id: itemId };
+        window.location.href = "Customer/Customer/" + itemId;
+
+        //$.post(url, data, function (result) {
+        //    var id = '#postedFor' + postId;
+        //    $(id).html(result);
+
+        //});
+    }
+</script>

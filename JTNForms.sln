@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33815.320
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JTNForms", "JTNForms.csproj", "{23227551-C8FB-4878-8AD1-CAA509B0921B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{23227551-C8FB-4878-8AD1-CAA509B0921B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23227551-C8FB-4878-8AD1-CAA509B0921B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23227551-C8FB-4878-8AD1-CAA509B0921B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23227551-C8FB-4878-8AD1-CAA509B0921B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {28D32CD2-A726-45F6-BD62-DF5E2FC4DD79}
+	EndGlobalSection
+EndGlobal

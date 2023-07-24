@@ -1,0 +1,67 @@
+﻿@model Measurement
+@{
+    ViewData["Title"] = "Index";
+}
+
+<form id="frm" asp-controller="Window">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group row">
+        <div class="col-lg-4">
+            <label asp-for="@Model.IsInchOrMM" class="control-label"></label>
+            <br />
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" asp-for="@Model.IsInchOrMM" type="radio" value="true" />
+                <label class="form-check-label" asp-for="@Model.IsInchOrMM">CM</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" asp-for="@Model.IsInchOrMM" type="radio" value="false" />
+                <label class="form-check-label" asp-for="@Model.IsInchOrMM">MM</label>
+            </div>
+            <span asp-validation-for="IsInchOrMM" class="text-danger"></span>
+        </div>
+    </div>
+    <table id="MultiAddUserTable" class="table">
+        <tr>
+            <th>Name</th>
+            <th>Window Name</th>
+            <th>Weight</th>
+            <th>Height</th>
+            <th>Option</th>
+        </tr>
+        @if (Model != null)
+        {
+            @for (int i = 0; i < Model.lstWindowDetails.Count(); i++)
+            {
+                <tr>
+                    <td>
+                        <input id="Text1" type="text" asp-for="@Model.lstWindowDetails[i].RoomName" />
+                        <br /><span asp-validation-for="@Model.lstWindowDetails[i].RoomName" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <input id="Text2" type="text" asp-for="@Model.lstWindowDetails[i].WindowName" />
+                        <br /><span asp-validation-for="@Model.lstWindowDetails[i].WindowName" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <input id="Text3" type="text" asp-for="@Model.lstWindowDetails[i].Weight" />
+                        <br /> <span asp-validation-for="@Model.lstWindowDetails[i].Weight" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <input id="Text4" type="text" asp-for="@Model.lstWindowDetails[i].Height" />
+                        <br /> <span asp-validation-for="@Model.lstWindowDetails[i].Height" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <input id="Text5" type="text" asp-for="@Model.lstWindowDetails[i].Option" />
+                    </td>
+                </tr>
+            }
+        }
+    </table>
+    <div class="form-group" style="float:right">
+        <input id="btnAdd" type="submit" class="btn btn-dark" value="Add" asp-action="Add" />
+
+    </div>
+
+    <div class="form-group">
+        <input id="btnSave" type="submit" class="btn btn-primary" value="Save" asp-action="Save"/>
+    </div>
+</form>
