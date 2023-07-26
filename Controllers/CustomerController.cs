@@ -28,9 +28,11 @@ namespace JTNForms.Controllers
             return View(customers);
         }
         public IActionResult Customer(int id)
-        {
-           var customer = dapperPocDbContext.Customers.FirstOrDefault(x => x.Id == id);
-           return View(customer);
+        {            
+            var customer = dapperPocDbContext.Customers.FirstOrDefault(x => x.Id == id);
+            //TempData["username"] = customer.FirstName +" "+ customer.LastName;
+            HttpContext.Session.SetString("username", customer.FirstName + " " + customer.LastName);
+            return View(customer);
         }
         [HttpPost]
         public IActionResult Add(Customer customer)

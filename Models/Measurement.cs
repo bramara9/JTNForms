@@ -13,20 +13,20 @@ namespace JTNForms.Models
         public bool IsInchOrMM { get; set; }
         public int customerId { get; set; }
         public IList<WindowDetails> lstWindowDetails { get; set; }
-        public IList<Window> windows { get; set; }
-        public IList<RoomDetails> lstRoomDetails { get;  set; }
-        public IList<Room> rooms { get;  set; }
+        //public IList<Window> windows { get; set; }
+        //public IList<RoomDetails> lstRoomDetails { get;  set; }
+        //public IList<Room> rooms { get;  set; }
     }
 
     public class WindowDetails {
-        public string WindowName  { get; set; }
-        public decimal Weight { get; set; }
-        public Decimal Height { get; set; }
-        public string Control { get; set; }
-        public string Option { get; set; }
+        public string? WindowName  { get; set; }
+        public decimal? Weight { get; set; }
+        public Decimal? Height { get; set; }
+        public string? Notes { get; set; }
         public string RoomName { get; set; }
 
-        public int MeasurementId { get; set; }
+        public int IndexVal { get; set; }
+        public int? MeasurementId { get; set; }
 
     }
 
