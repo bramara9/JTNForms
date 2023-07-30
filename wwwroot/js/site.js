@@ -14,7 +14,7 @@ $(document).ready(function () {
                 success: function (data) {
                     //debugger;
                     response($.map(data, function (item) {
-                        return { label: item.name, value: item.name };
+                        return { label: item, value: item };
                     }))
                 },
                 messages: {

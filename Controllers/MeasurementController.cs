@@ -1,9 +1,13 @@
 ﻿using JTNForms.DataModels;
 using JTNForms.Models;
+using JTNForms.Repos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow;
+using Microsoft.EntityFrameworkCore;
+using NuGet.Packaging;
+using System.Linq;
 
 namespace JTNForms.Controllers
 {
@@ -11,10 +15,18 @@ namespace JTNForms.Controllers
     {
 
         public static List<WindowDetails> details = new List<WindowDetails> { new WindowDetails { } };
+        public dapperDbContext _dapperPocDbContext = new dapperDbContext();
+
         public static Measurement tmpWindow = new Measurement
         {
             lstWindowDetails = details
         };
+
+        public MeasurementController(dapperDbContext dapperDbContext)
+        {
+            _dapperPocDbContext = dapperDbContext;
+        }
+
         public IActionResult Index(int customerId)
         {
             ViewBag.userName = HttpContext.Session.GetString("username");
@@ -23,9 +35,9 @@ namespace JTNForms.Controllers
                 tmpWindow.customerId = customerId;
             }
             ViewBag.JNTFDetails = tmpWindow;
-           
+
             return View("Index");
-        }       
+        }
         [HttpPost]
         public IActionResult Add(Measurement window)
         {
@@ -43,9 +55,9 @@ namespace JTNForms.Controllers
             return RedirectToAction("Index", new { customerId = window.customerId });
         }
 
-        
-             [HttpPost]
-        public IActionResult Copy(Measurement window,Int32 id )
+
+        [HttpPost]
+        public IActionResult Copy(Measurement window, Int32 id)
         {
             //var userId = TempData["username"]?.ToString();
             //TempData.Keep();
@@ -71,7 +83,7 @@ namespace JTNForms.Controllers
         public IActionResult Delete(Measurement window, Int32 id)
         {
             ViewBag.userName = HttpContext.Session.GetString("username");
-            
+
             if (window.lstWindowDetails.Any())
             {
                 window.lstWindowDetails.Remove(window.lstWindowDetails.FirstOrDefault(a => a.IndexVal == id));
@@ -82,42 +94,38 @@ namespace JTNForms.Controllers
         }
 
         [HttpPost]
-        public IActionResult AutoCompleteData(string Prefix)
+        public IActionResult AutoCompleteData(string prefix)
         {
-            //Note : you can bind same list from database  
-            List<City> ObjList = new List<City>()
-            {
 
-                new City {Id=1,Name="Latur" },
-                new City {Id=2,Name="Mumbai" },
-                new City {Id=3,Name="Pune" },
-                new City {Id=4,Name="Delhi" },
-                new City {Id=5,Name="Dehradun" },
-                new City {Id=6,Name="Noida" },
-                new City {Id=7,Name="New Delhi" },
-                  new City {Id=8,Name="New Mumbai" }
-
-        };
-            //Searching records from list using LINQ query  
-            var Name = (from N in ObjList
-                        where N.Name.StartsWith(Prefix)
-                        select new { N.Name });
-            return Json(Name);
+            var names = _dapperPocDbContext.LookUps.Where(x => x.Type.Trim() == "Room" && x.Name.ToLower().StartsWith(prefix.ToLower())).Select(y => y.Name).ToList();
+            return Json(names);
         }
 
         [HttpPost]
         public IActionResult Save(Measurement jntfModel)
         {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.JNTFDetails = tmpWindow;
+                return RedirectToAction("Index");
+            }
+            var mapper = MapperConfig.InitializeAutomapper();
+            List<Window> windows = new List<Window>();
+            foreach (var x in jntfModel.lstWindowDetails)
+            {
+                windows.Add(mapper.Map<WindowDetails, Window>(x));
+            }
+            if (windows.Count > 0)
+            {
+                var rooms = windows.Select(x => x.RoomName.Trim()).Distinct();
+                var res = rooms.Select(y => new Room() { RoomName = y, Windows = windows.Where(u => u.RoomName == y).ToList() });
+                var customer = _dapperPocDbContext.Customers.First(c => c.Id == jntfModel.customerId);
+                customer.Rooms.AddRange<Room>((IEnumerable<Room>)res);
+                _dapperPocDbContext.SaveChanges();
+            }
             return Json("Ok");
-           
+
         }
 
-
-    }
-
-    internal class City
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
     }
 }

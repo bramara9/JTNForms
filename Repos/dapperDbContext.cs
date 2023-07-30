@@ -18,6 +18,8 @@ public partial class dapperDbContext : DbContext
 
     public virtual DbSet<Customer> Customers { get; set; }
 
+    public virtual DbSet<LookUp> LookUps { get; set; }
+
     public virtual DbSet<Room> Rooms { get; set; }
 
     public virtual DbSet<Window> Windows { get; set; }
@@ -41,6 +43,11 @@ public partial class dapperDbContext : DbContext
             entity.Property(e => e.PhoneNumber).IsFixedLength();
             entity.Property(e => e.State).IsFixedLength();
             entity.Property(e => e.Zip).IsFixedLength();
+        });
+
+        modelBuilder.Entity<LookUp>(entity =>
+        {
+            entity.Property(e => e.Type).IsFixedLength();
         });
 
         modelBuilder.Entity<Room>(entity =>

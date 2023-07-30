@@ -1,4 +1,5 @@
-﻿using JTNForms.DataModels;
+﻿using JTNForms.Custom;
+using JTNForms.DataModels;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
@@ -19,10 +20,17 @@ namespace JTNForms.Models
     }
 
     public class WindowDetails {
-        public string? WindowName  { get; set; }
-        public decimal? Weight { get; set; }
+
+        [Required]
+        public string WindowName  { get; set; }
+        [Required]
+        [Range(0.01, 99999999)]
+        public decimal? Width { get; set; }
+        [Required]
+        [Range(0.01, 99999999)]
         public Decimal? Height { get; set; }
         public string? Notes { get; set; }
+        [Required]
         public string RoomName { get; set; }
 
         public int IndexVal { get; set; }

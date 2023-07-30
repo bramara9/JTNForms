@@ -35,6 +35,9 @@ public partial class Window
     [Column(TypeName = "decimal(18, 0)")]
     public decimal? TotalPrice { get; set; }
 
+    [StringLength(40)]
+    public string? RoomName { get; set; }
+
     [ForeignKey("RoomId")]
     [InverseProperty("Windows")]
     public virtual Room Room { get; set; } = null!;
