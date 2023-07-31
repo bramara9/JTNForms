@@ -1,0 +1,107 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering;
+@model List<RoomDetails>
+
+@{
+    var cId = ViewBag.CutomerId;
+}
+
+<div><b>User name : @ViewBag.userName</b></div>
+<form id="frm" asp-controller="Measurement">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+
+    @if (Model != null)
+    {
+        <table id="MultiAddUserTable" class="table">
+            <tr>
+                <th>Room Name</th>
+                <th>Fabric code</th>
+                <th>Base price</th>
+                <th>Blind type</th>
+            </tr>
+
+            @for (int i = 0; i < Model.Count(); i++)
+            {
+                <input type="hidden" class="form-control" id="IndexVal" asp-for="@Model[i].RoomName" value="@i">
+                <tr>
+                    <input type="hidden" class="form-control" id="hdnRoomId" asp-for="@Model[i].Id" value="@i">
+
+                    <td>
+                        <label class="form-check-label" asp-for="@Model[i].RoomName">@Model[i].RoomName</label>
+                    </td>
+                    <td>
+                        <label class="form-check-label" asp-for="@Model[i].Fabric">@Model[i].Fabric</label>
+
+                    </td>
+                    <td>
+                        <label class="form-check-label" asp-for="@Model[i].BasePrice">@Model[i].BasePrice</label>
+
+                    </td>
+                    <td>
+                        <label class="form-check-label" asp-for="@Model[i].BlindType">@Model[i].BlindType</label>
+
+                    </td>
+
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        @if (Model[i].windowDetails != null)
+                        {
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th> Window Name</th>
+                                        <th>Width</th>
+                                        <th>Height</th>
+                                        <th>Control Type</th>
+                                        <th>Control Position</th>
+                                        <th>Total Price</th>
+                                    </tr>
+                                </thead>
+                                @for (int j = 0; j < Model[i].windowDetails.Count(); j++)
+                                {
+                                    <input type="hidden" class="form-control" id="hdnWindowId" asp-for="@Model[i].windowDetails[j].Id" value="@j">
+
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <label class="form-check-label" asp-for="@Model[i].windowDetails[j].WindowName">@Model[i].windowDetails[j].WindowName</label>
+
+                                            </td>
+                                            <td>
+                                                <input class="activeVersion_@j" id="Text1" type="text" asp-for="@Model[i].windowDetails[j].Width" />
+                                                <br /><span asp-validation-for="@Model[i].windowDetails[j].Width" class="text-danger"></span>
+                                            </td>
+                                            <td>
+                                                <input class="activeVersion_@j" id="Text2" type="text" asp-for="@Model[i].windowDetails[j].Height" />
+                                                <br /><span asp-validation-for="@Model[i].windowDetails[j].Height" class="text-danger"></span>
+                                            </td>
+                                            <td>
+                                                <input class="activeVersion_@j" id="Text3" type="text" asp-for="@Model[i].windowDetails[j].ControlType" />
+                                                <br /><span asp-validation-for="@Model[i].windowDetails[j].ControlType" class="text-danger"></span>
+                                            </td>
+                                            <td>
+                                                <input class="activeVersion_@j" id="Text4" type="text" asp-for="@Model[i].windowDetails[j].ControlPosition" />
+                                                <br /><span asp-validation-for="@Model[i].windowDetails[j].ControlPosition " class="text-danger"></span>
+                                            </td>
+                                            <td>
+                                                <input class="activeVersion_@j" id="Text5" type="text" asp-for="@Model[i].windowDetails[j].TotalPrice" />
+                                                <br /><span asp-validation-for="@Model[i].windowDetails[j].TotalPrice" class="text-danger"></span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                }
+                            </table>
+                        }
+                    </td>
+                </tr>
+            }
+
+        </table>
+    }
+
+
+    <div class="form-group">
+        <input id="btnSaveWindow" type="submit" class="btn btn-primary" value="Next" asp-action="SaveWindowDetails" asp-route-customerId=@cId />
+    </div>
+</form>

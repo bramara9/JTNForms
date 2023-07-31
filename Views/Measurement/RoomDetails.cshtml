@@ -1,0 +1,64 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering;
+@model List<RoomDetails>
+
+@{
+    var cId =ViewBag.CutomerId;
+}
+
+<div><b>User name : @ViewBag.userName </b></div>
+<form id="frm" asp-controller="Measurement">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <table id="MultiAddUserTable" class="table">
+        <tr>		         	
+            <th>Room Name</th>
+            <th>Fabric code</th>
+            <th>Base price</th>
+            <th>Blind type</th>
+        </tr>
+        @if (Model != null)
+        {
+            @for (int i = 0; i < Model.Count(); i++)
+            {
+                <input type="hidden" class="form-control" id="IndexVal" asp-for="@Model[i].RoomName" value="@i">
+                <tr>
+                    <input type="hidden" class="form-control" id="hdnRoomId" asp-for="@Model[i].Id" value="@i">
+
+                    <td>
+                        <label class="form-check-label" asp-for="@Model[i].RoomName">@Model[i].RoomName</label>
+                    </td>
+                    <td>
+                        <input id="Text2" type="text" asp-for="@Model[i].Fabric" />
+                        <br /><span asp-validation-for="@Model[i].Fabric" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <input id="Text3" type="text" asp-for="@Model[i].BasePrice" />
+                        <br /> <span asp-validation-for="@Model[i].BasePrice" class="text-danger"></span>
+                    </td>
+                    <td>
+                       @* <input id="Text4" type="text" asp-for="@Model[i].BlindType" />
+                        <br /> <span asp-validation-for="@Model[i].BlindType" class="text-danger"></span>*@
+                      @*  <select class="BlindTypes_@i" asp-for="@Model[i].BlindType"
+                                asp-items="@ViewBag.BlidType">
+                            
+                                  <option value = "">Select BlindType</option>
+                        </select>*@
+                        <select asp-for="@Model[i].BlindType">
+                            <option value="">Select BlindType</option>
+                            @foreach (var typed in @Model[i].BlindTypes)
+                            {
+                                <option value="@typed.Value" selected="@typed.Selected">@typed.Text</option>
+                            }
+                        </select>
+
+                    </td>
+                 
+                </tr>
+            }
+        }
+    </table>
+
+    <div class="form-group">
+        <input id="btnSaveRoom" type="submit" class="btn btn-primary" value="Next" asp-action="SaveRoomDetails" asp-route-customerId=@cId />
+    </div>
+</form>

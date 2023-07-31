@@ -1,11 +1,11 @@
 ﻿@model Measurement
 @{
-    ViewData["Title"] = "Index";    
+    ViewData["Title"] = "Index";
     var Model = (Measurement)ViewBag.JNTFDetails;
-    var MaxRow=0;
+    var MaxRow = 0;
     if (Model != null)
     {
-        MaxRow=Model.lstWindowDetails.Count()-1;
+        MaxRow = Model.lstWindowDetails.Count() - 1;
     }
 }
 
@@ -44,7 +44,7 @@
             {
                 <input type="hidden" class="form-control" id="IndexVal" asp-for="@Model.lstWindowDetails[i].IndexVal" value="@i">
                 <tr>
-                    
+
                     <td>
                         <input class="activeVersion_@i" id="Text1" type="text" asp-for="@Model.lstWindowDetails[i].RoomName" />
                         <br /><span asp-validation-for="@Model.lstWindowDetails[i].RoomName" class="text-danger"></span>
@@ -65,15 +65,15 @@
                         <input id="Text5" type="text" asp-for="@Model.lstWindowDetails[i].Notes" />
                     </td>
                     <td>
-                        @if(@i!=0){
-                        <button type="submit" class="btn btn-danger" asp-action="Delete" asp-route-id="@i"><span class="bi bi-trash"></span> </button>
-                        
-                        }&nbsp;
-                        @if(@i==@MaxRow){
-                        <button type="submit" class="btn btn-primary" asp-action="Copy" asp-route-id="@i"><span class="bi bs-tooltip-auto"></span> </button>
-                    
+                        <button type="submit" class="btn btn-danger" asp-action="Delete" formnovalidate asp-route-id="@i"><span class="bi bi-trash"></span> </button>
+
+
+                        @if (@i == @MaxRow)
+                        {
+                            <button type="submit" class="btn btn-primary" asp-action="Copy" asp-route-id="@i"><span class="bi bs-tooltip-auto"></span> </button>
+
                         }
-                        </td>
+                    </td>
                 </tr>
             }
         }
@@ -84,6 +84,6 @@
     </div>
 
     <div class="form-group">
-        <input id="btnSave" type="submit" class="btn btn-primary" value="Save" asp-action="Save"/>
+        <input id="btnSave" type="submit" class="btn btn-primary" value="Next" asp-action="Save" />
     </div>
 </form>

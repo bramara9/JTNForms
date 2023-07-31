@@ -2,6 +2,7 @@
 using JTNForms.DataModels;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace JTNForms.Models
 {
@@ -20,7 +21,7 @@ namespace JTNForms.Models
     }
 
     public class WindowDetails {
-
+        public int Id { get; set; }
         [Required]
         public string WindowName  { get; set; }
         [Required]
@@ -35,15 +36,31 @@ namespace JTNForms.Models
 
         public int IndexVal { get; set; }
         public int? MeasurementId { get; set; }
+        public string? ControlType { get; set; }
+        public string? ControlPosition { get; set; }
+        [Range(0.01, 99999999)]
+        public Decimal? TotalPrice { get; set; }
 
     }
 
     public class RoomDetails
     {
+        public RoomDetails()
+        {
+            windowDetails = new List<WindowDetails>();
+            BlindTypes = new List<SelectListItem>();
+        }
+        public int Id { get; set; }
         public string RoomName { get; set; }
-        public Decimal Fabric { get; set; }
-        public Decimal BasePrice { get; set; }
+        public string Fabric { get; set; }
+        public int? BasePrice { get; set; }
         public string Notes { get; set; }
+
+        public string BlindType { get; set; }
+        public List<SelectListItem> BlindTypes { get; set; }
+
+        public List<WindowDetails>  windowDetails { get; set; }
+
 
     }
 

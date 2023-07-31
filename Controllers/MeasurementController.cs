@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Packaging;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace JTNForms.Controllers
 {
@@ -30,11 +31,43 @@ namespace JTNForms.Controllers
         public IActionResult Index(int customerId)
         {
             ViewBag.userName = HttpContext.Session.GetString("username");
-            if (customerId > 0)
+            if (customerId > 0 && tmpWindow.customerId <= 0)
             {
                 tmpWindow.customerId = customerId;
+
+                var result = (from c in _dapperPocDbContext.Customers.Where(a => a.Id == customerId)
+                              orderby c.Id
+                              select new Measurement
+                              {
+                                  customerId = c.Id,
+                                  IsInchOrMM = true,
+
+                                  lstWindowDetails =
+                                  (from r in _dapperPocDbContext.Rooms
+                                   join w in _dapperPocDbContext.Windows
+                                   on r.Id equals w.RoomId
+                                   where r.CustomerId == c.Id
+                                   select new WindowDetails
+                                   {
+                                       Height = w.Height,
+                                       Width = w.Width,
+                                       Notes = w.Notes,
+                                       RoomName = r.RoomName,
+                                       WindowName = w.WindowName,
+
+
+                                   })
+                                   .ToList()
+                              }).FirstOrDefault();
+
+                ViewBag.JNTFDetails = result;
+
             }
-            ViewBag.JNTFDetails = tmpWindow;
+            else
+            {
+                ViewBag.JNTFDetails = tmpWindow;
+            }
+
 
             return View("Index");
         }
@@ -107,7 +140,7 @@ namespace JTNForms.Controllers
             if (!ModelState.IsValid)
             {
                 ViewBag.JNTFDetails = tmpWindow;
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { customerId = jntfModel.customerId });
             }
             var mapper = MapperConfig.InitializeAutomapper();
             List<Window> windows = new List<Window>();
@@ -123,9 +156,124 @@ namespace JTNForms.Controllers
                 customer.Rooms.AddRange<Room>((IEnumerable<Room>)res);
                 _dapperPocDbContext.SaveChanges();
             }
+            return RedirectToAction("RoomDetails", new { customerId = jntfModel.customerId });
+
+        }
+
+        [HttpGet]
+        public IActionResult RoomDetails(int customerId)
+        {
+            ViewBag.userName = HttpContext.Session.GetString("username");
+            List<RoomDetails> lstRoomDetails = new List<RoomDetails>();
+            lstRoomDetails = GetRoomDetails(customerId);
+            ViewBag.CutomerId = customerId;
+            return View(lstRoomDetails);
+
+        }
+        [HttpPost]
+        public IActionResult SaveRoomDetails(List<RoomDetails> roomDetails, Int32 customerId)
+        {
+            using (var Db = _dapperPocDbContext)
+            {
+                foreach (var roomDtls in roomDetails)
+                {
+                    var result = Db.Rooms.Where(a => a.Id == roomDtls.Id).FirstOrDefault();
+                    if (result != null)
+                    {
+
+                        result.FabricName = roomDtls.Fabric;
+                        result.BasePrice = roomDtls.BasePrice;
+                        result.BlindType = roomDtls.BlindType;
+                    }
+                }
+                Db.SaveChanges();
+            }
+
+            return RedirectToAction("WindowDetails", new { customerId = customerId });
+
+        }
+
+        [HttpGet]
+        public IActionResult WindowDetails(int customerId)
+        {
+            ViewBag.userName = HttpContext.Session.GetString("username");
+            List<RoomDetails> lstRoomDetails = new List<RoomDetails>();
+            lstRoomDetails = GetRoomDetails(customerId);
+            ViewBag.CutomerId = customerId;
+            return View("WindowDetails", lstRoomDetails);
+        }
+        [HttpPost]
+        public IActionResult SaveWindowDetails(List<RoomDetails> roomDetails, Int32 customerId)
+        {
+            using (var Db = _dapperPocDbContext)
+            {
+                foreach (var roomDtls in roomDetails)
+                {
+                    foreach (var windowDtls in roomDtls.windowDetails)
+                    {
+                        var result = Db.Windows.Where(a => a.Id == windowDtls.Id).FirstOrDefault();
+                        if (result != null)
+                        {
+
+                            result.TotalPrice = windowDtls.TotalPrice;
+                            result.ControlType = windowDtls.ControlType;
+                            result.Option = windowDtls.ControlPosition;
+                            result.Width = windowDtls.Width;
+                            result.Height = windowDtls.Height;
+                        }
+                    }
+                }
+                Db.SaveChanges();
+            }
+
             return Json("Ok");
 
         }
 
+        private List<RoomDetails> GetRoomDetails(int customerId)
+        {
+            List<RoomDetails> lstRoomDetails;
+            using (var Db = _dapperPocDbContext)
+            {
+                lstRoomDetails = (from room in Db.Rooms.Where(a => a.CustomerId == customerId)
+                                  select new
+                                  {
+                                      BasePrice = room.BasePrice,
+                                      BlindType = room.BlindType,
+                                      RoomName = room.RoomName,
+                                      Id = room.Id,
+                                      Fabric = room.FabricName
+
+                                  }).AsEnumerable().Select(room => new RoomDetails
+                                  {
+
+                                      BasePrice = room.BasePrice,
+                                      BlindType = room.BlindType,
+                                      RoomName = room.RoomName,
+                                      Id = room.Id,
+                                      Fabric = room.Fabric,
+                                      BlindTypes = Db.LookUps.Where(x => x.Type.Trim() == "BlindType").Select(y => new SelectListItem()
+                                      {
+
+                                          Value = y.Name,
+                                          Text = y.Name,
+                                          Selected = (y.Name == room.BlindType)
+                                      }).ToList(),
+                                      windowDetails = Db.Windows.Where(x => x.RoomId == room.Id).Select(y => new WindowDetails()
+                                      {
+                                          Id = y.Id,
+                                          WindowName = y.WindowName,
+                                          Height = y.Height,
+                                          Width = y.Width,
+                                          ControlType = y.ControlType,
+                                          ControlPosition = y.ControlType,
+                                          TotalPrice = y.TotalPrice,
+
+                                      }).ToList()
+                                  }).ToList();
+            }
+
+            return lstRoomDetails;
+        }
     }
 }
