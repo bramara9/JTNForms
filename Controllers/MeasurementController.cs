@@ -209,24 +209,25 @@ namespace JTNForms.Controllers
             {
                 foreach (var roomDtls in roomDetails)
                 {
-                    foreach (var windowDtls in roomDtls.windowDetails)
+                    foreach (var windowDtls in roomDtls.WindowDetails)
                     {
                         var result = Db.Windows.Where(a => a.Id == windowDtls.Id).FirstOrDefault();
                         if (result != null)
                         {
 
-                            result.TotalPrice = windowDtls.TotalPrice;
+                            //result.TotalPrice = windowDtls.TotalPrice;
                             result.ControlType = windowDtls.ControlType;
                             result.Option = windowDtls.ControlPosition;
                             result.Width = windowDtls.Width;
                             result.Height = windowDtls.Height;
+                            result.Notes = windowDtls.Notes;
                         }
                     }
                 }
                 Db.SaveChanges();
             }
 
-            return Json("Ok");
+            return RedirectToAction("Index", "Invoice", new { customerId = customerId });
 
         }
 
@@ -259,7 +260,8 @@ namespace JTNForms.Controllers
                                           Text = y.Name,
                                           Selected = (y.Name == room.BlindType)
                                       }).ToList(),
-                                      windowDetails = Db.Windows.Where(x => x.RoomId == room.Id).Select(y => new WindowDetails()
+                                      WindowDetails = Db.Windows.Where(x => x.RoomId == room.Id).Select(y => new WindowDetails()
+
                                       {
                                           Id = y.Id,
                                           WindowName = y.WindowName,
@@ -269,11 +271,43 @@ namespace JTNForms.Controllers
                                           ControlPosition = y.ControlType,
                                           TotalPrice = y.TotalPrice,
 
+
                                       }).ToList()
                                   }).ToList();
-            }
 
+                if (lstRoomDetails != null && lstRoomDetails.Any())
+                {
+                    foreach (var room in lstRoomDetails)
+                    {
+                        foreach (var window in room.WindowDetails)
+                        {
+                            window.ControlTypes = Db.LookUps.Where(x => x.Type.Trim() == "BlindType").Select(y => new SelectListItem()
+                            {
+
+                                Value = y.Name,
+                                Text = y.Name,
+                                Selected = (y.Name == window.ControlType)
+                            }).ToList();
+                            window.ControlPositions = Db.LookUps.Where(x => x.Type.Trim() == "BlindType").Select(y => new SelectListItem()
+                            {
+
+                                Value = y.Name,
+                                Text = y.Name,
+                                Selected = (y.Name == window.ControlPosition)
+                            }).ToList();
+                            window.StackTypes = Db.LookUps.Where(x => x.Type.Trim() == "BlindType").Select(y => new SelectListItem()
+                            {
+
+                                Value = y.Name,
+                                Text = y.Name,
+                                Selected = (y.Name == window.StackType)
+                            }).ToList();
+                        }
+                    }
+                }
+            }
             return lstRoomDetails;
         }
+
     }
 }

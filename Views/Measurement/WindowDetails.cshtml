@@ -1,4 +1,4 @@
-﻿@using Microsoft.AspNetCore.Mvc.Rendering;
+﻿
 @model List<RoomDetails>
 
 @{
@@ -6,28 +6,36 @@
 }
 
 <div><b>User name : @ViewBag.userName</b></div>
-<form id="frm" asp-controller="Measurement">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<form id="frmWindow" asp-controller="Measurement" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
 
 
     @if (Model != null)
     {
         <table id="MultiAddUserTable" class="table">
-            <tr>
-                <th>Room Name</th>
-                <th>Fabric code</th>
-                <th>Base price</th>
-                <th>Blind type</th>
-            </tr>
-
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Room Name</th>
+                    <th scope="col">Fabric code</th>
+                    <th scope="col">Base price</th>
+                    <th scope="col">Blind type</th>
+                </tr>
+            </thead>
             @for (int i = 0; i < Model.Count(); i++)
             {
+                var roomId = "Room" + i;
                 <input type="hidden" class="form-control" id="IndexVal" asp-for="@Model[i].RoomName" value="@i">
-                <tr>
+                <tr data-toggle="toggle">
                     <input type="hidden" class="form-control" id="hdnRoomId" asp-for="@Model[i].Id" value="@i">
 
                     <td>
-                        <label class="form-check-label" asp-for="@Model[i].RoomName">@Model[i].RoomName</label>
+                        <p id=@roomId>
+                            <b>
+                                <span class="plusminus_@roomId">+</span>
+                                <label class="form-check-label" asp-for="@Model[i].RoomName">@Model[i].RoomName</label>
+                            </b>
+                        </p>
+
                     </td>
                     <td>
                         <label class="form-check-label" asp-for="@Model[i].Fabric">@Model[i].Fabric</label>
@@ -43,50 +51,154 @@
                     </td>
 
                 </tr>
-                <tr>
-                    <td colspan="4">
-                        @if (Model[i].windowDetails != null)
+                <tr class="hideTr">
+                    <td colspan="4" style="padding:0px 20px 0px 20px">
+                        @if (Model[i].WindowDetails != null && Model[i].WindowDetails.Count() > 0)
                         {
-                            <table>
-                                <thead>
+                            <table class="table table-striped">
+                                <thead class="thead-light">
                                     <tr>
-                                        <th> Window Name</th>
-                                        <th>Width</th>
-                                        <th>Height</th>
-                                        <th>Control Type</th>
-                                        <th>Control Position</th>
-                                        <th>Total Price</th>
+                                        <th scope="col">Item Selection</th>
+                                        <th scope="col">Window Name</th>
+                                        <th scope="col">Width</th>
+                                        <th scope="col">Height</th>
+                                        @if (!(@Model[i].BlindType.Contains("Vertical Blind") || @Model[i].BlindType.Contains("Panel Shade")))
+                                        {
+                                            <th scope="col">Control Type</th>
+                                        }
+                                        @if (!@Model[i].BlindType.Contains("Panel Shade"))
+                                        {
+                                            <th scope="col">Control Position</th>
+                                        }
+                                        @if (@Model[i].BlindType.Contains("Panel Shade"))
+                                        {
+                                            <th scope="col">No Of Panels</th>
+                                        }
+                                        @if (@Model[i].BlindType.Contains("Panel Shade") || @Model[i].BlindType.Contains("Vertical Blind"))
+                                        {
+                                            <th scope="col">Stack Type</th>
+                                        }
+                                        @if (!(@Model[i].BlindType.Contains("Sheer Shade") || @Model[i].BlindType.Contains("Panel Shade") || @Model[i].BlindType.Contains("Vertical Blind")))
+                                        {
+                                            <th scope="col">2 in 1 blind</th>
+                                        }
+                                        @if (!(@Model[i].BlindType.Contains("Banded Shade") || @Model[i].BlindType.Contains("Sheer Shade") || @Model[i].BlindType.Contains("Honeycomb Shade")))
+                                        {
+                                            <th scope="col">No Valance</th>
+                                        }
+                                        @if (@Model[i].BlindType.Contains("Panel Shade") || @Model[i].BlindType.Contains("Vertical Blind"))
+                                        {
+                                            <th scope="col">Need Extension</th>
+                                        }
+                                        <th scope="col">Notes</th>
                                     </tr>
                                 </thead>
-                                @for (int j = 0; j < Model[i].windowDetails.Count(); j++)
+                                @for (int j = 0; j < Model[i].WindowDetails.Count(); j++)
                                 {
-                                    <input type="hidden" class="form-control" id="hdnWindowId" asp-for="@Model[i].windowDetails[j].Id" value="@j">
+                                    <input type="hidden" class="form-control" id="hdnWindowId" asp-for="@Model[i].WindowDetails[j].Id" value="@j">
 
                                     <tbody>
                                         <tr>
                                             <td>
-                                                <label class="form-check-label" asp-for="@Model[i].windowDetails[j].WindowName">@Model[i].windowDetails[j].WindowName</label>
+                                                <input class="form-check-input" type="checkbox" asp-for="@Model[i].WindowDetails[j].IsItemSelection" />
 
                                             </td>
                                             <td>
-                                                <input class="activeVersion_@j" id="Text1" type="text" asp-for="@Model[i].windowDetails[j].Width" />
-                                                <br /><span asp-validation-for="@Model[i].windowDetails[j].Width" class="text-danger"></span>
+                                                <label class="form-check-label" asp-for="@Model[i].WindowDetails[j].WindowName">@Model[i].WindowDetails[j].WindowName</label>
+
                                             </td>
                                             <td>
-                                                <input class="activeVersion_@j" id="Text2" type="text" asp-for="@Model[i].windowDetails[j].Height" />
-                                                <br /><span asp-validation-for="@Model[i].windowDetails[j].Height" class="text-danger"></span>
+                                                <label class="form-check-label" asp-for="@Model[i].WindowDetails[j].Width">@Model[i].WindowDetails[j].Width</label>
+
                                             </td>
                                             <td>
-                                                <input class="activeVersion_@j" id="Text3" type="text" asp-for="@Model[i].windowDetails[j].ControlType" />
-                                                <br /><span asp-validation-for="@Model[i].windowDetails[j].ControlType" class="text-danger"></span>
+                                                <label class="form-check-label" asp-for="@Model[i].WindowDetails[j].Height">@Model[i].WindowDetails[j].Height</label>
+
                                             </td>
+                                            @if (!(@Model[i].BlindType.Contains("Panel Shade") || @Model[i].BlindType.Contains("Vertical Blind")))
+                                            {
+                                                <td>
+
+                                                    @*   <input class="activeVersion_@j form-control rounded" id="Text3" type="text" asp-for="@Model[i].WindowDetails[j].ControlType" />
+                                <br />*@
+                                                    <select asp-for="@Model[i].WindowDetails[j].ControlType" class="form-select">
+                                                        <option value="">Select ControlType</option>
+                                                        @foreach (var typed in @Model[i].WindowDetails[j].ControlTypes)
+                                                        {
+                                                            <option value="@typed.Value" selected="@typed.Selected">@typed.Text</option>
+                                                        }
+                                                    </select>
+                                                    <br />
+
+                                                    <span asp-validation-for="@Model[i].WindowDetails[j].ControlType" class="text-danger"></span>
+
+                                                </td>
+                                            }
+                                            @if (!@Model[i].BlindType.Contains("Panel Shade"))
+                                            {
+                                                <td>
+                                                    @* <input class="activeVersion_@j  form-control rounded" id="Text4" type="text" asp-for="@Model[i].WindowDetails[j].ControlPosition" />*@
+
+
+                                                    <select asp-for="@Model[i].WindowDetails[j].ControlPosition" class="form-select">
+                                                        <option value="">Select ControlPosition</option>
+                                                        @foreach (var typed in @Model[i].WindowDetails[j].ControlPositions)
+                                                        {
+                                                            <option value="@typed.Value" selected="@typed.Selected">@typed.Text</option>
+                                                        }
+                                                    </select>
+                                                    <br /><span asp-validation-for="@Model[i].WindowDetails[j].ControlPosition" class="text-danger"></span>
+                                                </td>
+                                            }
+                                            @if (@Model[i].BlindType.Contains("Panel Shade"))
+                                            {
+                                                <td>
+                                                    <input class="form-control" type="text" asp-for="@Model[i].WindowDetails[j].NoOfPanels" />
+
+
+                                                </td>
+                                            }
+                                            @if (@Model[i].BlindType.Contains("Panel Shade") || @Model[i].BlindType.Contains("Vertical Blind"))
+                                            {
+                                                <td>
+                                                    <select asp-for="@Model[i].WindowDetails[j].StackType" class="form-select">
+                                                        <option value="">Select Stack</option>
+                                                        @foreach (var typed in @Model[i].WindowDetails[j].StackTypes)
+                                                        {
+                                                            <option value="@typed.Value" selected="@typed.Selected">@typed.Text</option>
+                                                        }
+                                                    </select>
+                                                    <br /><span asp-validation-for="@Model[i].WindowDetails[j].StackType" class="text-danger"></span>
+                                                </td>
+                                            }
+                                            @if (!( @Model[i].BlindType.Contains("Panel Shade") || @Model[i].BlindType.Contains("Vertical Blind")))
+                                            {
+                                                <td>
+
+                                                    <input class="form-check-input" type="checkbox" asp-for="@Model[i].WindowDetails[j].Is2In1" />
+
+
+                                                </td>
+                                            }
+                                            @if (!(@Model[i].BlindType.Contains("Banded Shade") || @Model[i].BlindType.Contains("Sheer Shade") || @Model[i].BlindType.Contains("Honeycomb Shade")))
+                                            {
+                                                <td>
+                                                    <input class="form-check-input" type="checkbox" asp-for="@Model[i].WindowDetails[j].IsNoValance" />
+
+                                                </td>
+                                            }
+                                            @if (@Model[i].BlindType.Contains("Panel Shade") || @Model[i].BlindType.Contains("Vertical Blind"))
+                                            {
+                                                <td>
+
+                                                    <input class="form-check-input" type="checkbox" asp-for="@Model[i].WindowDetails[j].IsNeedExtension" />
+
+
+                                                </td>
+                                            }
                                             <td>
-                                                <input class="activeVersion_@j" id="Text4" type="text" asp-for="@Model[i].windowDetails[j].ControlPosition" />
-                                                <br /><span asp-validation-for="@Model[i].windowDetails[j].ControlPosition " class="text-danger"></span>
-                                            </td>
-                                            <td>
-                                                <input class="activeVersion_@j" id="Text5" type="text" asp-for="@Model[i].windowDetails[j].TotalPrice" />
-                                                <br /><span asp-validation-for="@Model[i].windowDetails[j].TotalPrice" class="text-danger"></span>
+                                                <input class="activeVersion_@j form-control rounded" id="Text5" type="text" asp-for="@Model[i].WindowDetails[j].Notes" />
+                                                <span asp-validation-for="@Model[i].WindowDetails[j].Notes" class="text-danger"></span>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -104,4 +216,6 @@
     <div class="form-group">
         <input id="btnSaveWindow" type="submit" class="btn btn-primary" value="Next" asp-action="SaveWindowDetails" asp-route-customerId=@cId />
     </div>
+   
+
 </form>

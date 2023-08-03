@@ -1,0 +1,17 @@
+﻿@model List<RoomDetails>
+
+@{
+    var cId = ViewBag.CutomerId;
+}
+
+<div><b>User name : @ViewBag.userName</b></div>
+<form id="frm" asp-controller="Measurement">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+
+    <div class="form-group">
+        <input id="btnDownloadInvoice" type="submit" class="btn btn-primary" value="Download" asp-action="DownloadInvoice" asp-route-customerId=@cId />
+    </div>
+
+</form>
+

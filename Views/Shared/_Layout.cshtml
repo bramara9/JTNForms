@@ -51,5 +51,22 @@
     <script src="~/lib/jquery/dist/jquery.ui.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //debugger;
+            $('.hideTr').slideUp();
+            $('[data-toggle="toggle"]').click(function () {
+                if ($(this).next('.hideTr').is(':visible')) {
+                    $(this).next('.hideTr').slideUp();
+                    $(".plusminus_" + $(this).children().children().attr("id")).text('+');
+                }
+                else {
+                    $(this).next('.hideTr').slideDown();
+                    $(".plusminus_" + $(this).children().children().attr("id")).text('- ');
+
+                }
+            });
+        });
+    </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-﻿@using Microsoft.AspNetCore.Mvc.Rendering;
+﻿
 @model List<RoomDetails>
 
 @{
@@ -28,11 +28,11 @@
                         <label class="form-check-label" asp-for="@Model[i].RoomName">@Model[i].RoomName</label>
                     </td>
                     <td>
-                        <input id="Text2" type="text" asp-for="@Model[i].Fabric" />
+                        <input id="Text2" type="text" asp-for="@Model[i].Fabric" class="form-control rounded" />
                         <br /><span asp-validation-for="@Model[i].Fabric" class="text-danger"></span>
                     </td>
                     <td>
-                        <input id="Text3" type="text" asp-for="@Model[i].BasePrice" />
+                        <input id="Text3" type="text" asp-for="@Model[i].BasePrice" class="form-control rounded" />
                         <br /> <span asp-validation-for="@Model[i].BasePrice" class="text-danger"></span>
                     </td>
                     <td>
@@ -43,13 +43,14 @@
                             
                                   <option value = "">Select BlindType</option>
                         </select>*@
-                        <select asp-for="@Model[i].BlindType">
+                        <select asp-for="@Model[i].BlindType" class="form-select">
                             <option value="">Select BlindType</option>
                             @foreach (var typed in @Model[i].BlindTypes)
                             {
                                 <option value="@typed.Value" selected="@typed.Selected">@typed.Text</option>
                             }
                         </select>
+                        <br /><span asp-validation-for="@Model[i].BlindType" class="text-danger"></span>
 
                     </td>
                  

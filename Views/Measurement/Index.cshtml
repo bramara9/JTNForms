@@ -46,23 +46,23 @@
                 <tr>
 
                     <td>
-                        <input class="activeVersion_@i" id="Text1" type="text" asp-for="@Model.lstWindowDetails[i].RoomName" />
+                        <input class="activeVersion_@i  form-control rounded" id="Text1" type="text" asp-for="@Model.lstWindowDetails[i].RoomName" />
                         <br /><span asp-validation-for="@Model.lstWindowDetails[i].RoomName" class="text-danger"></span>
                     </td>
                     <td>
-                        <input id="Text2" type="text" asp-for="@Model.lstWindowDetails[i].WindowName" />
+                        <input id="Text2" type="text" asp-for="@Model.lstWindowDetails[i].WindowName" class="form-control rounded" />
                         <br /><span asp-validation-for="@Model.lstWindowDetails[i].WindowName" class="text-danger"></span>
                     </td>
                     <td>
-                        <input id="Text3" type="text" asp-for="@Model.lstWindowDetails[i].Width" />
+                        <input id="Text3" type="text" asp-for="@Model.lstWindowDetails[i].Width" class="form-control rounded" />
                         <br /> <span asp-validation-for="@Model.lstWindowDetails[i].Width" class="text-danger"></span>
                     </td>
                     <td>
-                        <input id="Text4" type="text" asp-for="@Model.lstWindowDetails[i].Height" />
+                        <input id="Text4" type="text" asp-for="@Model.lstWindowDetails[i].Height" class="form-control rounded" />
                         <br /> <span asp-validation-for="@Model.lstWindowDetails[i].Height" class="text-danger"></span>
                     </td>
                     <td>
-                        <input id="Text5" type="text" asp-for="@Model.lstWindowDetails[i].Notes" />
+                        <input id="Text5" type="text" asp-for="@Model.lstWindowDetails[i].Notes" class="form-control rounded" />
                     </td>
                     <td>
                         <button type="submit" class="btn btn-danger" asp-action="Delete" formnovalidate asp-route-id="@i"><span class="bi bi-trash"></span> </button>
