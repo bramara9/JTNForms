@@ -43,11 +43,21 @@
             @for (int i = 0; i < Model.lstWindowDetails.Count(); i++)
             {
                 <input type="hidden" class="form-control" id="IndexVal" asp-for="@Model.lstWindowDetails[i].IndexVal" value="@i">
+                <input type="hidden" class="form-control" id="RoomId" asp-for="@Model.lstWindowDetails[i].RoomId">
+                <input type="hidden" class="form-control" id="WindowId" asp-for="@Model.lstWindowDetails[i].WindowId">
                 <tr>
 
                     <td>
+                        @if(@Model.lstWindowDetails[i].RoomId <= 0){
                         <input class="activeVersion_@i  form-control rounded" id="Text1" type="text" asp-for="@Model.lstWindowDetails[i].RoomName" />
-                        <br /><span asp-validation-for="@Model.lstWindowDetails[i].RoomName" class="text-danger"></span>
+                            <br /><span asp-validation-for="@Model.lstWindowDetails[i].RoomName" class="text-danger"></span>
+                        }
+                        else
+                        {
+
+                            <input type="hidden" class="form-control" id="RoomName" asp-for="@Model.lstWindowDetails[i].RoomName">
+                            <label class="form-check-label" asp-for="@Model.lstWindowDetails[i].RoomName">@Model.lstWindowDetails[i].RoomName</label>
+                        }
                     </td>
                     <td>
                         <input id="Text2" type="text" asp-for="@Model.lstWindowDetails[i].WindowName" class="form-control rounded" />

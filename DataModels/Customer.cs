@@ -42,6 +42,9 @@ public partial class Customer
     [StringLength(40)]
     public string? Address2 { get; set; }
 
+    [Column("IsInchOrMM")]
+    public bool? IsInchOrMm { get; set; }
+
     [InverseProperty("Customer")]
     public virtual ICollection<Room> Rooms { get; set; } = new List<Room>();
 }

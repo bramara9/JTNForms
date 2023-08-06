@@ -3,6 +3,10 @@
 
 @{
     var cId = ViewBag.CutomerId;
+    var BlindTypes = ViewBag.BlindTypes;
+    var ControlTypes = ViewBag.ControlTypes;
+    var ControlPositions = ViewBag.ControlPositions;
+    var StackTypes = ViewBag.StackTypes;
 }
 
 <div><b>User name : @ViewBag.userName</b></div>
@@ -123,9 +127,10 @@
                                 <br />*@
                                                     <select asp-for="@Model[i].WindowDetails[j].ControlType" class="form-select">
                                                         <option value="">Select ControlType</option>
-                                                        @foreach (var typed in @Model[i].WindowDetails[j].ControlTypes)
+                                                        @foreach (var typed in @ControlTypes)
                                                         {
-                                                            <option value="@typed.Value" selected="@typed.Selected">@typed.Text</option>
+                                                            var seltedVal = (@typed.Value.Trim() == @Model[i].WindowDetails[j].ControlType?.Trim()) ? true : false;
+                                                            <option value="@typed.Value" selected="@seltedVal">@typed.Text</option>
                                                         }
                                                     </select>
                                                     <br />
@@ -142,9 +147,10 @@
 
                                                     <select asp-for="@Model[i].WindowDetails[j].ControlPosition" class="form-select">
                                                         <option value="">Select ControlPosition</option>
-                                                        @foreach (var typed in @Model[i].WindowDetails[j].ControlPositions)
+                                                        @foreach (var typed in @ControlPositions)
                                                         {
-                                                            <option value="@typed.Value" selected="@typed.Selected">@typed.Text</option>
+                                                            var seltedVal = (@typed.Value.Trim() == @Model[i].WindowDetails[j].ControlPosition?.Trim()) ? true : false;
+                                                            <option value="@typed.Value" selected="@seltedVal">@typed.Text</option>
                                                         }
                                                     </select>
                                                     <br /><span asp-validation-for="@Model[i].WindowDetails[j].ControlPosition" class="text-danger"></span>
@@ -163,9 +169,10 @@
                                                 <td>
                                                     <select asp-for="@Model[i].WindowDetails[j].StackType" class="form-select">
                                                         <option value="">Select Stack</option>
-                                                        @foreach (var typed in @Model[i].WindowDetails[j].StackTypes)
+                                                        @foreach (var typed in @StackTypes)
                                                         {
-                                                            <option value="@typed.Value" selected="@typed.Selected">@typed.Text</option>
+                                                            var seltedVal = (@typed.Value.Trim() == @Model[i].WindowDetails[j].StackType?.Trim()) ? true : false;
+                                                            <option value="@typed.Value" selected="@seltedVal">@typed.Text</option>
                                                         }
                                                     </select>
                                                     <br /><span asp-validation-for="@Model[i].WindowDetails[j].StackType" class="text-danger"></span>

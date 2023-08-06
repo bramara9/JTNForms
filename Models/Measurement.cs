@@ -12,12 +12,27 @@ namespace JTNForms.Models
         {
         }
         [Display(Name ="Select Inch or MM")]
-        public bool IsInchOrMM { get; set; }
+        public bool? IsInchOrMM { get; set; }
         public int customerId { get; set; }
-        public IList<WindowDetails> lstWindowDetails { get; set; }
-        //public IList<Window> windows { get; set; }
-        //public IList<RoomDetails> lstRoomDetails { get;  set; }
-        //public IList<Room> rooms { get;  set; }
+        public IList<RWDetails> lstWindowDetails { get; set; }
+    }
+
+    public class RWDetails {
+        public int RoomId { get; set; }
+        public int WindowId { get; set; }
+        [Required]
+        public string WindowName { get; set; }
+        [Required]
+        [Range(0.01, 99999999)]
+        public decimal? Width { get; set; }
+        [Required]
+        [Range(0.01, 99999999)]
+        public Decimal? Height { get; set; }
+        public string? Notes { get; set; }
+        [Required]
+        public string RoomName { get; set; }
+
+        public int IndexVal { get; set; }
     }
 
     public class WindowDetails {
@@ -42,9 +57,9 @@ namespace JTNForms.Models
 
         public int IndexVal { get; set; }
         public int? MeasurementId { get; set; }
-        public string ControlType { get; set; }
-        public string ControlPosition { get; set; }
-        public string StackType { get; set; }
+        public string? ControlType { get; set; }
+        public string? ControlPosition { get; set; }
+        public string? StackType { get; set; }
         [Range(0.01, 99999999)]
         public Decimal? TotalPrice { get; set; }
 

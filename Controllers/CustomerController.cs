@@ -11,12 +11,6 @@ namespace JTNForms.Controllers
     {
         public dapperDbContext dapperPocDbContext = new dapperDbContext();
 
-        public static List<WindowDetails> details = new List<WindowDetails> { new WindowDetails { } };
-        public static Measurement tmpWindow = new Measurement
-        {
-            lstWindowDetails = details            
-        };
-
         public CustomerController(dapperDbContext dapperDbContext)
         {
             dapperPocDbContext = dapperDbContext;

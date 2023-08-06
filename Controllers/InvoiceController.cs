@@ -26,18 +26,18 @@ namespace JTNForms.Controllers
         public ActionResult DownloadInvoice(int customerId)
         {
             var details = GetRoomDetails(customerId);
-            var filePath = Path.GetFullPath(@"ExcelTemplate\\JTN Form Changes.xlsx");
+            var filePath = Path.GetFullPath(@"ExcelTemplate\\salesorderTemplate.xlsx");
             //string filePath = "C:\\Users\\dell\\source\\repos\\GitJTF\\ExcelTemplate\\JTN Form Changes.xlsx";
             var wbook = new XLWorkbook(filePath);
 
             var ws = wbook.Worksheet(1);
-            ws.Cell("A9").Value = "Srini vasu";
+            ws.Cell("A14").Value = "Srini vasu";
             //wbook.SaveAs("C:\\Users\\dell\\source\\repos\\GitJTF\\ExcelTemplate\\JTN Form Changes2.xlsx");
             System.IO.Stream spreadsheetStream = new System.IO.MemoryStream();
             wbook.SaveAs(spreadsheetStream);
             spreadsheetStream.Position = 0;
 
-            return new FileStreamResult(spreadsheetStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") { FileDownloadName = "example1.xlsx" };
+            return new FileStreamResult(spreadsheetStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") { FileDownloadName = "salesorder.xlsx" };
         }
 
         private List<RoomDetails> GetRoomDetails(int customerId)

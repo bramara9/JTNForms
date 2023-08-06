@@ -9,13 +9,12 @@ using Microsoft.EntityFrameworkCore;
 using NuGet.Packaging;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
-
 namespace JTNForms.Controllers
 {
     public class MeasurementController : Controller
     {
 
-        public static List<WindowDetails> details = new List<WindowDetails> { new WindowDetails { } };
+        public static List<RWDetails> details = new List<RWDetails> { new RWDetails { } };
         public dapperDbContext _dapperPocDbContext = new dapperDbContext();
 
         public static Measurement tmpWindow = new Measurement
@@ -31,24 +30,26 @@ namespace JTNForms.Controllers
         public IActionResult Index(int customerId)
         {
             ViewBag.userName = HttpContext.Session.GetString("username");
-            if (customerId > 0 && tmpWindow.customerId <= 0)
+            if (tmpWindow.customerId <= 0 || customerId != tmpWindow.customerId)
             {
-                tmpWindow.customerId = customerId;
+               //tmpWindow.customerId = customerId;
 
                 var result = (from c in _dapperPocDbContext.Customers.Where(a => a.Id == customerId)
                               orderby c.Id
                               select new Measurement
                               {
                                   customerId = c.Id,
-                                  IsInchOrMM = true,
+                                  IsInchOrMM = c.IsInchOrMm,
 
                                   lstWindowDetails =
                                   (from r in _dapperPocDbContext.Rooms
                                    join w in _dapperPocDbContext.Windows
                                    on r.Id equals w.RoomId
                                    where r.CustomerId == c.Id
-                                   select new WindowDetails
+                                   select new RWDetails
                                    {
+                                       RoomId = r.Id,
+                                       WindowId   = w.Id,
                                        Height = w.Height,
                                        Width = w.Width,
                                        Notes = w.Notes,
@@ -59,7 +60,16 @@ namespace JTNForms.Controllers
                                    })
                                    .ToList()
                               }).FirstOrDefault();
-
+                if (result == null)
+                {
+                    result = new Measurement();
+                    result.customerId=customerId;
+                }
+                if (result.lstWindowDetails == null || result.lstWindowDetails.Count()==0)
+                {
+                    result.lstWindowDetails.Add(new RWDetails { });
+                }
+                tmpWindow = result;
                 ViewBag.JNTFDetails = result;
 
             }
@@ -83,7 +93,7 @@ namespace JTNForms.Controllers
                 ViewBag.JNTFDetails = tmpWindow;
                 return View("Index");
             }
-            window.lstWindowDetails.Add(new WindowDetails { });
+            window.lstWindowDetails.Add(new RWDetails { });
             tmpWindow = window;
             return RedirectToAction("Index", new { customerId = window.customerId });
         }
@@ -106,7 +116,7 @@ namespace JTNForms.Controllers
             }
             else
             {
-                window.lstWindowDetails.Add(new WindowDetails { });
+                window.lstWindowDetails.Add(new RWDetails { });
             }
             tmpWindow = window;
             return RedirectToAction("Index", new { customerId = window.customerId });
@@ -142,19 +152,66 @@ namespace JTNForms.Controllers
                 ViewBag.JNTFDetails = tmpWindow;
                 return RedirectToAction("Index", new { customerId = jntfModel.customerId });
             }
-            var mapper = MapperConfig.InitializeAutomapper();
-            List<Window> windows = new List<Window>();
-            foreach (var x in jntfModel.lstWindowDetails)
+            if (jntfModel!=null && jntfModel.lstWindowDetails.Any())
             {
-                windows.Add(mapper.Map<WindowDetails, Window>(x));
-            }
-            if (windows.Count > 0)
-            {
-                var rooms = windows.Select(x => x.RoomName.Trim()).Distinct();
-                var res = rooms.Select(y => new Room() { RoomName = y, Windows = windows.Where(u => u.RoomName == y).ToList() });
-                var customer = _dapperPocDbContext.Customers.First(c => c.Id == jntfModel.customerId);
-                customer.Rooms.AddRange<Room>((IEnumerable<Room>)res);
-                _dapperPocDbContext.SaveChanges();
+                 var customer = _dapperPocDbContext.Customers.First(c => c.Id == jntfModel.customerId);
+                customer.IsInchOrMm = jntfModel.IsInchOrMM;
+                var rooms = jntfModel.lstWindowDetails.Select(a => a.RoomName.Trim()).Distinct();
+                foreach (var room in rooms)
+                {
+                    var dbRooms = _dapperPocDbContext.Rooms.Where(a => a.RoomName.Trim()== room).FirstOrDefault();
+                    if (dbRooms != null)
+                    {
+                        jntfModel.lstWindowDetails.Where(a => a.RoomName.Trim() == room).
+                            ToList().ForEach(cc => cc.RoomId = dbRooms.Id);
+                        foreach (var windowDtls in jntfModel.lstWindowDetails.Where(a => a.RoomName.Trim() == room))
+                        {
+                            var dbWindows = _dapperPocDbContext.Windows.Where(a => a.Id == windowDtls.WindowId).FirstOrDefault();
+                            if (dbWindows != null)
+                            {
+                                dbWindows.WindowName = windowDtls.WindowName;
+                                dbWindows.Height = windowDtls.Height;
+                                dbWindows.Width = windowDtls.Width;
+                                dbWindows.Notes = windowDtls.Notes;
+                                _dapperPocDbContext.Windows.Update(dbWindows);
+                            }
+                            else
+                            {
+                                Window tblWindow = new Window();
+                                tblWindow.RoomName = windowDtls.RoomName;
+                                tblWindow.RoomId = windowDtls.RoomId;
+                                tblWindow.WindowName = windowDtls.WindowName;
+                                tblWindow.Height = windowDtls.Height;
+                                tblWindow.Width = windowDtls.Width;
+                                tblWindow.Notes = windowDtls.Notes;
+                                _dapperPocDbContext.Windows.Add(tblWindow);
+                            }
+                        }
+                        _dapperPocDbContext.SaveChanges();
+                    }
+                    else
+                    {
+                        Room tblRoom = new Room();
+                        tblRoom.RoomName = room;
+                        tblRoom.CustomerId = jntfModel.customerId;
+                        List<Window> lstWindow = new List<Window>();
+                        foreach (var r in jntfModel.lstWindowDetails.Where(a => a.RoomName.Trim() == room).ToList())
+                        {
+                            Window tblWindow = new Window();
+                            tblWindow.RoomName = room;
+                            tblWindow.WindowName = r.WindowName;
+                            tblWindow.Height = r.Height;
+                            tblWindow.Width = r.Width;
+                            tblWindow.Notes = r.Notes;
+                            lstWindow.Add(tblWindow);
+                        }
+                        tblRoom.Windows.AddRange(lstWindow);
+                        customer.Rooms.Add(tblRoom);
+                        _dapperPocDbContext.SaveChanges();
+                    }
+                
+                }
+               
             }
             return RedirectToAction("RoomDetails", new { customerId = jntfModel.customerId });
 
@@ -184,6 +241,7 @@ namespace JTNForms.Controllers
                         result.FabricName = roomDtls.Fabric;
                         result.BasePrice = roomDtls.BasePrice;
                         result.BlindType = roomDtls.BlindType;
+                        Db.Rooms.Update(result);
                     }
                 }
                 Db.SaveChanges();
@@ -221,6 +279,7 @@ namespace JTNForms.Controllers
                             result.Width = windowDtls.Width;
                             result.Height = windowDtls.Height;
                             result.Notes = windowDtls.Notes;
+                            Db.Windows.Update(result);
                         }
                     }
                 }
@@ -253,13 +312,7 @@ namespace JTNForms.Controllers
                                       RoomName = room.RoomName,
                                       Id = room.Id,
                                       Fabric = room.Fabric,
-                                      BlindTypes = Db.LookUps.Where(x => x.Type.Trim() == "BlindType").Select(y => new SelectListItem()
-                                      {
-
-                                          Value = y.Name,
-                                          Text = y.Name,
-                                          Selected = (y.Name == room.BlindType)
-                                      }).ToList(),
+                                     
                                       WindowDetails = Db.Windows.Where(x => x.RoomId == room.Id).Select(y => new WindowDetails()
 
                                       {
@@ -275,36 +328,26 @@ namespace JTNForms.Controllers
                                       }).ToList()
                                   }).ToList();
 
-                if (lstRoomDetails != null && lstRoomDetails.Any())
+                ViewBag.BlindTypes = Db.LookUps.Where(x => x.Type.Trim() == "BlindType").Select(y => new SelectListItem()
                 {
-                    foreach (var room in lstRoomDetails)
-                    {
-                        foreach (var window in room.WindowDetails)
-                        {
-                            window.ControlTypes = Db.LookUps.Where(x => x.Type.Trim() == "BlindType").Select(y => new SelectListItem()
-                            {
-
-                                Value = y.Name,
-                                Text = y.Name,
-                                Selected = (y.Name == window.ControlType)
-                            }).ToList();
-                            window.ControlPositions = Db.LookUps.Where(x => x.Type.Trim() == "BlindType").Select(y => new SelectListItem()
-                            {
-
-                                Value = y.Name,
-                                Text = y.Name,
-                                Selected = (y.Name == window.ControlPosition)
-                            }).ToList();
-                            window.StackTypes = Db.LookUps.Where(x => x.Type.Trim() == "BlindType").Select(y => new SelectListItem()
-                            {
-
-                                Value = y.Name,
-                                Text = y.Name,
-                                Selected = (y.Name == window.StackType)
-                            }).ToList();
-                        }
-                    }
-                }
+                    Value = y.Name,
+                    Text = y.Name
+                }).ToList();
+                ViewBag.ControlTypes = Db.LookUps.Where(x => x.Type.Trim() == "BlindType").Select(y => new SelectListItem()
+                {
+                    Value = y.Name,
+                    Text = y.Name
+                }).ToList();
+                ViewBag.ControlPositions = Db.LookUps.Where(x => x.Type.Trim() == "BlindType").Select(y => new SelectListItem()
+                {
+                    Value = y.Name,
+                    Text = y.Name
+                }).ToList();
+                ViewBag.StackTypes = Db.LookUps.Where(x => x.Type.Trim() == "BlindType").Select(y => new SelectListItem()
+                {
+                    Value = y.Name,
+                    Text = y.Name
+                }).ToList();
             }
             return lstRoomDetails;
         }
