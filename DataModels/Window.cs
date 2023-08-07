@@ -30,15 +30,19 @@ public partial class Window
     [StringLength(50)]
     public string? Notes { get; set; }
 
-    public int RoomId { get; set; }
-
     [Column(TypeName = "decimal(18, 0)")]
     public decimal? TotalPrice { get; set; }
 
     [StringLength(40)]
     public string? RoomName { get; set; }
 
-    [ForeignKey("RoomId")]
-    [InverseProperty("Windows")]
-    public virtual Room Room { get; set; } = null!;
+    public int? BasePrice { get; set; }
+
+    [StringLength(20)]
+    public string? FabricName { get; set; }
+
+    [StringLength(20)]
+    public string? BlindType { get; set; }
+
+    public int CustomerId { get; set; }
 }

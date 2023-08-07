@@ -31,7 +31,4 @@ public partial class Room
     [ForeignKey("CustomerId")]
     [InverseProperty("Rooms")]
     public virtual Customer Customer { get; set; } = null!;
-
-    [InverseProperty("Room")]
-    public virtual ICollection<Window> Windows { get; set; } = new List<Window>();
 }

@@ -70,10 +70,6 @@ public partial class dapperDbContext : DbContext
             entity.Property(e => e.ControlType).IsFixedLength();
             entity.Property(e => e.Option).IsFixedLength();
             entity.Property(e => e.WindowName).IsFixedLength();
-
-            entity.HasOne(d => d.Room).WithMany(p => p.Windows)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Window__RoomId__6D0D32F4");
         });
 
         OnModelCreatingPartial(modelBuilder);

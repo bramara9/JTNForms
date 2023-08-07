@@ -30,7 +30,6 @@
                 var roomId = "Room" + i;
                 <input type="hidden" class="form-control" id="IndexVal" asp-for="@Model[i].RoomName" value="@i">
                 <tr data-toggle="toggle">
-                    <input type="hidden" class="form-control" id="hdnRoomId" asp-for="@Model[i].Id" value="@i">
 
                     <td>
                         <p id=@roomId>
@@ -82,7 +81,7 @@
                                         {
                                             <th scope="col">Stack Type</th>
                                         }
-                                        @if (!(@Model[i].BlindType.Contains("Sheer Shade") || @Model[i].BlindType.Contains("Panel Shade") || @Model[i].BlindType.Contains("Vertical Blind")))
+                                        @if (!( @Model[i].BlindType.Contains("Panel Shade") || @Model[i].BlindType.Contains("Vertical Blind")))
                                         {
                                             <th scope="col">2 in 1 blind</th>
                                         }

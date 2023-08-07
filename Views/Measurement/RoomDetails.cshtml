@@ -1,4 +1,4 @@
-﻿@model List<RoomDetails>
+﻿@model List<WindowDetails>
 
 @{
     var cId = ViewBag.CutomerId;
@@ -22,15 +22,14 @@
             {
 
                 <tr>
-                    <input type="hidden" class="form-control" id="hdnRoomId" asp-for="@Model[i].Id">
 
                     <td>
                         <label class="form-check-label" asp-for="@Model[i].RoomName">@Model[i].RoomName</label>
                         <input type="hidden" class="form-control" id="hdnRoomName" asp-for="@Model[i].RoomName">
                     </td>
                     <td>
-                        <input id="Text2" type="text" asp-for="@Model[i].Fabric" class="form-control rounded" />
-                        <br /><span asp-validation-for="@Model[i].Fabric" class="text-danger"></span>
+                        <input id="Text2" type="text" asp-for="@Model[i].FabricName" class="form-control rounded" />
+                        <br /><span asp-validation-for="@Model[i].FabricName" class="text-danger"></span>
                     </td>
                     <td>
                         <input id="Text3" type="text" asp-for="@Model[i].BasePrice" class="form-control rounded" />

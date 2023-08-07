@@ -40,40 +40,41 @@ namespace JTNForms.Controllers
             return new FileStreamResult(spreadsheetStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") { FileDownloadName = "salesorder.xlsx" };
         }
 
-        private List<RoomDetails> GetRoomDetails(int customerId)
+        private List<WindowDetails> GetRoomDetails(int customerId)
         {
-            List<RoomDetails> lstRoomDetails;
+            List<WindowDetails> lstRoomDetails;
 
             using ( var Db = _dapperDbContext)
             {
-                lstRoomDetails = (from room in Db.Rooms.Where(a => a.CustomerId == customerId)
+                lstRoomDetails = (from y in Db.Windows.Where(a => a.CustomerId == customerId)
                                   select new
                                   {
-                                      BasePrice = room.BasePrice,
-                                      BlindType = room.BlindType,
-                                      RoomName = room.RoomName,
-                                      Id = room.Id,
-                                      Fabric = room.FabricName
+                                      BasePrice = y.BasePrice,
+                                      BlindType = y.BlindType,
+                                      RoomName = y.RoomName,
+                                      Id = y.Id,
+                                      FabricName = y.FabricName,
+                                      WindowName = y.WindowName,
+                                      Height = y.Height,
+                                      Width = y.Width,
+                                      ControlType = y.ControlType,
+                                      ControlPosition = y.ControlType,
+                                      TotalPrice = y.TotalPrice
 
-                                  }).AsEnumerable().Select(room => new RoomDetails
+                                  }).AsEnumerable().Select(y => new WindowDetails
                                   {
 
-                                      BasePrice = room.BasePrice,
-                                      BlindType = room.BlindType,
-                                      RoomName = room.RoomName,
-                                      Id = room.Id,
-                                      Fabric = room.Fabric,
-                                      WindowDetails = Db.Windows.Where(x => x.RoomId == room.Id).Select(y => new WindowDetails()
-                                      {
-                                          Id = y.Id,
-                                          WindowName = y.WindowName,
-                                          Height = y.Height,
-                                          Width = y.Width,
-                                          ControlType = y.ControlType,
-                                          ControlPosition = y.ControlType,
-                                          TotalPrice = y.TotalPrice
-
-                                      }).ToList()
+                                      BasePrice = y.BasePrice,
+                                      BlindType = y.BlindType,
+                                      RoomName = y.RoomName,
+                                      Id = y.Id,
+                                      FabricName = y.FabricName,
+                                      WindowName = y.WindowName,
+                                      Height = y.Height,
+                                      Width = y.Width,
+                                      ControlType = y.ControlType,
+                                      ControlPosition = y.ControlType,
+                                      TotalPrice = y.TotalPrice
                                   }).ToList();
             }
 
