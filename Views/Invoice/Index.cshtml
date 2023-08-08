@@ -9,9 +9,19 @@
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
 
-    <div class="form-group">
+    <div class="form-group row" style="padding-bottom:10px;">
         <input id="btnDownloadInvoice" type="submit" class="btn btn-primary" value="Download" asp-action="DownloadInvoice" asp-route-customerId=@cId />
     </div>
 
+
+    <div class="form-group row">
+        <div style="text-align:left">
+            <input id="btnBack" type="submit" class="btn btn-dark" value="Back" asp-controller="Measurement" asp-action="WindowDetails" asp-route-customerId=@cId />
+
+        </div>
+        <div style="text-align:right">
+            <input id="btnSave" type="submit" class="btn btn-primary" value="Next" asp-action="Save" />
+        </div>
+    </div>
 </form>
 

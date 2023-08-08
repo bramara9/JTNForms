@@ -1,5 +1,4 @@
-﻿
-@model List<RoomDetails>
+﻿@model List<RoomDetails>
 
 @{
     var cId = ViewBag.CutomerId;
@@ -10,7 +9,7 @@
 }
 
 <div><b>User name : @ViewBag.userName</b></div>
-<form id="frmWindow" asp-controller="Measurement" method="post">
+<form id="frmWindow" asp-controller="Measurement">
     <div asp-validation-summary="All" class="text-danger"></div>
 
 
@@ -81,7 +80,7 @@
                                         {
                                             <th scope="col">Stack Type</th>
                                         }
-                                        @if (!( @Model[i].BlindType.Contains("Panel Shade") || @Model[i].BlindType.Contains("Vertical Blind")))
+                                        @if (!(@Model[i].BlindType.Contains("Panel Shade") || @Model[i].BlindType.Contains("Vertical Blind")))
                                         {
                                             <th scope="col">2 in 1 blind</th>
                                         }
@@ -177,7 +176,7 @@
                                                     <br /><span asp-validation-for="@Model[i].WindowDetails[j].StackType" class="text-danger"></span>
                                                 </td>
                                             }
-                                            @if (!( @Model[i].BlindType.Contains("Panel Shade") || @Model[i].BlindType.Contains("Vertical Blind")))
+                                            @if (!(@Model[i].BlindType.Contains("Panel Shade") || @Model[i].BlindType.Contains("Vertical Blind")))
                                             {
                                                 <td>
 
@@ -219,9 +218,17 @@
     }
 
 
-    <div class="form-group">
-        <input id="btnSaveWindow" type="submit" class="btn btn-primary" value="Next" asp-action="SaveWindowDetails" asp-route-customerId=@cId />
-    </div>
-   
+    <div class="form-group row">
 
+        <div style="text-align:left">
+            
+            <input id="btnBack" type="submit" class="btn btn-dark" value="Back" asp-action="RoomDetails" asp-route-customerId=@cId/>
+         @*   <a asp-controller="Measurement" asp-action="RoomDetails" asp-route-customerId=@cId>Back</a>*@
+        </div>
+        <div style="text-align:right">
+            <input id="btnSaveWindow" type="submit" class="btn btn-primary" value="Next" asp-action="SaveWindowDetails" asp-route-customerId=@cId />
+
+
+        </div>
+    </div>
 </form>

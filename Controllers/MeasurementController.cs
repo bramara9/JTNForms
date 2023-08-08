@@ -27,10 +27,10 @@ namespace JTNForms.Controllers
             _dapperPocDbContext = dapperDbContext;
         }
 
-        public IActionResult Index(int customerId)
+        public IActionResult Index(int customerId,string coming=null)
         {
             ViewBag.userName = HttpContext.Session.GetString("username");
-            if (tmpWindow.customerId <= 0 || customerId != tmpWindow.customerId)
+            if (tmpWindow.customerId <= 0 || customerId != tmpWindow.customerId || !string.IsNullOrWhiteSpace(coming))
             {
                 tmpWindow.customerId = customerId;
 
@@ -188,7 +188,6 @@ namespace JTNForms.Controllers
 
         }
 
-        [HttpGet]
         public IActionResult RoomDetails(int customerId)
         {
             ViewBag.userName = HttpContext.Session.GetString("username");
