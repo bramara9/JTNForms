@@ -39,19 +39,20 @@ namespace JTNForms.Models
 
         public int IndexVal { get; set; }
         public int? MeasurementId { get; set; }
+
         public string? ControlType { get; set; }
         public string? ControlPosition { get; set; }
         public string? StackType { get; set; }
         [Range(0.01, 99999999)]
         public Decimal? TotalPrice { get; set; }
 
-        public bool Is2In1 { get; set; }
-        public bool IsNoValance { get; set; }
-        public bool IsItemSelection { get; set; }
-        public bool IsNeedExtension { get; set; }
-        public Int32 NoOfPanels { get; set; }       
-
+        public bool Is2In1 { get; set; } = false;
+        public bool IsNoValance { get; set; } = false;
+        public bool IsItemSelection { get; set; } = true;
+        public bool IsNeedExtension { get; set; } = false;
+        public Int32 NoOfPanels { get; set; }
         public int? BasePrice { get; set; }
+     
         public string? FabricName { get; set; }
         public string? BlindType { get; set; }
     }

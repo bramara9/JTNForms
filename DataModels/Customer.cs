@@ -44,7 +44,4 @@ public partial class Customer
 
     [Column("IsInchOrMM")]
     public bool? IsInchOrMm { get; set; }
-
-    [InverseProperty("Customer")]
-    public virtual ICollection<Room> Rooms { get; set; } = new List<Room>();
 }

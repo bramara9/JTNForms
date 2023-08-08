@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using NuGet.Packaging;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using DocumentFormat.OpenXml.Office2010.Excel;
+
 namespace JTNForms.Controllers
 {
     public class MeasurementController : Controller
@@ -29,6 +31,7 @@ namespace JTNForms.Controllers
 
         public IActionResult Index(int customerId,string coming=null)
         {
+            SetUserName(customerId);
             ViewBag.userName = HttpContext.Session.GetString("username");
             if (tmpWindow.customerId <= 0 || customerId != tmpWindow.customerId || !string.IsNullOrWhiteSpace(coming))
             {
@@ -78,6 +81,17 @@ namespace JTNForms.Controllers
 
             return View("Index");
         }
+
+        private void SetUserName(int customerId)
+        {
+            if (HttpContext.Session.GetString("username") == null)
+            {
+                var customer = _dapperPocDbContext.Customers.FirstOrDefault(x => x.Id == customerId);
+                //TempData["username"] = customer.FirstName +" "+ customer.LastName;
+                HttpContext.Session.SetString("username", customer.FirstName + " " + customer.LastName);
+            }
+        }
+
         [HttpPost]
         public IActionResult Add(Measurement window)
         {
@@ -144,15 +158,18 @@ namespace JTNForms.Controllers
         [HttpPost]
         public IActionResult Save(Measurement jntfModel)
         {
-            if (!ModelState.IsValid)
-            {
-                ViewBag.JNTFDetails = tmpWindow;
-                return RedirectToAction("Index", new { customerId = jntfModel.customerId });
-            }
+            //if (!ModelState.IsValid)
+            //{
+            //    ViewBag.JNTFDetails = tmpWindow;
+            //    return RedirectToAction("Index", new { customerId = jntfModel.customerId });
+            //}
             if (jntfModel != null && jntfModel.lstWindowDetails.Any())
             {
                 var customer = _dapperPocDbContext.Customers.First(c => c.Id == jntfModel.customerId);
                 customer.IsInchOrMm = jntfModel.IsInchOrMM;
+                var excludedBenCodes = jntfModel.lstWindowDetails.Select(x => x.Id).Distinct();
+                var deletedRows = _dapperPocDbContext.Windows.Where(b => !excludedBenCodes.Contains(b.Id) && b.CustomerId== jntfModel.customerId);
+                _dapperPocDbContext.Windows.RemoveRange(deletedRows);
                 //var rooms = jntfModel.lstWindowDetails.Select(a => a.RoomName.Trim()).Distinct();
                 foreach (var windowDtls in jntfModel.lstWindowDetails)
                 {
@@ -166,6 +183,7 @@ namespace JTNForms.Controllers
                         dbWindows.Height = windowDtls.Height;
                         dbWindows.Width = windowDtls.Width;
                         dbWindows.Notes = windowDtls.Notes;
+                        dbWindows.IsItemSelected = windowDtls.IsItemSelection;
                         _dapperPocDbContext.Windows.Update(dbWindows);
                     }
                     else
@@ -177,6 +195,7 @@ namespace JTNForms.Controllers
                         tblWindow.Height = windowDtls.Height;
                         tblWindow.Width = windowDtls.Width;
                         tblWindow.Notes = windowDtls.Notes;
+                        tblWindow.IsItemSelected = windowDtls.IsItemSelection;
                         _dapperPocDbContext.Windows.Add(tblWindow);
                     }
 
@@ -187,9 +206,10 @@ namespace JTNForms.Controllers
             return RedirectToAction("RoomDetails", new { customerId = jntfModel.customerId });
 
         }
-
+      
         public IActionResult RoomDetails(int customerId)
         {
+            SetUserName(customerId);
             ViewBag.userName = HttpContext.Session.GetString("username");
             List<WindowDetails> lstRoomDetails = new List<WindowDetails>();
             lstRoomDetails = GetRoomDetails(customerId);
@@ -199,7 +219,8 @@ namespace JTNForms.Controllers
                                  BlindType=room.FirstOrDefault()?.BlindType,
                                  BasePrice=room.FirstOrDefault()?.BasePrice,
                                  FabricName=room.FirstOrDefault()?.FabricName,
-                                 
+                                 IsItemSelection=room.FirstOrDefault()?.IsItemSelection ?? false
+
                              }).ToList();
             ViewBag.CutomerId = customerId;
             return View(lstRoomDetails);
@@ -208,6 +229,10 @@ namespace JTNForms.Controllers
         [HttpPost]
         public IActionResult SaveRoomDetails(List<WindowDetails> roomDetails, Int32 customerId)
         {
+            //if (!ModelState.IsValid)
+            //{
+            //    return RedirectToAction("RoomDetails", new { customerId = customerId });
+            //}
             using (var Db = _dapperPocDbContext)
             {
                 foreach (var roomDtls in roomDetails)
@@ -219,7 +244,7 @@ namespace JTNForms.Controllers
                      {
                          room.FabricName = roomDtls.FabricName;
                          room.BasePrice = roomDtls.BasePrice;
-                         room.BlindType = roomDtls.BlindType;                        
+                         room.BlindType = roomDtls.BlindType;    
 
                      });
                     Db.Windows.UpdateRange(result);
@@ -232,9 +257,9 @@ namespace JTNForms.Controllers
 
         }
 
-        [HttpGet]
         public IActionResult WindowDetails(int customerId)
         {
+            SetUserName(customerId);
             ViewBag.userName = HttpContext.Session.GetString("username");
             List<RoomDetails> lstRoomDetails = new List<RoomDetails>();
             lstRoomDetails = GetWindowDetails(customerId);
@@ -242,24 +267,32 @@ namespace JTNForms.Controllers
             return View("WindowDetails", lstRoomDetails);
         }
         [HttpPost]
-        public IActionResult SaveWindowDetails(List<WindowDetails> roomDetails, Int32 customerId)
+        public IActionResult SaveWindowDetails(List<RoomDetails> roomDetails, Int32 customerId)
         {
             using (var Db = _dapperPocDbContext)
             {
-                foreach (var windowDtls in roomDetails)
+                foreach (var roomDtls in roomDetails)
                 {
-
-                    var result = Db.Windows.Where(a => a.Id == windowDtls.Id).FirstOrDefault();
-                    if (result != null)
+                    foreach (var windowDtls in roomDtls.WindowDetails)
                     {
 
-                        //result.TotalPrice = windowDtls.TotalPrice;
-                        result.ControlType = windowDtls.ControlType;
-                        result.Option = windowDtls.ControlPosition;
-                        result.Width = windowDtls.Width;
-                        result.Height = windowDtls.Height;
-                        result.Notes = windowDtls.Notes;
-                        Db.Windows.Update(result);
+                        var result = Db.Windows.Where(a => a.Id == windowDtls.Id).FirstOrDefault();
+                        if (result != null)
+                        {
+
+                            //result.TotalPrice = windowDtls.TotalPrice;
+                            result.ControlType = windowDtls.ControlType;
+                            result.Option = windowDtls.ControlPosition;
+                            result.Notes = windowDtls.Notes;
+                            result.IsItemSelected = windowDtls.IsItemSelection;
+                            result.Is2In1 = windowDtls.Is2In1;
+                            result.IsNoValance = windowDtls.IsNoValance;
+                            result.IsNeedExtension = windowDtls.IsNeedExtension;
+                            result.StackType = windowDtls.StackType;
+                            result.NoOfPanels = windowDtls.NoOfPanels;
+
+                            Db.Windows.Update(result);
+                        }
                     }
 
                 }
@@ -289,6 +322,13 @@ namespace JTNForms.Controllers
                                       ControlType = y.ControlType,
                                       ControlPosition = y.ControlType,
                                       TotalPrice = y.TotalPrice,
+                                      IsItemSelected = y.IsItemSelected,
+                                      NoOfPanels = y.NoOfPanels,
+                                      IsNoValance = y.IsNoValance,
+                                      Notes = y.Notes,
+                                      Is2In1 = y.Is2In1,
+                                      IsNeedExtension = y.IsNeedExtension,
+                                      StackType = y.StackType
 
                                   }).AsEnumerable().Select(y => new WindowDetails
                                   {
@@ -304,6 +344,13 @@ namespace JTNForms.Controllers
                                       ControlType = y.ControlType,
                                       ControlPosition = y.ControlType,
                                       TotalPrice = y.TotalPrice,
+                                      IsItemSelection = y.IsItemSelected ?? false,
+                                      NoOfPanels = y.NoOfPanels??0,
+                                      IsNoValance = y.IsNoValance ?? false,
+                                      Notes = y.Notes,
+                                      Is2In1 = y.Is2In1 ?? false,
+                                      IsNeedExtension = y.IsNeedExtension ?? false,
+                                      StackType = y.StackType
 
                                   }).ToList();
 
@@ -335,6 +382,14 @@ namespace JTNForms.Controllers
                                       ControlType = y.ControlType,
                                       ControlPosition = y.ControlType,
                                       TotalPrice = y.TotalPrice,
+                                      IsItemSelected = y.IsItemSelected,
+                                      NoOfPanels = y.NoOfPanels,
+                                      IsNoValance = y.IsNoValance,
+                                      Notes = y.Notes,
+                                      Is2In1 = y.Is2In1,
+                                      IsNeedExtension = y.IsNeedExtension,
+                                      StackType = y.StackType
+
 
                                   }).AsEnumerable().Select(y => new WindowDetails
                                   {
@@ -350,6 +405,13 @@ namespace JTNForms.Controllers
                                       ControlType = y.ControlType,
                                       ControlPosition = y.ControlType,
                                       TotalPrice = y.TotalPrice,
+                                      IsItemSelection = y.IsItemSelected ?? false,
+                                      NoOfPanels = y.NoOfPanels??0,
+                                      IsNoValance = y.IsNoValance ?? false,
+                                      Notes = y.Notes,
+                                      Is2In1 = y.Is2In1 ?? false,
+                                      IsNeedExtension = y.IsNeedExtension?? false,
+                                      StackType = y.StackType
 
                                   }).ToList();
 

@@ -17,7 +17,10 @@ namespace JTNForms.Controllers
         // GET: InvoiceController
         public ActionResult Index(int customerId)
         {
+            SetUserName(customerId);
+            ViewBag.userName = HttpContext.Session.GetString("username");
             var details = GetRoomDetails(customerId);
+            ViewBag.CutomerId = customerId;
             return View(details);
             //return View();
         }
@@ -40,6 +43,16 @@ namespace JTNForms.Controllers
             return new FileStreamResult(spreadsheetStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") { FileDownloadName = "salesorder.xlsx" };
         }
 
+        private void SetUserName(int customerId)
+        {
+            if (HttpContext.Session.GetString("username") == null)
+            {
+                var customer = _dapperDbContext.Customers.FirstOrDefault(x => x.Id == customerId);
+                //TempData["username"] = customer.FirstName +" "+ customer.LastName;
+                HttpContext.Session.SetString("username", customer.FirstName + " " + customer.LastName);
+            }
+        }
+
         private List<WindowDetails> GetRoomDetails(int customerId)
         {
             List<WindowDetails> lstRoomDetails;
@@ -59,7 +72,14 @@ namespace JTNForms.Controllers
                                       Width = y.Width,
                                       ControlType = y.ControlType,
                                       ControlPosition = y.ControlType,
-                                      TotalPrice = y.TotalPrice
+                                      TotalPrice = y.TotalPrice,
+                                      IsItemSelected = y.IsItemSelected,
+                                      NoOfPanels = y.NoOfPanels,
+                                      IsNoValance = y.IsNoValance,
+                                      Notes = y.Notes,
+                                      Is2In1 = y.Is2In1,
+                                      IsNeedExtension = y.IsNeedExtension,
+                                      StackType = y.StackType
 
                                   }).AsEnumerable().Select(y => new WindowDetails
                                   {
@@ -74,7 +94,14 @@ namespace JTNForms.Controllers
                                       Width = y.Width,
                                       ControlType = y.ControlType,
                                       ControlPosition = y.ControlType,
-                                      TotalPrice = y.TotalPrice
+                                      TotalPrice = y.TotalPrice,
+                                      IsItemSelection = y.IsItemSelected ?? false,
+                                      NoOfPanels = y.NoOfPanels??0,
+                                      IsNoValance = y.IsNoValance ?? false,
+                                      Notes = y.Notes,
+                                      Is2In1 = y.Is2In1 ?? false,
+                                      IsNeedExtension = y.IsNeedExtension ?? false,
+                                      StackType = y.StackType
                                   }).ToList();
             }
 

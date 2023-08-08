@@ -21,10 +21,10 @@ public partial class Window
     [Column(TypeName = "decimal(18, 0)")]
     public decimal? Height { get; set; }
 
-    [StringLength(10)]
+    [StringLength(250)]
     public string? ControlType { get; set; }
 
-    [StringLength(10)]
+    [StringLength(250)]
     public string? Option { get; set; }
 
     [StringLength(50)]
@@ -45,4 +45,17 @@ public partial class Window
     public string? BlindType { get; set; }
 
     public int CustomerId { get; set; }
+
+    public bool? IsItemSelected { get; set; }
+
+    public bool? Is2In1 { get; set; }
+
+    public bool? IsNoValance { get; set; }
+
+    public bool? IsNeedExtension { get; set; }
+
+    public int? NoOfPanels { get; set; }
+
+    [StringLength(250)]
+    public string? StackType { get; set; }
 }

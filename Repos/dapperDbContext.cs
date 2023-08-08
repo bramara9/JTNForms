@@ -20,8 +20,6 @@ public partial class dapperDbContext : DbContext
 
     public virtual DbSet<LookUp> LookUps { get; set; }
 
-    public virtual DbSet<Room> Rooms { get; set; }
-
     public virtual DbSet<Window> Windows { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -50,25 +48,10 @@ public partial class dapperDbContext : DbContext
             entity.Property(e => e.Type).IsFixedLength();
         });
 
-        modelBuilder.Entity<Room>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Room__3214EC07D83A49CF");
-
-            entity.Property(e => e.BlindType).IsFixedLength();
-            entity.Property(e => e.FabricName).IsFixedLength();
-            entity.Property(e => e.RoomName).IsFixedLength();
-
-            entity.HasOne(d => d.Customer).WithMany(p => p.Rooms)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Room__CustomerId__6A30C649");
-        });
-
         modelBuilder.Entity<Window>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Window__3214EC076B589E30");
 
-            entity.Property(e => e.ControlType).IsFixedLength();
-            entity.Property(e => e.Option).IsFixedLength();
             entity.Property(e => e.WindowName).IsFixedLength();
         });
 
