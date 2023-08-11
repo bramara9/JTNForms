@@ -434,17 +434,17 @@ namespace JTNForms.Controllers
                         
                 }
 
-                ViewBag.ControlTypes = Db.LookUps.Where(x => x.Type.Trim() == "BlindType").Select(y => new SelectListItem()
+                ViewBag.ControlTypes = Db.LookUps.Where(x => x.Type.Trim() == "ControlType").Select(y => new SelectListItem()
                 {
                     Value = y.Name,
                     Text = y.Name
                 }).ToList();
-                ViewBag.ControlPositions = Db.LookUps.Where(x => x.Type.Trim() == "BlindType").Select(y => new SelectListItem()
+                ViewBag.ControlPositions = Db.LookUps.Where(x => x.Type.Trim() == "ControlPosition").Select(y => new SelectListItem()
                 {
                     Value = y.Name,
                     Text = y.Name
                 }).ToList();
-                ViewBag.StackTypes = Db.LookUps.Where(x => x.Type.Trim() == "BlindType").Select(y => new SelectListItem()
+                ViewBag.StackTypes = Db.LookUps.Where(x => x.Type.Trim() == "Stack").Select(y => new SelectListItem()
                 {
                     Value = y.Name,
                     Text = y.Name
