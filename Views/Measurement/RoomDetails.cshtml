@@ -53,14 +53,15 @@
         }
     </table>
 
-    <div class="form-group row">
-        <div style="text-align:left">
+    <div class="row">
+        <div class="col-12 col-md-6">
             <input id="btnBack" type="submit" class="btn btn-dark" formnovalidate value="Back" asp-action="Index" asp-route-customerId=@cId asp-route-coming="back" />
 
         </div>
-        <div style="text-align:right">
-            <input id="btnSaveRoom" type="submit" class="btn btn-primary" value="Next" asp-action="SaveRoomDetails" asp-route-customerId=@cId />
-
+        <div class="col-12 col-md-6" style="text-align:right;">
+            <input id="btnSaveWindow" type="submit" class="btn btn-primary" value="Save And Next" asp-action="SaveRoomDetails" asp-route-customerId=@cId />
         </div>
     </div>
+
+    
 </form>

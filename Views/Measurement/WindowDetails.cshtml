@@ -214,19 +214,13 @@
 
         </table>
     }
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <input id="btnBack" type="submit" class="btn btn-dark" formnovalidate formnovalidate value="Back" asp-action="RoomDetails" asp-route-customerId=@cId />
 
-
-    <div class="form-group row">
-
-        <div style="text-align:left">
-            
-            <input id="btnBack" type="submit" class="btn btn-dark" value="Back" asp-action="RoomDetails" asp-route-customerId=@cId/>
-         @*   <a asp-controller="Measurement" asp-action="RoomDetails" asp-route-customerId=@cId>Back</a>*@
         </div>
-        <div style="text-align:right">
-            <input id="btnSaveWindow" type="submit" class="btn btn-primary" value="Next" asp-action="SaveWindowDetails" asp-route-customerId=@cId />
-
-
+        <div class="col-12 col-md-6" style="text-align:right;">
+            <input id="btnSaveWindow" type="submit" class="btn btn-primary" value="Save And Next" asp-action="SaveWindowDetails" asp-route-customerId=@cId />
         </div>
     </div>
 </form>

@@ -5,11 +5,16 @@
 }
 <style type="text/css">
 
-    .invoice h1 {
+    .sales h1 {
         font-size: 34px;
         font-weight: 500;
         text-transform: fullsize-kana;
+        
     }
+
+
+
+
 
     table {
         border: 1px solid #ccc;
@@ -44,24 +49,23 @@
         }
 
 </style>
-
-    
 <div class="row">
     <div class="col-12 col-md-6">
-       
-            <b>User name : @ViewBag.userName</b>
+
+        <b>User name : @ViewBag.userName</b>
 
     </div>
     <div class="col-12 col-md-6" style="text-align:right;">
         Date : @DateTime.Now.ToShortDateString()
     </div>
 </div>
-<form id="frm" asp-controller="Invoice">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <div class="invoice" style="text-align:center">
-        <h1>Invoice Details</h1>
+<form id="frm" asp-controller="SalesOrder">
+    <div class="sales" style="text-align:center">
+        <h1>Sales Order</h1>
     </div>
     <div style="text-align:center;color: #c50000;">--------------------------------------------------------------------------------------------</div>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
 
     <div class="form-group" style="padding-bottom:10px;text-align:right">
         <input id="btnDownloadInvoice" type="submit" class="btn btn-primary" value="Download" asp-action="DownloadInvoice" asp-route-customerId=@cId />
@@ -139,11 +143,11 @@
 
                             </td>
                             <td>
-                                <label class="form-check-label" asp-for="@Model[i].IsNoValance">@(Model[i].IsNoValance?"Yes":"No" )</label>
+                                <label class="form-check-label" asp-for="@Model[i].IsNoValance">@(Model[i].IsNoValance ? "Yes" : "No")</label>
 
                             </td>
                             <td>
-                                <label class="form-check-label" asp-for="@Model[i].IsNeedExtension">@(Model[i].IsNeedExtension?"Yes":"No")</label>
+                                <label class="form-check-label" asp-for="@Model[i].IsNeedExtension">@(Model[i].IsNeedExtension ? "Yes" : "No")</label>
 
                             </td>
                             <td>
@@ -161,8 +165,11 @@
 
     <div class="row">
         <div class="col-12 col-md-6">
-            <input id="btnBack" type="submit" class="btn btn-dark" formnovalidate value="Back" asp-controller="SalesOrder" asp-action="Index" asp-route-id=@cId />
+            <input id="btnBack" type="submit" class="btn btn-dark" formnovalidate value="Back" asp-controller="Measurement" asp-action="WindowDetails" asp-route-id=@cId />
 
+        </div>
+        <div class="col-12 col-md-6" style="text-align:right;">
+            <input id="btnSave" type="submit" class="btn btn-primary" value="Next" asp-action="InvoiceDetails" asp-route-customerId=@cId />
         </div>
     </div>
 

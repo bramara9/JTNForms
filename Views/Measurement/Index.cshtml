@@ -69,12 +69,12 @@
                         <input id="Text5" type="text" asp-for="@Model.lstWindowDetails[i].Notes" class="form-control rounded" />
                     </td>
                     <td>
-                        <button type="submit" class="btn btn-danger" asp-action="Delete" formnovalidate asp-route-id="@i"><span class="bi bi-trash"></span> </button>
+                        <button type="submit" class="btn btn-danger" asp-action="Delete" formnovalidate asp-route-id="@i"><img src="~/img/trash3.svg" alt="Delete" />  </button>
 
 
                         @if (@i == @MaxRow)
                         {
-                            <button type="submit" class="btn btn-primary" asp-action="Copy" asp-route-id="@i"><span class="bi bs-tooltip-auto"></span> </button>
+                            <button type="submit" class="btn btn-primary" asp-action="Copy" asp-route-id="@i"><img src="~/img/c-circle.svg" alt="Copy" /> </button>
 
                         }
                     </td>
@@ -87,13 +87,15 @@
 
     </div>
 
-    <div class="form-group row">
-        <div style="text-align:left">
-            <input id="btnBack" type="submit" class="btn btn-dark" value="Back" asp-controller="Customer" asp-action="Customer" asp-route-id=@Model.customerId />
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <input id="btnBack" type="submit" class="btn btn-dark" formnovalidate value="Back" asp-controller="Customer" asp-action="Customer" asp-route-id=@Model.customerId />
 
         </div>
-        <div style="text-align:right">
-        <input id="btnSave" type="submit" class="btn btn-primary" value="Next" asp-action="Save" />
+        <div class="col-12 col-md-6" style="text-align:right;">
+            <input id="btnSave" type="submit" class="btn btn-primary" value="Save And Next" asp-action="Save" />
         </div>
     </div>
+
+    
 </form>

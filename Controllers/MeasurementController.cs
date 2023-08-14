@@ -299,7 +299,7 @@ namespace JTNForms.Controllers
                 Db.SaveChanges();
             }
 
-            return RedirectToAction("Index", "Invoice", new { customerId = customerId });
+            return RedirectToAction("Index", "SalesOrder", new { customerId = customerId });
 
         }
 
