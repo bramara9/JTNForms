@@ -11,6 +11,7 @@ namespace JTNForms.Models
     {
         public Measurement()
         {
+            lstWindowDetails = new List<WindowDetails>();
         }
         [Display(Name = "Select Inch or MM")]
         public bool? IsInchOrMM { get; set; }
