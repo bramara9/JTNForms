@@ -31,41 +31,39 @@ namespace JTNForms.Controllers
         {
             var details = GetRoomDetails(customerId);
             var CustomerName = HttpContext.Session.GetString("username");
-            var filePath = Path.GetFullPath(@"ExcelTemplate\\SAMPLE.xlsx");
+            var filePath = Path.GetFullPath(@"ExcelTemplate\\Hemanth.xlsx");
             //string filePath = "C:\\Users\\dell\\source\\repos\\GitJTF\\ExcelTemplate\\JTN Form Changes.xlsx";
             var wbook = new XLWorkbook(filePath);
-            var dataStartVal = 14;
+            var dataStartVal = 11;
             var ws = wbook.Worksheet(1);
             var InsexVal = 1;
-            ws.Cell("AA3").Value = CustomerName;
-            ws.Cell("G3").Value = DateTime.Now.ToString("dd/MM/yyyy");
+            ws.Cell("D3").Value = CustomerName;
+            //ws.Cell("G3").Value = DateTime.Now.ToString("dd/MM/yyyy");
             foreach (var windows in details)
             {
-                ws.Cell("A" + dataStartVal).Value = InsexVal;
-                ws.Cell("B" + dataStartVal).Value = windows.RoomName;
-                ws.Cell("C" + dataStartVal).Value = windows.BlindType;
-                ws.Cell("D" + dataStartVal).Value = windows.FabricName;
-                ws.Cell("E" + dataStartVal).Value = windows.WindowName;
-                ws.Cell("F" + dataStartVal).Value = windows.Width;
-                ws.Cell("G" + dataStartVal).Value = windows.Height;
-                ws.Cell("H" + dataStartVal).Value = "Blind Size";
-                ws.Cell("I" + dataStartVal).Value = 1;
-                ws.Cell("L" + dataStartVal).Value = windows.TotalPrice;
-                ws.Cell("M" + dataStartVal).Value = (windows.IsNoValance ? "CLASSIC" : "EVO");
-                ws.Cell("N" + dataStartVal).Value = windows.ControlPosition;
-                ws.Cell("O" + dataStartVal).Value = "child safety";
-                ws.Cell("AA" + dataStartVal).Value = windows.NoOfPanels;
-                ws.Cell("AB" + dataStartVal).Value = windows.StackType;
-                ws.Cell("AD" + dataStartVal).Value = windows.ControlType + " And 2In1 Blind : " + (windows.Is2In1?"Yes":"No") ;
-                dataStartVal++;
+                ws.Cell("B" + dataStartVal).Value = InsexVal;
+                ws.Cell("C" + dataStartVal).Value = windows.RoomName;
+                ws.Cell("D" + dataStartVal).Value = windows.WindowName;
+                ws.Cell("E" + dataStartVal).Value = windows.FabricName;
+                ws.Cell("F" + dataStartVal).Value = windows.NoOfPanels;
+                ws.Cell("G" + dataStartVal).Value = windows.ControlType;
+              
+                ws.Cell("H" + dataStartVal).Value = windows.ControlPosition; 
+                ws.Cell("I" + dataStartVal).Value = windows.Area;
+               dataStartVal++;
                 InsexVal++;
             }
+            ws.Cell("B" + dataStartVal).Value = "Totals";
+            ws.Cell("C" + dataStartVal).Value = "INVENTORY ITEMS:";
+            ws.Cell("F" + dataStartVal).Value = 10;
+            ws.Cell("C" + dataStartVal+1).Value = "Installation";
+            ws.Cell("C" + dataStartVal + 2).Value = "Total";
             //wbook.SaveAs("C:\\Users\\dell\\source\\repos\\GitJTF\\ExcelTemplate\\JTN Form Changes2.xlsx");
             System.IO.Stream spreadsheetStream = new System.IO.MemoryStream();
             wbook.SaveAs(spreadsheetStream);
             spreadsheetStream.Position = 0;
 
-            return new FileStreamResult(spreadsheetStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") { FileDownloadName = String.Concat(CustomerName.Where(c => !Char.IsWhiteSpace(c))) + ".xlsx" };
+            return new FileStreamResult(spreadsheetStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") { FileDownloadName = String.Concat(CustomerName.Where(c => !Char.IsWhiteSpace(c))) + "_Invoice.xlsx" };
         }
 
         private void SetUserName(int customerId)
@@ -96,7 +94,7 @@ namespace JTNForms.Controllers
                                       Height = y.Height,
                                       Width = y.Width,
                                       ControlType = y.ControlType,
-                                      ControlPosition = y.ControlType,
+                                      ControlPosition = y.Option,
                                       TotalPrice = y.TotalPrice,
                                       IsItemSelected = y.IsItemSelected,
                                       NoOfPanels = y.NoOfPanels,
@@ -117,8 +115,8 @@ namespace JTNForms.Controllers
                                       WindowName = y.WindowName,
                                       Height = y.Height,
                                       Width = y.Width,
-                                      ControlType = y.ControlType,
-                                      ControlPosition = y.ControlType,
+                                      ControlType = y.ControlType ?? "",
+                                      ControlPosition = y.ControlPosition ?? "",
                                       TotalPrice = y.TotalPrice,
                                       IsItemSelection = y.IsItemSelected ?? false,
                                       NoOfPanels = y.NoOfPanels??0,
@@ -126,12 +124,19 @@ namespace JTNForms.Controllers
                                       Notes = y.Notes,
                                       Is2In1 = y.Is2In1 ?? false,
                                       IsNeedExtension = y.IsNeedExtension ?? false,
-                                      StackType = y.StackType
+                                      StackType = y.StackType?? "",
+                                      OrderedHeight= (double)y.Height,
+                                      OrderedWidth= (double)y.Width,
+                                      Area =getArea((double)y.Width, (double)y.Height)
                                   }).ToList();
             }
 
             return lstRoomDetails;
         }
 
+        private double? getArea(double? width, double? height)
+        {
+            return width * height;
+        }
     }
 }

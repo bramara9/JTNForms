@@ -15,7 +15,7 @@
 
     @if (Model != null)
     {
-        <table id="MultiAddUserTable" class="table" >
+        <table id="MultiAddUserTable" class="table">
             <thead class="thead-dark">
                 <tr>
                     <th scope="col">Room Name</th>
@@ -119,15 +119,16 @@
                                             </td>
                                             @if (!(@Model[i].BlindType.Contains("Panel Shade") || @Model[i].BlindType.Contains("Vertical Blind")))
                                             {
+                                                var TypeId = "divControlType" + @i + @j;
                                                 <td>
-
                                                     @*   <input class="activeVersion_@j form-control rounded" id="Text3" type="text" asp-for="@Model[i].WindowDetails[j].ControlType" />
                                 <br />*@
-                                                    <select asp-for="@Model[i].WindowDetails[j].ControlType" required class="form-select">
+
+                                                    <select asp-for="@Model[i].WindowDetails[j].ControlType" id="@TypeId" required class="form-select" onchange="showControlPosition('divControlType'+@i+@j,'divControlPosition'+@i+@j)">
                                                         <option value="">Select ControlType</option>
                                                         @foreach (var typed in @ControlTypes)
-                                                        {                                                            
-                                                            <option value="@typed.Value" >@typed.Text</option>
+                                                        {
+                                                            <option value="@typed.Value">@typed.Text</option>
                                                         }
                                                     </select>
                                                     <br />
@@ -138,24 +139,30 @@
                                             }
                                             @if (!@Model[i].BlindType.Contains("Panel Shade"))
                                             {
+                                                var divId = "divControlPosition" + @i + @j;
+                                                var ControlPositionDisplay = (@Model[i].WindowDetails[j].ControlType != null && @Model[i].WindowDetails[j].ControlType.Contains("Stainless Steel Beaded Chain")) ? "block" : "none";
                                                 <td>
-                                                    @* <input class="activeVersion_@j  form-control rounded" id="Text4" type="text" asp-for="@Model[i].WindowDetails[j].ControlPosition" />*@
+                                                    <div style="display:@ControlPositionDisplay" id="@divId">
+                                                        @* <input class="activeVersion_@j  form-control rounded" id="Text4" type="text" asp-for="@Model[i].WindowDetails[j].ControlPosition" />*@
 
 
-                                                    <select asp-for="@Model[i].WindowDetails[j].ControlPosition" required class="form-select">
-                                                        <option value="">Select ControlPosition</option>
-                                                        @foreach (var typed in @ControlPositions)
-                                                        {
-                                                            <option value="@typed.Value">@typed.Text</option>
-                                                        }
-                                                    </select>
-                                                    <br /><span asp-validation-for="@Model[i].WindowDetails[j].ControlPosition" class="text-danger"></span>
+                                                        <select asp-for="@Model[i].WindowDetails[j].ControlPosition" required class="form-select">
+
+                                                            @foreach (var typed in @ControlPositions)
+                                                            {
+                                                                var seltedVal = (@typed.Value.Trim() == @Model[i].WindowDetails[j].ControlPosition?.Trim() ?? "Right") ? true : false;
+
+                                                                <option value="@typed.Value" selected="@seltedVal">@typed.Text</option>
+                                                            }
+                                                        </select>
+                                                        <br /><span asp-validation-for="@Model[i].WindowDetails[j].ControlPosition" class="text-danger"></span>
+                                                    </div>
                                                 </td>
                                             }
                                             @if (@Model[i].BlindType.Contains("Panel Shade"))
                                             {
                                                 <td>
-                                                    <input class="form-control" type="text"  asp-for="@Model[i].WindowDetails[j].NoOfPanels" required />
+                                                    <input class="form-control" type="text" asp-for="@Model[i].WindowDetails[j].NoOfPanels" required />
 
 
                                                 </td>
@@ -167,8 +174,7 @@
                                                         <option value="">Select Stack</option>
                                                         @foreach (var typed in @StackTypes)
                                                         {
-                                                           // var seltedVal = (@typed.Value.Trim() == @Model[i].WindowDetails[j].StackType?.Trim()) ? true : false; selected = "@seltedVal"
-                                                            <option value="@typed.Value" >@typed.Text</option>
+                                                            <option value="@typed.Value">@typed.Text</option>
                                                         }
                                                     </select>
                                                     <br /><span asp-validation-for="@Model[i].WindowDetails[j].StackType" class="text-danger"></span>
@@ -201,7 +207,7 @@
                                             }
                                             <td>
                                                 <input class="activeVersion_@j form-control rounded" id="Text5" type="text" asp-for="@Model[i].WindowDetails[j].Notes" />
-                                                <span asp-validation-for="@Model[i].WindowDetails[j].Notes" class="text-danger"></span>
+
                                             </td>
                                         </tr>
                                     </tbody>
@@ -216,11 +222,22 @@
     }
     <div class="row">
         <div class="col-12 col-md-6">
-            <input id="btnBack" type="submit" class="btn btn-dark" formnovalidate formnovalidate value="Back" asp-action="RoomDetails" asp-route-customerId=@cId />
+            <input id="btnBack" type="submit" class="btn btn-dark" formnovalidate value="Back" asp-action="RoomDetails" asp-route-customerId=@cId />
 
         </div>
         <div class="col-12 col-md-6" style="text-align:right;">
             <input id="btnSaveWindow" type="submit" class="btn btn-primary" value="Save And Next" asp-action="SaveWindowDetails" asp-route-customerId=@cId />
         </div>
     </div>
+    <script type="text/javascript">
+        function showControlPosition(ControlTypeVal, ControlPositionVal) {
+            var seletedTypeVal=$("#"+ControlTypeVal+" option:selected").val();
+            if (seletedTypeVal.indexOf("Stainless Steel Beaded Chain") != -1){
+                $("#" + ControlPositionVal).css("display", "block");
+            }else{
+                $("#" + ControlPositionVal).val('');
+                $("#" + ControlPositionVal).css("display", "none");
+            }
+        }
+    </script>
 </form>

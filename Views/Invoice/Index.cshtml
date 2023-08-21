@@ -74,18 +74,16 @@
 
                     <th>Room Name</th>
                     <th>Window Name</th>
-                    <th>Weight</th>
-                    <th>Height</th>
+                    <th>Ordered Weight</th>
+                    <th>Ordered Height</th>
                     <th>Fabric code</th>
-                    <th>Blind type</th>
                     <th>Control Type</th>
                     <th>Control Position</th>
-                    <th>Stack Type</th>
-                    <th>No Of Panels</th>
-                    <th>2 in 1 blind</th>
-                    <th>No Valance</th>
-                    <th>Need Extension</th>
-                    <th>Notes</th>
+                    <th>Quatity</th>
+                    <th>Area Sq.m</th>
+                    <th>Base Price</th>
+                    <th>Price Per Item</th>
+                    <th>Total Price</th>
                 </tr>
             </thead>
             <tbody>
@@ -95,61 +93,61 @@
                     {
                         <tr>
                             <td>
-                                <label class="form-check-label" asp-for="@Model[i].RoomName">@Model[i].RoomName</label>
+                                <label class="form-label" asp-for="@Model[i].RoomName">@Model[i].RoomName</label>
 
                             </td>
                             <td>
-                                <label class="form-check-label" asp-for="@Model[i].WindowName">@Model[i].WindowName</label>
+                                <label class="form-label" asp-for="@Model[i].WindowName">@Model[i].WindowName</label>
 
                             </td>
                             <td>
-                                <label class="form-check-label" asp-for="@Model[i].Width">@Model[i].Width</label>
+                                <label class="form-label" asp-for="@Model[i].OrderedWidth">@Model[i].OrderedWidth</label>
 
                             </td>
                             <td>
-                                <label class="form-check-label" asp-for="@Model[i].Height">@Model[i].Height</label>
+                                <label class="form-label" asp-for="@Model[i].OrderedHeight">@Model[i].OrderedHeight</label>
 
                             </td>
                             <td>
-                                <label class="form-check-label" asp-for="@Model[i].FabricName">@Model[i].FabricName</label>
+                                <label class="form-label" asp-for="@Model[i].FabricName">@Model[i].FabricName</label>
+
+                            </td>
+                            
+                            <td>
+                                <label class="form-label" asp-for="@Model[i].ControlType">
+                                    @(
+                                        Model[i].ControlType == "" ? "-" : Model[i].ControlType)
+                                </label>
 
                             </td>
                             <td>
-                                <label class="form-check-label" asp-for="@Model[i].BlindType">@Model[i].BlindType</label>
+                                <label class="form-check-label" asp-for="@Model[i].ControlPosition">
+                                    @(
+                                        Model[i].ControlPosition == "" ? "-" : Model[i].ControlPosition)
+                                </label>
 
                             </td>
                             <td>
-                                <label class="form-check-label" asp-for="@Model[i].ControlType">@Model[i].ControlType</label>
+                                <label class="form-label" asp-for="@Model[i].NoOfPanels">@(Model[i].NoOfPanels == 0 ? "-" : Model[i].NoOfPanels)</label>
 
                             </td>
                             <td>
-                                <label class="form-check-label" asp-for="@Model[i].ControlPosition">@Model[i].ControlPosition</label>
+                                <label class="form-label" asp-for="@Model[i].Area">@Model[i].Area</label>
 
                             </td>
                             <td>
-                                <label class="form-check-label" asp-for="@Model[i].StackType">@Model[i].StackType</label>
+                                <label class="form-label" asp-for="@Model[i].BasePrice">@Model[i].BasePrice</label>
 
                             </td>
                             <td>
-                                <label class="form-check-label" asp-for="@Model[i].NoOfPanels">@Model[i].NoOfPanels</label>
+                                <label class="form-label" asp-for="@Model[i].PricePerItem">@(Model[i].PricePerItem == null ? 0 : Model[i].PricePerItem)</label>
 
                             </td>
                             <td>
-                                <label class="form-check-label" asp-for="@Model[i].Is2In1"> @(Model[i].Is2In1 ? "Yes" : "No")</label>
+                                <label class="form-label" asp-for="@Model[i].TotalPrice">@(Model[i].TotalPrice == null ? 0 : Model[i].TotalPrice)</label>
 
                             </td>
-                            <td>
-                                <label class="form-check-label" asp-for="@Model[i].IsNoValance">@(Model[i].IsNoValance?"Yes":"No" )</label>
-
-                            </td>
-                            <td>
-                                <label class="form-check-label" asp-for="@Model[i].IsNeedExtension">@(Model[i].IsNeedExtension?"Yes":"No")</label>
-
-                            </td>
-                            <td>
-                                <label class="form-check-label" asp-for="@Model[i].Notes">@Model[i].Notes</label>
-
-                            </td>
+                          
                         </tr>
                     }
                 }

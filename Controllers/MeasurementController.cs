@@ -320,7 +320,7 @@ namespace JTNForms.Controllers
                                       Height = y.Height,
                                       Width = y.Width,
                                       ControlType = y.ControlType,
-                                      ControlPosition = y.ControlType,
+                                      ControlPosition = y.Option,
                                       TotalPrice = y.TotalPrice,
                                       IsItemSelected = y.IsItemSelected,
                                       NoOfPanels = y.NoOfPanels,
@@ -342,7 +342,7 @@ namespace JTNForms.Controllers
                                       Height = y.Height,
                                       Width = y.Width,
                                       ControlType = y.ControlType,
-                                      ControlPosition = y.ControlType,
+                                      ControlPosition = y.ControlPosition ,
                                       TotalPrice = y.TotalPrice,
                                       IsItemSelection = y.IsItemSelected ?? false,
                                       NoOfPanels = y.NoOfPanels??0,
@@ -380,7 +380,7 @@ namespace JTNForms.Controllers
                                       Height = y.Height,
                                       Width = y.Width,
                                       ControlType = y.ControlType,
-                                      ControlPosition = y.ControlType,
+                                      ControlPosition = y.Option,
                                       TotalPrice = y.TotalPrice,
                                       IsItemSelected = y.IsItemSelected,
                                       NoOfPanels = y.NoOfPanels,
@@ -402,8 +402,8 @@ namespace JTNForms.Controllers
                                       WindowName = y.WindowName,
                                       Height = y.Height,
                                       Width = y.Width,
-                                      ControlType = y.ControlType,
-                                      ControlPosition = y.ControlType,
+                                      ControlType = y.ControlType ?? "",
+                                      ControlPosition = y.ControlPosition ?? "",
                                       TotalPrice = y.TotalPrice,
                                       IsItemSelection = y.IsItemSelected ?? false,
                                       NoOfPanels = y.NoOfPanels??0,
@@ -411,7 +411,7 @@ namespace JTNForms.Controllers
                                       Notes = y.Notes,
                                       Is2In1 = y.Is2In1 ?? false,
                                       IsNeedExtension = y.IsNeedExtension?? false,
-                                      StackType = y.StackType
+                                      StackType = y.StackType ?? ""
 
                                   }).ToList();
 

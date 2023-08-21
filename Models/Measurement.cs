@@ -53,9 +53,16 @@ namespace JTNForms.Models
         public bool IsNeedExtension { get; set; } = false;
         public Int32 NoOfPanels { get; set; }
         public int? BasePrice { get; set; }
-     
+        public decimal? PricePerItem { get; set; }
+
         public string? FabricName { get; set; }
         public string? BlindType { get; set; }
+        [Range(0.01, 99999999)]
+        public double? OrderedWidth { get; set; }
+        [Range(0.01, 99999999)]
+        public double? OrderedHeight { get; set; }
+        [Range(0.01, 99999999)]
+        public double? Area { get; set; }
     }
 
     public class RoomDetails

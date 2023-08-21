@@ -68,7 +68,7 @@ namespace JTNForms.Controllers
         }
 
         [HttpPost]
-        public IActionResult InvoiceDetails( Int32 customerId)
+        public IActionResult InvoiceDetails(Int32 customerId)
         {
 
             return RedirectToAction("Index", "Invoice", new { customerId = customerId });
@@ -92,6 +92,8 @@ namespace JTNForms.Controllers
 
             using (var Db = _dapperDbContext)
             {
+                var customer = _dapperDbContext.Customers.FirstOrDefault(x => x.Id == customerId);
+
                 lstRoomDetails = (from y in Db.Windows.Where(a => a.CustomerId == customerId && a.IsItemSelected == true)
                                   select new
                                   {
@@ -104,7 +106,7 @@ namespace JTNForms.Controllers
                                       Height = y.Height,
                                       Width = y.Width,
                                       ControlType = y.ControlType,
-                                      ControlPosition = y.ControlType,
+                                      ControlPosition = y.Option,
                                       TotalPrice = y.TotalPrice,
                                       IsItemSelected = y.IsItemSelected,
                                       NoOfPanels = y.NoOfPanels,
@@ -125,8 +127,8 @@ namespace JTNForms.Controllers
                                       WindowName = y.WindowName,
                                       Height = y.Height,
                                       Width = y.Width,
-                                      ControlType = y.ControlType,
-                                      ControlPosition = y.ControlType,
+                                      ControlType = y.ControlType ?? "",
+                                      ControlPosition = y.ControlPosition ?? "",
                                       TotalPrice = y.TotalPrice,
                                       IsItemSelection = y.IsItemSelected ?? false,
                                       NoOfPanels = y.NoOfPanels ?? 0,
@@ -134,12 +136,69 @@ namespace JTNForms.Controllers
                                       Notes = y.Notes,
                                       Is2In1 = y.Is2In1 ?? false,
                                       IsNeedExtension = y.IsNeedExtension ?? false,
-                                      StackType = y.StackType
+                                      StackType = y.StackType ?? "",
+                                      OrderedHeight = GetOrderedWidth(customer.IsInchOrMm, y.Width),
+                                      OrderedWidth = GetOrderedHeight(customer.IsInchOrMm, y.Height),
                                   }).ToList();
             }
 
             return lstRoomDetails;
         }
 
+        [HttpPost]
+        public IActionResult SaveSalesOrderedData(WindowDetails windowDtls)
+        {
+            using (var Db = _dapperDbContext)
+            {
+
+                var result = Db.Windows.Where(a => a.Id == windowDtls.Id).FirstOrDefault();
+                if (result != null)
+                {
+
+                    //result.OrderedWidth = windowDtls.OrderedWidth;
+                    //result.OrderedHeight = windowDtls.OrderedHeight;
+
+                    Db.Windows.Update(result);
+                }
+
+                Db.SaveChanges();
+            }
+
+            return Ok();
+
+        }
+
+        private double GetOrderedHeight(bool? isInchOrMm, decimal? height)
+        {
+            double millimeter;
+            if (isInchOrMm ?? false)
+            {
+
+                millimeter = 25.4 * (double)(height ?? 0);
+            }
+            millimeter = (double)(height ?? 0);
+            return millimeter-4;
+        }
+
+        private double GetOrderedWidth(bool? isInchOrMm, decimal? width)
+        {
+            double millimeter;
+            if (isInchOrMm ?? false)
+            {
+
+                millimeter= 25.4 * (double)(width ?? 0);
+            }
+            millimeter=(double)(width ?? 0);
+            millimeter = Math.Round(millimeter) switch
+            {
+                <900=> millimeter-6,
+                > 900 and < 1500 => millimeter - 7,
+                > 900 and < 1800 => millimeter - 8,
+                > 1800 => millimeter - 9,
+                _ => 0
+            };
+
+            return millimeter;
+        }
     }
 }
