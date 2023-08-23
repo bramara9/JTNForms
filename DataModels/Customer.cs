@@ -9,11 +9,11 @@ namespace JTNForms.DataModels;
 [Table("Customer")]
 public partial class Customer
 {
-    [StringLength(20)]
+    [StringLength(40)]
     public string FirstName { get; set; } = null!;
 
-    [StringLength(20)]
-    public string? LastName { get; set; }
+    [StringLength(40)]
+    public string LastName { get; set; } = null!;
 
     [StringLength(40)]
     public string? EmailAddress { get; set; }
@@ -42,6 +42,5 @@ public partial class Customer
     [StringLength(40)]
     public string? Address2 { get; set; }
 
-    [Column("IsInchOrMM")]
     public bool? IsInchOrMm { get; set; }
 }

@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace JTNForms.DataModels;
 
 [Table("Window")]
+[Index("CustomerId", Name = "IX_Window")]
 public partial class Window
 {
     [Key]
@@ -21,24 +22,24 @@ public partial class Window
     [Column(TypeName = "decimal(18, 0)")]
     public decimal? Height { get; set; }
 
-    [StringLength(250)]
+    [StringLength(100)]
     public string? ControlType { get; set; }
 
-    [StringLength(250)]
+    [StringLength(200)]
     public string? Option { get; set; }
 
-    [StringLength(50)]
+    [StringLength(200)]
     public string? Notes { get; set; }
 
-    [Column(TypeName = "decimal(18, 0)")]
+    [Column(TypeName = "decimal(18, 2)")]
     public decimal? TotalPrice { get; set; }
 
-    [StringLength(40)]
+    [StringLength(50)]
     public string? RoomName { get; set; }
 
     public int? BasePrice { get; set; }
 
-    [StringLength(20)]
+    [StringLength(50)]
     public string? FabricName { get; set; }
 
     [StringLength(20)]
@@ -56,6 +57,12 @@ public partial class Window
 
     public int? NoOfPanels { get; set; }
 
-    [StringLength(250)]
+    [StringLength(10)]
     public string? StackType { get; set; }
+
+    [Column(TypeName = "decimal(18, 0)")]
+    public decimal? OrderedHeight { get; set; }
+
+    [Column(TypeName = "decimal(18, 0)")]
+    public decimal? OrderedWidth { get; set; }
 }

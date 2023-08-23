@@ -29,15 +29,9 @@ public partial class dapperDbContext : DbContext
     {
         modelBuilder.Entity<Customer>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Customer__3214EC078F611867");
+            entity.HasKey(e => e.Id).HasName("PK__Customer__3214EC07D0A2DD76");
 
-            entity.Property(e => e.Address).IsFixedLength();
-            entity.Property(e => e.Address2).IsFixedLength();
-            entity.Property(e => e.Community).IsFixedLength();
             entity.Property(e => e.CustomerStatus).IsFixedLength();
-            entity.Property(e => e.EmailAddress).IsFixedLength();
-            entity.Property(e => e.FirstName).IsFixedLength();
-            entity.Property(e => e.LastName).IsFixedLength();
             entity.Property(e => e.PhoneNumber).IsFixedLength();
             entity.Property(e => e.State).IsFixedLength();
             entity.Property(e => e.Zip).IsFixedLength();
@@ -50,8 +44,10 @@ public partial class dapperDbContext : DbContext
 
         modelBuilder.Entity<Window>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Window__3214EC076B589E30");
+            entity.HasKey(e => e.Id).HasName("PK__Window__3214EC076711EE56");
 
+            entity.Property(e => e.BlindType).IsFixedLength();
+            entity.Property(e => e.StackType).IsFixedLength();
             entity.Property(e => e.WindowName).IsFixedLength();
         });
 

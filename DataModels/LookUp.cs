@@ -10,9 +10,9 @@ namespace JTNForms.DataModels;
 [Table("LookUp")]
 public partial class LookUp
 {
-    [StringLength(10)]
-    public string Type { get; set; } = null!;
+    [StringLength(20)]
+    public string? Type { get; set; }
 
     [StringLength(50)]
-    public string Name { get; set; } = null!;
+    public string? Name { get; set; }
 }
