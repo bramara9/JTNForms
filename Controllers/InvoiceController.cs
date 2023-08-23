@@ -102,7 +102,9 @@ namespace JTNForms.Controllers
                                       Notes = y.Notes,
                                       Is2In1 = y.Is2In1,
                                       IsNeedExtension = y.IsNeedExtension,
-                                      StackType = y.StackType
+                                      StackType = y.StackType,
+                                      OrderedHeight = y.OrderedHeight,
+                                      OrderedWidth = y.OrderedWidth
 
                                   }).AsEnumerable().Select(y => new WindowDetails
                                   {
@@ -125,8 +127,8 @@ namespace JTNForms.Controllers
                                       Is2In1 = y.Is2In1 ?? false,
                                       IsNeedExtension = y.IsNeedExtension ?? false,
                                       StackType = y.StackType?? "",
-                                      OrderedHeight= (double)y.Height,
-                                      OrderedWidth= (double)y.Width,
+                                      OrderedHeight= (double)y.OrderedHeight,
+                                      OrderedWidth= (double)y.OrderedWidth,
                                       Area =getArea((double)y.Width, (double)y.Height)
                                   }).ToList();
             }

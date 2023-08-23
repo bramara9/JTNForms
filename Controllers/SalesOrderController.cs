@@ -155,8 +155,8 @@ namespace JTNForms.Controllers
                 if (result != null)
                 {
 
-                    //result.OrderedWidth = windowDtls.OrderedWidth;
-                    //result.OrderedHeight = windowDtls.OrderedHeight;
+                    result.OrderedWidth = (decimal)(windowDtls.OrderedWidth ?? 0);
+                    result.OrderedHeight = (decimal)(windowDtls.OrderedHeight ?? 0);
 
                     Db.Windows.Update(result);
                 }
@@ -177,7 +177,7 @@ namespace JTNForms.Controllers
                 millimeter = 25.4 * (double)(height ?? 0);
             }
             millimeter = (double)(height ?? 0);
-            return millimeter-4;
+            return millimeter - 4;
         }
 
         private double GetOrderedWidth(bool? isInchOrMm, decimal? width)
@@ -186,12 +186,12 @@ namespace JTNForms.Controllers
             if (isInchOrMm ?? false)
             {
 
-                millimeter= 25.4 * (double)(width ?? 0);
+                millimeter = 25.4 * (double)(width ?? 0);
             }
-            millimeter=(double)(width ?? 0);
+            millimeter = (double)(width ?? 0);
             millimeter = Math.Round(millimeter) switch
             {
-                <900=> millimeter-6,
+                < 900 => millimeter - 6,
                 > 900 and < 1500 => millimeter - 7,
                 > 900 and < 1800 => millimeter - 8,
                 > 1800 => millimeter - 9,
