@@ -31,33 +31,35 @@ namespace JTNForms.Controllers
         {
             var details = GetRoomDetails(customerId);
             var CustomerName = HttpContext.Session.GetString("username");
-            var filePath = Path.GetFullPath(@"ExcelTemplate\\Hemanth.xlsx");
+            var filePath = Path.GetFullPath(@"ExcelTemplate\\Invoice.xlsx");
             //string filePath = "C:\\Users\\dell\\source\\repos\\GitJTF\\ExcelTemplate\\JTN Form Changes.xlsx";
             var wbook = new XLWorkbook(filePath);
-            var dataStartVal = 11;
+            var dataStartVal = 14;
             var ws = wbook.Worksheet(1);
             var InsexVal = 1;
-            ws.Cell("D3").Value = CustomerName;
+            ws.Cell("E4").Value = CustomerName;
             //ws.Cell("G3").Value = DateTime.Now.ToString("dd/MM/yyyy");
             foreach (var windows in details)
             {
-                ws.Cell("B" + dataStartVal).Value = InsexVal;
-                ws.Cell("C" + dataStartVal).Value = windows.RoomName;
-                ws.Cell("D" + dataStartVal).Value = windows.WindowName;
+                ws.Cell("A" + dataStartVal).Value = InsexVal;
+                ws.Cell("B" + dataStartVal).Value = windows.RoomName;
+                ws.Cell("C" + dataStartVal).Value = windows.WindowName;
                 ws.Cell("E" + dataStartVal).Value = windows.FabricName;
-                ws.Cell("F" + dataStartVal).Value = windows.NoOfPanels;
-                ws.Cell("G" + dataStartVal).Value = windows.ControlType;
+                
+                ws.Cell("F" + dataStartVal).Value = windows.ControlType;
               
-                ws.Cell("H" + dataStartVal).Value = windows.ControlPosition; 
+                ws.Cell("G" + dataStartVal).Value = windows.ControlPosition; 
                 ws.Cell("I" + dataStartVal).Value = windows.Area;
-               dataStartVal++;
+                ws.Cell("J" + dataStartVal).Value = Math.Round((Decimal)windows.BasePrice ).ToString();
+                ws.Cell("M" + dataStartVal).Value = Math.Round(windows.TotalPrice??0).ToString();
+                dataStartVal++;
                 InsexVal++;
             }
-            ws.Cell("B" + dataStartVal).Value = "Totals";
-            ws.Cell("C" + dataStartVal).Value = "INVENTORY ITEMS:";
-            ws.Cell("F" + dataStartVal).Value = 10;
-            ws.Cell("C" + dataStartVal+1).Value = "Installation";
-            ws.Cell("C" + dataStartVal + 2).Value = "Total";
+            ws.Cell("A" + dataStartVal).Value = "Totals";
+            ws.Cell("B" + (dataStartVal+1)).Value = "INVENTORY ITEMS:";
+            ws.Cell("B" + (dataStartVal+2)).Value = 10;
+            ws.Cell("C" + (dataStartVal+1)).Value = "Installation";
+            ws.Cell("E" + (dataStartVal + 1)).Value = "Total";
             //wbook.SaveAs("C:\\Users\\dell\\source\\repos\\GitJTF\\ExcelTemplate\\JTN Form Changes2.xlsx");
             System.IO.Stream spreadsheetStream = new System.IO.MemoryStream();
             wbook.SaveAs(spreadsheetStream);

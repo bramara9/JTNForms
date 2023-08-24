@@ -41,7 +41,9 @@
                             <option value="">Select BlindType</option>
                             @foreach (var typed in @BlindTypes)
                             {
-                                <option value="@typed.Value" >@typed.Text</option>
+                                var seltedVal = (@typed.Value.Trim() == @Model[i].BlindType?.Trim()) ? true : false;
+
+                                <option value="@typed.Value" selected="@seltedVal">@typed.Text</option>
                             }
                         </select>
                         <br /><span asp-validation-for="@Model[i].BlindType" class="text-danger"></span>

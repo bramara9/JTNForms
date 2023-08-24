@@ -19,11 +19,11 @@
             <label asp-for="@Model.IsInchOrMM" class="control-label"></label>
             <br />
             <div class="form-check form-check-inline">
-                <input class="form-check-input" asp-for="@Model.IsInchOrMM" type="radio" value="true" />
+                <input class="form-check-input" required asp-for="@Model.IsInchOrMM" type="radio" value="true" />
                 <label class="form-check-label" asp-for="@Model.IsInchOrMM">Inch</label>
             </div>
             <div class="form-check form-check-inline">
-                <input class="form-check-input" asp-for="@Model.IsInchOrMM" type="radio" value="false" />
+                <input class="form-check-input" required asp-for="@Model.IsInchOrMM" type="radio" value="false" />
                 <label class="form-check-label" asp-for="@Model.IsInchOrMM">MM</label>
             </div>
             <span asp-validation-for="IsInchOrMM" class="text-danger"></span>
@@ -33,7 +33,7 @@
         <tr>
             <th>Room Name</th>
             <th>Window Name</th>
-            <th>Weight</th>
+            <th>Width</th>
             <th>Height</th>
             <th>Notes</th>
             <th>Action</th>

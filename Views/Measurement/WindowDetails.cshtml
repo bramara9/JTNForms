@@ -140,7 +140,7 @@
                                             @if (!@Model[i].BlindType.Contains("Panel Shade"))
                                             {
                                                 var divId = "divControlPosition" + @i + @j;
-                                                var ControlPositionDisplay = (@Model[i].WindowDetails[j].ControlType != null && @Model[i].WindowDetails[j].ControlType.Contains("Stainless Steel Beaded Chain")) ? "block" : "none";
+                                                var ControlPositionDisplay = (@Model[i].WindowDetails[j].ControlType != null && @Model[i].WindowDetails[j].ControlType.Contains("Stainless Steel Beaded Loop")) ? "block" : "none";
                                                 <td>
                                                     <div style="display:@ControlPositionDisplay" id="@divId">
                                                         @* <input class="activeVersion_@j  form-control rounded" id="Text4" type="text" asp-for="@Model[i].WindowDetails[j].ControlPosition" />*@
@@ -174,7 +174,9 @@
                                                         <option value="">Select Stack</option>
                                                         @foreach (var typed in @StackTypes)
                                                         {
-                                                            <option value="@typed.Value">@typed.Text</option>
+                                                            var seltedVal = (@typed.Value.Trim() == @Model[i].WindowDetails[j].StackType?.Trim()) ? true : false;
+
+                                                            <option value="@typed.Value" selected="@seltedVal">@typed.Text</option>
                                                         }
                                                     </select>
                                                     <br /><span asp-validation-for="@Model[i].WindowDetails[j].StackType" class="text-danger"></span>
@@ -232,7 +234,7 @@
     <script type="text/javascript">
         function showControlPosition(ControlTypeVal, ControlPositionVal) {
             var seletedTypeVal=$("#"+ControlTypeVal+" option:selected").val();
-            if (seletedTypeVal.indexOf("Stainless Steel Beaded Chain") != -1){
+            if (seletedTypeVal.trim().indexOf("Stainless Steel Beaded Loop") != -1) {
                 $("#" + ControlPositionVal).css("display", "block");
             }else{
                 $("#" + ControlPositionVal).val('');

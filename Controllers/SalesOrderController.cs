@@ -45,17 +45,17 @@ namespace JTNForms.Controllers
                 ws.Cell("C" + dataStartVal).Value = windows.BlindType;
                 ws.Cell("D" + dataStartVal).Value = windows.FabricName;
                 ws.Cell("E" + dataStartVal).Value = windows.WindowName;
-                ws.Cell("F" + dataStartVal).Value = windows.Width;
-                ws.Cell("G" + dataStartVal).Value = windows.Height;
+                ws.Cell("F" + dataStartVal).Value = Math.Truncate((Decimal)windows.OrderedWidth).ToString();
+                ws.Cell("G" + dataStartVal).Value = Math.Truncate((Decimal)windows.OrderedHeight).ToString();
                 ws.Cell("H" + dataStartVal).Value = "Blind Size";
                 ws.Cell("I" + dataStartVal).Value = 1;
                 ws.Cell("L" + dataStartVal).Value = windows.TotalPrice;
                 ws.Cell("M" + dataStartVal).Value = (windows.IsNoValance ? "CLASSIC" : "EVO");
-                ws.Cell("N" + dataStartVal).Value = windows.ControlPosition;
+                ws.Cell("N" + dataStartVal).Value = (windows.ControlType.Contains( "Stainless Steel Beaded Loop") || windows.ControlType.Contains("Cordless")) ? windows.ControlPosition : windows.ControlType;
                 ws.Cell("O" + dataStartVal).Value = "child safety";
                 ws.Cell("AA" + dataStartVal).Value = windows.NoOfPanels;
                 ws.Cell("AB" + dataStartVal).Value = windows.StackType;
-                ws.Cell("AD" + dataStartVal).Value = windows.ControlType + " And 2In1 Blind : " + (windows.Is2In1 ? "Yes" : "No");
+                ws.Cell("AD" + dataStartVal).Value =  (windows.Is2In1 ? "2In1 Blind:Yes" : "-");
                 dataStartVal++;
                 InsexVal++;
             }
@@ -114,7 +114,9 @@ namespace JTNForms.Controllers
                                       Notes = y.Notes,
                                       Is2In1 = y.Is2In1,
                                       IsNeedExtension = y.IsNeedExtension,
-                                      StackType = y.StackType
+                                      StackType = y.StackType,
+                                      OrderedWidth = y.OrderedWidth,
+                                      OrderedHeight = y.OrderedHeight
 
                                   }).AsEnumerable().Select(y => new WindowDetails
                                   {
@@ -137,8 +139,8 @@ namespace JTNForms.Controllers
                                       Is2In1 = y.Is2In1 ?? false,
                                       IsNeedExtension = y.IsNeedExtension ?? false,
                                       StackType = y.StackType ?? "",
-                                      OrderedHeight = GetOrderedWidth(customer.IsInchOrMm, y.Width),
-                                      OrderedWidth = GetOrderedHeight(customer.IsInchOrMm, y.Height),
+                                      OrderedHeight = (double)y.OrderedHeight,
+                                      OrderedWidth = (double)y.OrderedWidth,
                                   }).ToList();
             }
 
@@ -168,37 +170,37 @@ namespace JTNForms.Controllers
 
         }
 
-        private double GetOrderedHeight(bool? isInchOrMm, decimal? height)
-        {
-            double millimeter;
-            if (isInchOrMm ?? false)
-            {
+        //private double GetOrderedHeight(bool? isInchOrMm, decimal? height)
+        //{
+        //    double millimeter;
+        //    if (isInchOrMm ?? false)
+        //    {
 
-                millimeter = 25.4 * (double)(height ?? 0);
-            }
-            millimeter = (double)(height ?? 0);
-            return millimeter - 4;
-        }
+        //        millimeter = 25.4 * (double)(height ?? 0);
+        //    }
+        //    millimeter = (double)(height ?? 0);
+        //    return millimeter - 4;
+        //}
 
-        private double GetOrderedWidth(bool? isInchOrMm, decimal? width)
-        {
-            double millimeter;
-            if (isInchOrMm ?? false)
-            {
+        //private double GetOrderedWidth(bool? isInchOrMm, decimal? width)
+        //{
+        //    double millimeter;
+        //    if (isInchOrMm ?? false)
+        //    {
 
-                millimeter = 25.4 * (double)(width ?? 0);
-            }
-            millimeter = (double)(width ?? 0);
-            millimeter = Math.Round(millimeter) switch
-            {
-                < 900 => millimeter - 6,
-                > 900 and < 1500 => millimeter - 7,
-                > 900 and < 1800 => millimeter - 8,
-                > 1800 => millimeter - 9,
-                _ => 0
-            };
+        //        millimeter = 25.4 * (double)(width ?? 0);
+        //    }
+        //    millimeter = (double)(width ?? 0);
+        //    millimeter = Math.Round(millimeter) switch
+        //    {
+        //        < 900 => millimeter - 6,
+        //        > 900 and < 1500 => millimeter - 7,
+        //        > 900 and < 1800 => millimeter - 8,
+        //        > 1800 => millimeter - 9,
+        //        _ => 0
+        //    };
 
-            return millimeter;
-        }
+        //    return millimeter;
+        //}
     }
 }

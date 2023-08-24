@@ -42,7 +42,7 @@ public partial class Window
     [StringLength(50)]
     public string? FabricName { get; set; }
 
-    [StringLength(20)]
+    [StringLength(50)]
     public string? BlindType { get; set; }
 
     public int CustomerId { get; set; }
@@ -57,7 +57,7 @@ public partial class Window
 
     public int? NoOfPanels { get; set; }
 
-    [StringLength(10)]
+    [StringLength(50)]
     public string? StackType { get; set; }
 
     [Column(TypeName = "decimal(18, 0)")]

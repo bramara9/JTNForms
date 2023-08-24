@@ -121,13 +121,36 @@ namespace JTNForms.Controllers
                 ViewBag.JNTFDetails = tmpWindow;
                 return RedirectToAction("Index");
             }
+            WindowDetails wDetails = new WindowDetails { };
             if (window.lstWindowDetails.Any())
             {
-                window.lstWindowDetails.Add(window.lstWindowDetails.FirstOrDefault(a => a.IndexVal == id));
+                var windowDetails = window.lstWindowDetails.FirstOrDefault(a => a.IndexVal == id);
+                wDetails = new WindowDetails()
+                {
+                    BasePrice = windowDetails.BasePrice,
+                    BlindType = windowDetails.BlindType,
+                    RoomName = windowDetails.RoomName,
+                    FabricName = windowDetails.FabricName,
+                    WindowName = windowDetails.WindowName,
+                    Height = windowDetails.Height,
+                    Width = windowDetails.Width,
+                    ControlType = windowDetails.ControlType,
+                    ControlPosition = windowDetails.ControlPosition,
+                    TotalPrice = windowDetails.TotalPrice,
+                    IsItemSelection = windowDetails.IsItemSelection,
+                    NoOfPanels = windowDetails.NoOfPanels,
+                    IsNoValance = windowDetails.IsNoValance,
+                    Notes = windowDetails.Notes,
+                    Is2In1 = windowDetails.Is2In1,
+                    IsNeedExtension = windowDetails.IsNeedExtension,
+                    StackType = windowDetails.StackType
+                };
+
+                window.lstWindowDetails.Add(wDetails);
             }
             else
             {
-                window.lstWindowDetails.Add(new WindowDetails { });
+                window.lstWindowDetails.Add(wDetails);
             }
             tmpWindow = window;
             return RedirectToAction("Index", new { customerId = window.customerId });
@@ -235,6 +258,8 @@ namespace JTNForms.Controllers
             //}
             using (var Db = _dapperPocDbContext)
             {
+                var customer = Db.Customers.First(c => c.Id == customerId);
+
                 foreach (var roomDtls in roomDetails)
                 {
                    
@@ -244,7 +269,10 @@ namespace JTNForms.Controllers
                      {
                          room.FabricName = roomDtls.FabricName;
                          room.BasePrice = roomDtls.BasePrice;
-                         room.BlindType = roomDtls.BlindType;    
+                         room.BlindType = roomDtls.BlindType;
+                         room.OrderedHeight = (decimal)GetOrderedHeight(customer.IsInchOrMm, room.Height);
+                         room.OrderedWidth = (decimal)GetOrderedHeight(customer.IsInchOrMm, room.Width);
+
 
                      });
                     Db.Windows.UpdateRange(result);
@@ -255,6 +283,39 @@ namespace JTNForms.Controllers
 
             return RedirectToAction("WindowDetails", new { customerId = customerId });
 
+        }
+
+        private double GetOrderedHeight(bool? isInchOrMm, decimal? height)
+        {
+            double millimeter;
+            if (isInchOrMm ?? false)
+            {
+
+                millimeter = 25.4 * (double)(height ?? 0);
+            }
+            millimeter = (double)(height ?? 0);
+            return millimeter - 4;
+        }
+
+        private double GetOrderedWidth(bool? isInchOrMm, decimal? width)
+        {
+            double millimeter;
+            if (isInchOrMm ?? false)
+            {
+
+                millimeter = 25.4 * (double)(width ?? 0);
+            }
+            millimeter = (double)(width ?? 0);
+            millimeter = Math.Round(millimeter) switch
+            {
+                < 900 => millimeter - 6,
+                > 900 and < 1500 => millimeter - 7,
+                > 900 and < 1800 => millimeter - 8,
+                > 1800 => millimeter - 9,
+                _ => 0
+            };
+
+            return millimeter;
         }
 
         public IActionResult WindowDetails(int customerId)
