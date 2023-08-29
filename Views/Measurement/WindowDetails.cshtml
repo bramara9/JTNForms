@@ -228,7 +228,9 @@
 
         </div>
         <div class="col-12 col-md-6" style="text-align:right;">
-            <input id="btnSaveWindow" type="submit" class="btn btn-primary" value="Save And Next" asp-action="SaveWindowDetails" asp-route-customerId=@cId />
+            <input id="btnSaveWindow" type="submit" class="btn btn-primary" value="Save And View Invoice" asp-action="SaveWindowDetails" asp-route-customerId=@cId asp-route-viewName="Invoice" />
+            &nbsp;&nbsp;&nbsp;
+            <input id="btnWindow" type="submit" class="btn btn-primary" value="Save And View Orders" asp-action="SaveWindowDetails" asp-route-customerId=@cId asp-route-viewName="Order" />
         </div>
     </div>
     <script type="text/javascript">

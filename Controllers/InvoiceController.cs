@@ -44,10 +44,8 @@ namespace JTNForms.Controllers
                 ws.Cell("A" + dataStartVal).Value = InsexVal;
                 ws.Cell("B" + dataStartVal).Value = windows.RoomName;
                 ws.Cell("C" + dataStartVal).Value = windows.WindowName;
-                ws.Cell("E" + dataStartVal).Value = windows.FabricName;
-                
-                ws.Cell("F" + dataStartVal).Value = windows.ControlType;
-              
+                ws.Cell("E" + dataStartVal).Value = windows.FabricName;                
+                ws.Cell("F" + dataStartVal).Value = windows.ControlType;              
                 ws.Cell("G" + dataStartVal).Value = windows.ControlPosition; 
                 ws.Cell("I" + dataStartVal).Value = windows.Area;
                 ws.Cell("J" + dataStartVal).Value = Math.Round((Decimal)windows.BasePrice ).ToString();
@@ -121,7 +119,7 @@ namespace JTNForms.Controllers
                                       Width = y.Width,
                                       ControlType = y.ControlType ?? "",
                                       ControlPosition = y.ControlPosition ?? "",
-                                      TotalPrice = y.TotalPrice,
+                                      TotalPrice = Math.Round((decimal)((double)(y.BasePrice??0)* getArea((double)y.Width, (double)y.Height) / 1.5),2),
                                       IsItemSelection = y.IsItemSelected ?? false,
                                       NoOfPanels = y.NoOfPanels??0,
                                       IsNoValance = y.IsNoValance ?? false,
@@ -131,16 +129,35 @@ namespace JTNForms.Controllers
                                       StackType = y.StackType?? "",
                                       OrderedHeight= (double)y.OrderedHeight,
                                       OrderedWidth= (double)y.OrderedWidth,
-                                      Area =getArea((double)y.Width, (double)y.Height)
+                                      Area =getArea((double)y.Width, (double)y.Height),
+                                      CordlessOrMotorPrice= GetCordlessOrMotorPrice(y.ControlType)
                                   }).ToList();
             }
-
+            
             return lstRoomDetails;
+        }
+
+        private int? GetCordlessOrMotorPrice(string ControlType)
+        {
+            return ControlType switch
+            {
+                string a when a.Contains("Stainless Steel Beaded Loop") => 0,
+                string a when a.Contains("Corded") => 0,
+                string b when b.Contains("Cordless") => 15,
+                string c when c.Contains("Motorized") => 185,
+                _ => 0
+            };
         }
 
         private double? getArea(double? width, double? height)
         {
-            return width * height;
+            return (double)Math.Round((decimal)(width * height*1e-6),2);
         }
+        [HttpPost]
+        public IActionResult ReturnToSalesDetails( Int32 customerId)
+        {
+            return RedirectToAction("Index", "SalesOrder", new { customerId = customerId });
+        }
+
     }
 }

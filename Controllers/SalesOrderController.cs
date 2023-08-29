@@ -51,11 +51,11 @@ namespace JTNForms.Controllers
                 ws.Cell("I" + dataStartVal).Value = 1;
                 ws.Cell("L" + dataStartVal).Value = windows.TotalPrice;
                 ws.Cell("M" + dataStartVal).Value = (windows.IsNoValance ? "CLASSIC" : "EVO");
-                ws.Cell("N" + dataStartVal).Value = (windows.ControlType.Contains( "Stainless Steel Beaded Loop") || windows.ControlType.Contains("Cordless")) ? windows.ControlPosition : windows.ControlType;
+                ws.Cell("N" + dataStartVal).Value = (windows.ControlType.Contains("Stainless Steel Beaded Loop") || windows.ControlType.Contains("Cordless")) ? windows.ControlPosition : windows.ControlType;
                 ws.Cell("O" + dataStartVal).Value = "child safety";
-                ws.Cell("AA" + dataStartVal).Value = windows.NoOfPanels;
+                ws.Cell("AA" + dataStartVal).Value = windows.NoOfPanels == 0 ? "" : windows.NoOfPanels;
                 ws.Cell("AB" + dataStartVal).Value = windows.StackType;
-                ws.Cell("AD" + dataStartVal).Value =  (windows.Is2In1 ? "2In1 Blind:Yes" : "-");
+                ws.Cell("AD" + dataStartVal).Value = (windows.Is2In1 ? "2In1 Blind" : "-");
                 dataStartVal++;
                 InsexVal++;
             }

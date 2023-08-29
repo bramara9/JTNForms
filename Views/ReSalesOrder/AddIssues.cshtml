@@ -1,0 +1,184 @@
+﻿@model List<IssuesModel>
+@{
+    var cId = ViewBag.CutomerId;
+    var RoomTypes = ViewBag.RoomTypes;
+    var IssueType = ViewBag.IssueTypes;
+    var Model = (List<IssuesModel>)ViewBag.IssueDetails;
+}
+<style type="text/css">
+
+    .Issues h1 {
+        font-size: 34px;
+        font-weight: 500;
+        text-transform: fullsize-kana;
+    }
+
+    table {
+        border: 1px solid #ccc;
+        border-collapse: collapse;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        table-layout: fixed;
+    }
+
+        table caption {
+            font-size: 1.5em;
+            margin: .5em 0 .75em;
+        }
+
+        table thead tr {
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            padding: .35em;
+        }
+
+        table th,
+        table td {
+            padding: .625em;
+            text-align: center;
+        }
+
+        table th {
+            font-size: .85em;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+
+</style>
+
+
+<div class="row">
+    <div class="col-12 col-md-6">
+
+        <b>User name : @ViewBag.userName</b>
+
+    </div>
+    <div class="col-12 col-md-6" style="text-align:right;">
+        Date : @DateTime.Now.ToShortDateString()
+    </div>
+</div>
+<form id="frm" asp-controller="ReSalesOrder">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="Issues" style="text-align:center">
+        <h1>Repair/Reorder Details</h1>
+    </div>
+    <div style="text-align:center;color: #c50000;">--------------------------------------------------------------------------------------------</div>
+
+    <table id="MultiAddIssuesTable" class="table">
+        <tr>
+            <th>Room Name</th>
+            <th>Window Name</th>
+            <th>Description</th>
+            <th>Notes</th>
+            <th>Resolution</th>
+            <th>Action</th>
+        </tr>
+        @if (Model != null)
+        {
+            @for (int i = 0; i < Model.Count(); i++)
+            {
+                var RoomId = "RoomName" + @i;
+
+                var WindowId = "WindowName" + @i;
+                <input type="hidden" class="form-control" id="IndexVal" asp-for="@Model[i].IndexVal" value="@i">
+                <input type="hidden" class="form-control" id="RepairId" asp-for="@Model[i].RepairId">
+
+                <tr>
+
+                    <td>
+                        <select asp-for="@Model[i].WindowId" id="@RoomId" class="form-select" onchange="showWindowName(this)">
+                            <option value="">Select RoomName</option>
+                            @foreach (var typed in @RoomTypes)
+                            {
+                                var seltedVal = (@typed.Value == Convert.ToString(@Model[i].WindowId)) ? true : false;
+
+                                <option value="@typed.Value" selected="@seltedVal">@typed.Text</option>
+                            }
+                        </select>
+                        <br /><span asp-validation-for="@Model[i].WindowId" class="text-danger"></span>
+
+                    </td>
+                    <td>
+                        <select asp-for="@Model[i].WindowName" id="@WindowId" class="form-select">
+                            <option value="">Select WindowName</option>
+                            @foreach (var typed in @Model[i].lstWindowsName)
+                            {
+                                var seltedVal = (@typed.Value.Trim() == @Model[i].WindowName?.Trim() ) ? true : false;
+
+                                <option value="@typed.Value" selected="@seltedVal">@typed.Text</option>
+                            }
+                        </select>
+                        <br /><span asp-validation-for="@Model[i].WindowName" class="text-danger"></span>
+
+                    </td>
+                    <td>
+                        <textarea id="txtDescription" asp-for="@Model[i].Description" class="form-control rounded"></textarea>
+                        <br /> <span asp-validation-for="@Model[i].Description" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <input id="txtNotes" type="text" asp-for="@Model[i].Notes" class="form-control rounded" />
+                        <br /> <span asp-validation-for="@Model[i].Notes" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <select asp-for="@Model[i].IssueType" class="form-select">
+                            <option value="">Select IssueType</option>
+                            @foreach (var typed in @IssueType)
+                            {
+                                var seltedVal = (@typed.Value.Trim() == @Model[i].IssueType?.Trim()) ? true : false;
+
+                                <option value="@typed.Value" selected="@seltedVal">@typed.Text</option>
+                            }
+                        </select>
+                        <br /><span asp-validation-for="@Model[i].IssueType" class="text-danger"></span>
+
+                    </td>
+                    <td>
+                        <button type="submit" class="btn btn-danger" asp-action="Delete" formnovalidate asp-route-id="@i" asp-route-customerId=@cId><img src="~/img/trash3.svg" alt="Delete" />  </button>
+
+                    </td>
+                </tr>
+            }
+        }
+    </table>
+    <div class="form-group row" style="text-align:right;padding-bottom:20px;">
+        <input id="btnAdd" type="submit" class="btn btn-dark" value="Add" asp-action="Add" asp-route-customerId=@cId />
+
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <input id="btnBack" type="submit" class="btn btn-dark" formnovalidate value="Back" asp-controller="Customer" asp-action="Customer" asp-route-customerId=@cId />
+
+        </div>
+        <div class="col-12 col-md-6" style="text-align:right;">
+            <input id="btnSave" type="submit" class="btn btn-primary" value="Save And Next" asp-action="Save" asp-route-customerId=@cId />
+        </div>
+    </div>
+    <script type="text/javascript">
+        function showWindowName(element) {
+            var seletedTypeVal = $(element).val();
+            // alert(seletedTypeVal);
+            $('#' + element.id.replace('RoomName', 'WindowName')).empty().append(new Option('Select WindowName', ''));
+            $.ajax({
+                url: '/ReSalesOrder/GetWindowsDataByWindowsId',
+                data: { "windowId": seletedTypeVal },
+                dataType: "json",
+                type: "POST",
+                success: function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        var opt = new Option(data[i].text, data[i].value);
+                        $('#' + element.id.replace('RoomName', 'WindowName')).append(opt);
+
+                    }
+                },
+                error: function (xhr, textStatus, error) {
+                    alert(xhr.statusText);
+                },
+                failure: function (response) {
+                    alert("failure " + response.responseText);
+                }
+            });
+        }
+    </script>
+</form>

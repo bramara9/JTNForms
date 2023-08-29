@@ -63,6 +63,7 @@ namespace JTNForms.Models
         public double? OrderedHeight { get; set; }
         [Range(0.01, 99999999)]
         public double? Area { get; set; }
+        public int? CordlessOrMotorPrice { get; set; }
     }
 
     public class RoomDetails

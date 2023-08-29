@@ -271,7 +271,7 @@ namespace JTNForms.Controllers
                          room.BasePrice = roomDtls.BasePrice;
                          room.BlindType = roomDtls.BlindType;
                          room.OrderedHeight = (decimal)GetOrderedHeight(customer.IsInchOrMm, room.Height);
-                         room.OrderedWidth = (decimal)GetOrderedHeight(customer.IsInchOrMm, room.Width);
+                         room.OrderedWidth = (decimal)GetOrderedWidth(customer.IsInchOrMm, room.Width);
 
 
                      });
@@ -328,7 +328,7 @@ namespace JTNForms.Controllers
             return View("WindowDetails", lstRoomDetails);
         }
         [HttpPost]
-        public IActionResult SaveWindowDetails(List<RoomDetails> roomDetails, Int32 customerId)
+        public IActionResult SaveWindowDetails(List<RoomDetails> roomDetails, Int32 customerId,string viewName)
         {
             using (var Db = _dapperPocDbContext)
             {
@@ -359,8 +359,13 @@ namespace JTNForms.Controllers
                 }
                 Db.SaveChanges();
             }
-
-            return RedirectToAction("Index", "SalesOrder", new { customerId = customerId });
+            if (viewName == "Invoice") {
+                return RedirectToAction("Index", "Invoice", new { customerId = customerId });
+            }
+            else
+            {
+                return RedirectToAction("Index", "SalesOrder", new { customerId = customerId });
+            }
 
         }
 
