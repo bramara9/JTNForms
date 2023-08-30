@@ -1,8 +1,13 @@
-﻿using ClosedXML.Excel;
+﻿//using ClosedXML.Excel;
+using Spire.Xls;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Spreadsheet;
 using JTNForms.DataModels;
 using JTNForms.Models;
 using JTNForms.Repos;
 using Microsoft.AspNetCore.Mvc;
+using System.IO;
+using ClosedXML.Excel;
 
 namespace JTNForms.Controllers
 {
@@ -64,7 +69,23 @@ namespace JTNForms.Controllers
             wbook.SaveAs(spreadsheetStream);
             spreadsheetStream.Position = 0;
 
-            return new FileStreamResult(spreadsheetStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") { FileDownloadName = String.Concat(CustomerName.Where(c => !Char.IsWhiteSpace(c))) + ".xlsx" };
+            MemoryStream stream1 = new MemoryStream();
+
+
+            Spire.Xls.Workbook book = new Spire.Xls.Workbook();
+            book.LoadFromStream(spreadsheetStream);
+            book.SaveToStream(stream1, FileFormat.PDF);
+
+            //Response.Clear();
+            //Response.Buffer = true;
+            //Response.AddHeader("content-disposition", "attachment; filename=" + String.Concat(CustomerName.Where(c => !Char.IsWhiteSpace(c))) + ".pdf");
+            //Response.ContentType = "application/pdf";
+            //Response.BinaryWrite(stream1.ToArray());
+            //Response.End();
+
+
+            // return new FileStreamResult(spreadsheetStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") { FileDownloadName = String.Concat(CustomerName.Where(c => !Char.IsWhiteSpace(c))) + ".xlsx" };
+            return new FileStreamResult(stream1, "application/pdf") { FileDownloadName = String.Concat(CustomerName.Where(c => !Char.IsWhiteSpace(c))) + ".pdf" };
         }
 
         [HttpPost]
@@ -169,6 +190,22 @@ namespace JTNForms.Controllers
             return Ok();
 
         }
+
+        [HttpPost]
+        public IActionResult OrderNowData(List<WindowDetails> lstwindowDtls, int customerId)
+        {
+            using (var Db = _dapperDbContext)
+            {
+                var result = Db.Windows.Where(a => a.CustomerId == customerId).ToList();
+                result.ForEach(c => c.Ordered = true);
+                Db.Windows.UpdateRange(result);
+                Db.SaveChanges();
+            }
+
+            return RedirectToAction("Index", "SalesOrder", new { customerId = customerId });
+
+        }
+
 
         //private double GetOrderedHeight(bool? isInchOrMm, decimal? height)
         //{

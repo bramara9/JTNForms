@@ -62,7 +62,8 @@
 
 
     <div class="form-group" style="padding-bottom:10px;text-align:right">
-        <input id="btnDownloadInvoice" type="submit" class="btn btn-primary" value="Download" asp-action="DownloadInvoice" asp-route-customerId=@cId />
+        <input id="btnOrderNow" type="submit" class="btn btn-primary" value="Order Now" asp-action="OrderNowData" asp-route-customerId=@cId />
+        <input id="btnDownloadInvoice" type="submit" class="btn btn-primary" style="margin-left:20px" value="Download" asp-action="DownloadInvoice" asp-route-customerId=@cId />
     </div>
     <br />
     <div class="table-responsive">

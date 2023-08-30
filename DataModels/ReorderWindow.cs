@@ -6,21 +6,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace JTNForms.DataModels;
 
-[Table("Window")]
-[Index("CustomerId", Name = "IX_Window")]
-public partial class Window
+[Table("ReorderWindow")]
+public partial class ReorderWindow
 {
     [Key]
     public int Id { get; set; }
 
-    [StringLength(20)]
-    public string? WindowName { get; set; }
-
-    [Column(TypeName = "decimal(18, 0)")]
-    public decimal? Width { get; set; }
-
-    [Column(TypeName = "decimal(18, 0)")]
-    public decimal? Height { get; set; }
+    public int WindowId { get; set; }
 
     [StringLength(100)]
     public string? ControlType { get; set; }
@@ -31,13 +23,8 @@ public partial class Window
     [StringLength(200)]
     public string? Notes { get; set; }
 
-    [Column(TypeName = "decimal(18, 2)")]
-    public decimal? TotalPrice { get; set; }
-
     [StringLength(50)]
     public string? RoomName { get; set; }
-
-    public int? BasePrice { get; set; }
 
     [StringLength(50)]
     public string? FabricName { get; set; }
@@ -46,8 +33,6 @@ public partial class Window
     public string? BlindType { get; set; }
 
     public int CustomerId { get; set; }
-
-    public bool? IsItemSelected { get; set; }
 
     public bool? Is2In1 { get; set; }
 
@@ -66,13 +51,7 @@ public partial class Window
     [Column(TypeName = "decimal(18, 0)")]
     public decimal? OrderedWidth { get; set; }
 
-    public bool? Ordered { get; set; }
-
-    public bool? ReOrdered { get; set; }
-
-    [InverseProperty("Window")]
-    public virtual ICollection<Issue> Issues { get; set; } = new List<Issue>();
-
-    [InverseProperty("Window")]
-    public virtual ICollection<ReorderWindow> ReorderWindows { get; set; } = new List<ReorderWindow>();
+    [ForeignKey("WindowId")]
+    [InverseProperty("ReorderWindows")]
+    public virtual Window Window { get; set; } = null!;
 }

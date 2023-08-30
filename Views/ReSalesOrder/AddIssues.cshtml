@@ -36,13 +36,13 @@
         table th,
         table td {
             padding: .625em;
-            text-align: center;
+            text-align: left;
         }
 
         table th {
             font-size: .85em;
             letter-spacing: .1em;
-            text-transform: uppercase;
+           /* text-transform: uppercase;*/
         }
 
 </style>
@@ -66,13 +66,13 @@
     <div style="text-align:center;color: #c50000;">--------------------------------------------------------------------------------------------</div>
 
     <table id="MultiAddIssuesTable" class="table">
-        <tr>
-            <th>Room Name</th>
-            <th>Window Name</th>
-            <th>Description</th>
-            <th>Notes</th>
-            <th>Resolution</th>
-            <th>Action</th>
+        <tr style="width:100%">
+            <th style="width:15%">Room Name</th>
+            <th style="width:15%">Window Name</th>
+            <th style="width:25%">Description</th>
+            <th style="width:25%">Notes</th>
+            <th style="width:15%">Resolution</th>
+            <th style="width:5%">Action</th>
         </tr>
         @if (Model != null)
         {
@@ -84,11 +84,11 @@
                 <input type="hidden" class="form-control" id="IndexVal" asp-for="@Model[i].IndexVal" value="@i">
                 <input type="hidden" class="form-control" id="RepairId" asp-for="@Model[i].RepairId">
 
-                <tr>
+                <tr style="width:100%">
 
-                    <td>
+                    <td style="width:15%">
                         <select asp-for="@Model[i].WindowId" id="@RoomId" class="form-select" onchange="showWindowName(this)">
-                            <option value="">Select RoomName</option>
+                            <option value="">Select</option>
                             @foreach (var typed in @RoomTypes)
                             {
                                 var seltedVal = (@typed.Value == Convert.ToString(@Model[i].WindowId)) ? true : false;
@@ -99,28 +99,28 @@
                         <br /><span asp-validation-for="@Model[i].WindowId" class="text-danger"></span>
 
                     </td>
-                    <td>
-                        <select asp-for="@Model[i].WindowName" id="@WindowId" class="form-select">
-                            <option value="">Select WindowName</option>
+                    <td style ="width:15%">
+                        <select asp-for="@Model[i].WindowId" id="@WindowId" class="form-select">
+                            <option value="">Select</option>
                             @foreach (var typed in @Model[i].lstWindowsName)
                             {
-                                var seltedVal = (@typed.Value.Trim() == @Model[i].WindowName?.Trim() ) ? true : false;
+                                var seltedVal = (@typed.Value == Convert.ToString( @Model[i].WindowId)) ? true : false;
 
                                 <option value="@typed.Value" selected="@seltedVal">@typed.Text</option>
                             }
                         </select>
-                        <br /><span asp-validation-for="@Model[i].WindowName" class="text-danger"></span>
+                        <br /><span asp-validation-for="@Model[i].WindowId" class="text-danger"></span>
 
                     </td>
-                    <td>
+                    <td style="width:25%">
                         <textarea id="txtDescription" asp-for="@Model[i].Description" class="form-control rounded"></textarea>
                         <br /> <span asp-validation-for="@Model[i].Description" class="text-danger"></span>
                     </td>
-                    <td>
-                        <input id="txtNotes" type="text" asp-for="@Model[i].Notes" class="form-control rounded" />
+                    <td style="width:25%">
+                        <textarea id="txtNotes" asp-for="@Model[i].Notes" class="form-control rounded"></textarea>
                         <br /> <span asp-validation-for="@Model[i].Notes" class="text-danger"></span>
                     </td>
-                    <td>
+                    <td style="width:15%">
                         <select asp-for="@Model[i].IssueType" class="form-select">
                             <option value="">Select IssueType</option>
                             @foreach (var typed in @IssueType)
@@ -133,7 +133,7 @@
                         <br /><span asp-validation-for="@Model[i].IssueType" class="text-danger"></span>
 
                     </td>
-                    <td>
+                    <td style="width:5%">
                         <button type="submit" class="btn btn-danger" asp-action="Delete" formnovalidate asp-route-id="@i" asp-route-customerId=@cId><img src="~/img/trash3.svg" alt="Delete" />  </button>
 
                     </td>
@@ -159,7 +159,7 @@
         function showWindowName(element) {
             var seletedTypeVal = $(element).val();
             // alert(seletedTypeVal);
-            $('#' + element.id.replace('RoomName', 'WindowName')).empty().append(new Option('Select WindowName', ''));
+            $('#' + element.id.replace('RoomName', 'WindowName')).empty().append(new Option('Select', ''));
             $.ajax({
                 url: '/ReSalesOrder/GetWindowsDataByWindowsId',
                 data: { "windowId": seletedTypeVal },

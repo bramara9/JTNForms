@@ -9,7 +9,7 @@ namespace JTNForms.Models
         {
             lstWindowsName = new List<SelectListItem>();
         }
-        public int RepairId { get; set; }
+        public decimal? RepairId { get; set; }
         [Required]
         public int WindowId { get; set; }
         [Required]

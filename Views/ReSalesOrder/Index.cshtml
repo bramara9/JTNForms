@@ -2,6 +2,10 @@
 
 @{
     var cId = ViewBag.CutomerId;
+    var BlindTypes = ViewBag.BlindTypes;
+    var ControlTypes = ViewBag.ControlTypes;
+    var ControlPositions = ViewBag.ControlPositions;
+    var StackTypes = ViewBag.StackTypes;
 }
 <style type="text/css">
 
@@ -34,13 +38,13 @@
         table th,
         table td {
             padding: .625em;
-            text-align: center;
+            /*   text-align: center;*/
         }
 
         table th {
             font-size: .85em;
             letter-spacing: .1em;
-            text-transform: uppercase;
+            /* text-transform: uppercase;*/
         }
 
 </style>
@@ -55,6 +59,7 @@
     </div>
 </div>
 <form id="frm" asp-controller="SalesOrder">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="sales" style="text-align:center">
         <h1>Re-Sales Order</h1>
     </div>
@@ -62,9 +67,9 @@
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
 
-    <div class="form-group" style="padding-bottom:10px;text-align:right">
-        <input id="btnDownloadInvoice" type="submit" class="btn btn-primary" value="Download" asp-action="DownloadInvoice" asp-route-customerId=@cId />
-    </div>
+    @*<div class="form-group" style="padding-bottom:10px;text-align:right">
+    <input id="btnDownloadInvoice" type="submit" class="btn btn-primary" value="Download" asp-action="DownloadInvoice" asp-route-customerId=@cId />
+    </div>*@
     <br />
     <div class="table-responsive">
         <table class="table">
@@ -87,7 +92,7 @@
                     <th>Ordered Width</th>
                     <th>Ordered Height</th>
                     <th>Notes</th>
-                    <th></th>
+                    @* <th></th>*@
                 </tr>
             </thead>
             <tbody>
@@ -99,85 +104,167 @@
 
                         <tr>
                             <td>
-                                <label class="form-label" asp-for="@Model[i].RoomName">@Model[i].RoomName</label>
+                                <label class="form-check-label" asp-for="@Model[i].RoomName">@Model[i].RoomName</label>
+                                <input type="hidden" class="form-control" id="hdnRoomName" asp-for="@Model[i].RoomName">
 
                             </td>
                             <td>
-                                <label class="form-label" asp-for="@Model[i].WindowName">@Model[i].WindowName</label>
+                                <label class="form-check-label" asp-for="@Model[i].WindowName">@Model[i].WindowName</label>
+                                <input type="hidden" class="form-control" id="hdnWindowName" asp-for="@Model[i].WindowName">
 
                             </td>
                             <td>
-                                <label class="form-label" asp-for="@Model[i].Width">@Model[i].Width</label>
+                                <input id="Text3" type="text" asp-for="@Model[i].Width" class="form-control rounded" />
+                                <br /> <span asp-validation-for="@Model[i].Width" class="text-danger"></span>
 
                             </td>
                             <td>
-                                <label class="form-label" asp-for="@Model[i].Height">@Model[i].Height</label>
+                                <input id="Text4" type="text" asp-for="@Model[i].Height" class="form-control rounded" />
+                                <br /> <span asp-validation-for="@Model[i].Height" class="text-danger"></span>
 
                             </td>
                             <td>
-                                <label class="form-label" asp-for="@Model[i].FabricName">@Model[i].FabricName</label>
+                                <input id="Text2" type="text" asp-for="@Model[i].FabricName" required class="form-control rounded" />
+                                <br /><span asp-validation-for="@Model[i].FabricName" class="text-danger"></span>
 
                             </td>
                             <td>
-                                <label class="form-label" asp-for="@Model[i].BlindType">@Model[i].BlindType</label>
+
+
+                                <select asp-for="@Model[i].BlindType" required class="form-select">
+                                    <option value="">Select BlindType</option>
+                                    @foreach (var typed in @BlindTypes)
+                                    {
+                                        var seltedVal = (@typed.Value.Trim() == @Model[i].BlindType?.Trim()) ? true : false;
+
+                                        <option value="@typed.Value" selected="@seltedVal">@typed.Text</option>
+                                    }
+                                </select>
+                                <br /><span asp-validation-for="@Model[i].BlindType" class="text-danger"></span>
 
                             </td>
                             <td>
-                                <label class="form-label" asp-for="@Model[i].ControlType">
-                                    @(
-                                        Model[i].ControlType == "" ? "-" : Model[i].ControlType)
-                                </label>
-
-                            </td>
-                            <td>
-                                @if (@Model[i].ControlType != null && @Model[i].ControlType.Contains("Stainless Steel Beaded Chain"))
+                                @if (!(@Model[i].BlindType.Contains("Panel Shade") || @Model[i].BlindType.Contains("Vertical Blind")))
                                 {
-                                    <label class="form-label" asp-for="@Model[i].ControlPosition">
-                                        @(
-                                            Model[i].ControlPosition == "" ? "-" : Model[i].ControlPosition)
-                                    </label>
+                                    var TypeId = "divControlType" + @i;
+
+
+                                    <select asp-for="@Model[i].ControlType" id="@TypeId" required class="form-select" onchange="showControlPosition('divControlType'+@i,'divControlPosition'+@i)">
+                                        <option value="">Select ControlType</option>
+                                        @foreach (var typed in @ControlTypes)
+                                        {
+                                            <option value="@typed.Value">@typed.Text</option>
+                                        }
+                                    </select>
+                                    <br />
+
+                                    <span asp-validation-for="@Model[i].ControlType" class="text-danger"></span>
+
+
                                 }
                             </td>
                             <td>
-                                <label class="form-label" asp-for="@Model[i].StackType">@(Model[i].StackType == "" ? "-" : Model[i].StackType)</label>
+                                @if (!@Model[i].BlindType.Contains("Panel Shade"))
+                                {
+                                    var divId = "divControlPosition" + @i;
+                                    var ControlPositionDisplay = (@Model[i].ControlType != null && @Model[i].ControlType.Contains("Stainless Steel Beaded Loop")) ? "block" : "none";
+
+                                    <div style="display:@ControlPositionDisplay" id="@divId">
+
+
+                                        <select asp-for="@Model[i].ControlPosition" required class="form-select">
+
+                                            @foreach (var typed in @ControlPositions)
+                                            {
+                                                var seltedVal = (@typed.Value.Trim() == @Model[i].ControlPosition?.Trim() ?? "Right") ? true : false;
+
+                                                <option value="@typed.Value" selected="@seltedVal">@typed.Text</option>
+                                            }
+                                        </select>
+                                        <br /><span asp-validation-for="@Model[i].ControlPosition" class="text-danger"></span>
+                                    </div>
+
+                                }
+                            </td>
+
+                            <td>
+                                @if (@Model[i].BlindType.Contains("Panel Shade") || @Model[i].BlindType.Contains("Vertical Blind"))
+                                {
+
+                                    <select asp-for="@Model[i].StackType" required class="form-select">
+                                        <option value="">Select Stack</option>
+                                        @foreach (var typed in @StackTypes)
+                                        {
+                                            var seltedVal = (@typed.Value.Trim() == @Model[i].StackType?.Trim()) ? true : false;
+
+                                            <option value="@typed.Value" selected="@seltedVal">@typed.Text</option>
+                                        }
+                                    </select>
+                                    <br />
+
+                                    <span asp-validation-for="@Model[i].StackType" class="text-danger"></span>
+
+                                }
 
                             </td>
                             <td>
-                                <label class="form-label" asp-for="@Model[i].NoOfPanels">@(Model[i].NoOfPanels == 0 ? "-" : Model[i].NoOfPanels)</label>
+                                @if (@Model[i].BlindType.Contains("Panel Shade"))
+                                {
+                                    <label class="form-label" asp-for="@Model[i].NoOfPanels">@(Model[i].NoOfPanels == 0 ? "-" : Model[i].NoOfPanels)</label>
+                                }
 
                             </td>
                             <td>
-                                <label class="form-label" asp-for="@Model[i].Is2In1"> @(Model[i].Is2In1 ? "Yes" : "-")</label>
+                                @if (!(@Model[i].BlindType.Contains("Panel Shade") || @Model[i].BlindType.Contains("Vertical Blind")))
+                                {
+
+
+                                    <input class="form-check-input" type="checkbox" asp-for="@Model[i].Is2In1 ?? false" />
+
+
+
+                                }
+                            </td>
+                            <td>
+                                @if (!(@Model[i].BlindType.Contains("Banded Shade") || @Model[i].BlindType.Contains("Sheer Shade") || @Model[i].BlindType.Contains("Honeycomb Shade")))
+                                {
+
+                                    <input class="form-check-input" type="checkbox" asp-for="@Model[i].IsNoValance ?? false" />
+
+
+                                }
+                            </td>
+                            <td>
+                                @if (@Model[i].BlindType.Contains("Panel Shade") || @Model[i].BlindType.Contains("Vertical Blind"))
+                                {
+
+
+                                    <input class="form-check-input" type="checkbox" asp-for="@Model[i].IsNeedExtension ?? false" />
+
+
+                                }
 
                             </td>
                             <td>
-                                <label class="form-label" asp-for="@Model[i].IsNoValance">@(Model[i].IsNoValance ? "Yes" : "-")</label>
+                                @*<label class="lblWeight_@i form-label" asp-for="@Model[i].OrderedWidth"> @Model[i].OrderedWidth</label>*@
+                                <input class="txtWeight_@i  form-control rounded" id="txtOrderWidth" type="text" asp-for="@Model[i].OrderedWidth" />
 
                             </td>
                             <td>
-                                <label class="form-label" asp-for="@Model[i].IsNeedExtension">@(Model[i].IsNeedExtension ? "Yes" : "-")</label>
+                                @*  <label class="lblHeight_@i form-label" asp-for="@Model[i].OrderedHeight"> @Model[i].OrderedHeight</label>*@
+                                <input class="txtHeight_@i  form-control rounded" id="txtOrderHeight" type="text" asp-for="@Model[i].OrderedHeight" />
 
                             </td>
                             <td>
-                                <label class="lblWeight_@i form-label" asp-for="@Model[i].OrderedWidth"> @Model[i].OrderedWidth</label>
-                                <input class="txtWeight_@i  form-control rounded" id="txtOrderWidth" type="text" asp-for="@Model[i].OrderedWidth" style="display:none" />
+                                <input class="txtNotes_@i  form-control rounded" id="txtNotes" type="text" asp-for="@Model[i].Notes" />
 
                             </td>
-                            <td>
-                                <label class="lblHeight_@i form-label" asp-for="@Model[i].OrderedHeight"> @Model[i].OrderedHeight</label>
-                                <input class="txtHeight_@i  form-control rounded" id="txtOrderHeight" type="text" asp-for="@Model[i].OrderedHeight" style="display:none" />
+                            @* <td>
+                    <button id="btnEdit_@i" type="button" value="Edit" onclick="enableEditMode(@i)"><img src="~/img/Edit.svg" alt="Edit" /> </button>
+                    <button id="btnSave_@i" type="button" value="Save" style="display:none" onclick="enableSaveMode(@i,@Model[i].Id)"><img src="~/img/save.svg" alt="Save" /> </button>
+                    <button id="btnCancel_@i" type="button" value="Cancel" style="display:none" onclick="enableCancelMode(@i)"><img src="~/img/cancel.svg" alt="Cancel" /> </button>
 
-                            </td>
-                            <td>
-                                <label class="form-label" asp-for="@Model[i].Notes">@(Model[i].Notes ?? "-")</label>
-
-                            </td>
-                            <td>
-                                <button id="btnEdit_@i" type="button" value="Edit" onclick="enableEditMode(@i)"><img src="~/img/Edit.svg" alt="Edit" /> </button>
-                                <button id="btnSave_@i" type="button" value="Save" style="display:none" onclick="enableSaveMode(@i,@Model[i].Id)"><img src="~/img/save.svg" alt="Save" /> </button>
-                                <button id="btnCancel_@i" type="button" value="Cancel" style="display:none" onclick="enableCancelMode(@i)"><img src="~/img/cancel.svg" alt="Cancel" /> </button>
-
-                            </td>
+                    </td>*@
                         </tr>
                     }
                 }
@@ -189,75 +276,93 @@
 
     <div class="row">
         <div class="col-12 col-md-6">
-            <input id="btnBack" type="submit" class="btn btn-dark" formnovalidate value="Back" asp-controller="Measurement" asp-action="WindowDetails" asp-route-customerId=@cId />
+            <input id="btnBack" type="submit" class="btn btn-dark" formnovalidate value="Back" asp-controller="ReSalesOrder" asp-action="AddIssues" asp-route-customerId=@cId />
 
         </div>
         <div class="col-12 col-md-6" style="text-align:right;">
-            <input id="btnSaveAndNext" type="submit" class="btn btn-primary" value="Next" asp-action="InvoiceDetails" asp-route-customerId=@cId />
+            <input id="btnSaveAndNext" type="submit" class="btn btn-primary btnOrder" value="Re-Order Now" asp-action="SaveReOrderDetails" asp-route-customerId=@cId />
         </div>
     </div>
     <script type="text/javascript">
-        function enableEditMode(IndexVal) {
-            $(".lblWeight_" + IndexVal).css("display", "none");
-            $(".lblHeight_" + IndexVal).css("display", "none");
-            $(".txtWeight_" + IndexVal).css("display", "block");
-            $(".txtHeight_" + IndexVal).css("display", "block");
-            $("#btnEdit_" + IndexVal).css("display", "none");
-            $("#btnSave_" + IndexVal).css("display", "block");
-            $("#btnCancel_" + IndexVal).css("display", "block");
+           function showControlPosition(ControlTypeVal, ControlPositionVal) {
+            var seletedTypeVal=$("#"+ControlTypeVal+" option:selected").val();
+            if (seletedTypeVal.trim().indexOf("Stainless Steel Beaded Loop") != -1) {
+                $("#" + ControlPositionVal).css("display", "block");
+            }else{
+                $("#" + ControlPositionVal).val('');
+                $("#" + ControlPositionVal).css("display", "none");
+            }
+        }
+
+        //            let button = document.querySelector(".btnOrder");
+
+        //button.addEventListener("onclick", stateHandle);
+
+        //function stateHandle() {
+        //        button.disabled = true; //button remains disabled
+        //   button.setAttribute("display", "none");
+        //}
+        @*function enableEditMode(IndexVal) {
+        $(".lblWeight_" + IndexVal).css("display", "none");
+        $(".lblHeight_" + IndexVal).css("display", "none");
+        $(".txtWeight_" + IndexVal).css("display", "block");
+        $(".txtHeight_" + IndexVal).css("display", "block");
+        $("#btnEdit_" + IndexVal).css("display", "none");
+        $("#btnSave_" + IndexVal).css("display", "block");
+        $("#btnCancel_" + IndexVal).css("display", "block");
 
         }
         function enableSaveMode(IndexVal, ValId) {
-            var windowDtls = {
-                Id: $("#ItemSelection_" + IndexVal).val(),
-                OrderedWidth: $(".txtWeight_" + IndexVal).val(),
-                OrderedHeight: $(".txtHeight_" + IndexVal).val()
-            };
-            debugger
-            if (windowDtls != null) {
-                $.ajax({
-                    type: "POST",
-                    url: "/SalesOrder/SaveSalesOrderedData",
-                    data: windowDtls,
-                    async: false,
-                    success: function (response) {
-                        debugger
-                        alert('Updated');
-                    },
-                    failure: function (response) {
-                        debugger
-                        alert(response.responseText);
-                    },
-                    error: function (response) {
-                        debugger
-                        alert(response.responseText);
-                    }
-                });
-            }
+        var windowDtls = {
+        Id: $("#ItemSelection_" + IndexVal).val(),
+        OrderedWidth: $(".txtWeight_" + IndexVal).val(),
+        OrderedHeight: $(".txtHeight_" + IndexVal).val()
+        };
+        debugger
+        if (windowDtls != null) {
+        $.ajax({
+        type: "POST",
+        url: "/SalesOrder/SaveSalesOrderedData",
+        data: windowDtls,
+        async: false,
+        success: function (response) {
+        debugger
+        alert('Updated');
+        },
+        failure: function (response) {
+        debugger
+        alert(response.responseText);
+        },
+        error: function (response) {
+        debugger
+        alert(response.responseText);
+        }
+        });
+        }
 
-            $(".lblWeight_" + IndexVal).css("display", "block");
-            $(".lblWeight_" + IndexVal).text($(".txtWeight_" + IndexVal).val());
-            $(".lblHeight_" + IndexVal).css("display", "block");
-            $(".lblHeight_" + IndexVal).text($(".txtHeight_" + IndexVal).val());
-            $(".txtWeight_" + IndexVal).css("display", "none");
-            $(".txtHeight_" + IndexVal).css("display", "none");
-            $("#btnEdit_" + IndexVal).css("display", "block");
-            $("#btnSave_" + IndexVal).css("display", "none");
-            $("#btnCancel_" + IndexVal).css("display", "none");
+        $(".lblWeight_" + IndexVal).css("display", "block");
+        $(".lblWeight_" + IndexVal).text($(".txtWeight_" + IndexVal).val());
+        $(".lblHeight_" + IndexVal).css("display", "block");
+        $(".lblHeight_" + IndexVal).text($(".txtHeight_" + IndexVal).val());
+        $(".txtWeight_" + IndexVal).css("display", "none");
+        $(".txtHeight_" + IndexVal).css("display", "none");
+        $("#btnEdit_" + IndexVal).css("display", "block");
+        $("#btnSave_" + IndexVal).css("display", "none");
+        $("#btnCancel_" + IndexVal).css("display", "none");
         }
         function enableCancelMode(IndexVal) {
-            $(".lblWeight_" + IndexVal).css("display", "block");
-            $(".lblHeight_" + IndexVal).css("display", "block");
-            $(".txtWeight_" + IndexVal).css("display", "none");
-            $(".txtHeight_" + IndexVal).css("display", "none");
-            $("#btnEdit_" + IndexVal).css("display", "block");
-            $("#btnSave_" + IndexVal).css("display", "none");
-            $("#btnCancel_" + IndexVal).css("display", "none");
-            $(".txtWeight_" + IndexVal).val($(".lblWeight_" + IndexVal).text());
+        $(".lblWeight_" + IndexVal).css("display", "block");
+        $(".lblHeight_" + IndexVal).css("display", "block");
+        $(".txtWeight_" + IndexVal).css("display", "none");
+        $(".txtHeight_" + IndexVal).css("display", "none");
+        $("#btnEdit_" + IndexVal).css("display", "block");
+        $("#btnSave_" + IndexVal).css("display", "none");
+        $("#btnCancel_" + IndexVal).css("display", "none");
+        $(".txtWeight_" + IndexVal).val($(".lblWeight_" + IndexVal).text());
 
-            $(".txtHeight_" + IndexVal).val($(".lblHeight_" + IndexVal).text());
+        $(".txtHeight_" + IndexVal).val($(".lblHeight_" + IndexVal).text());
 
-        }
+        }*@
     </script>
 </form>
 
