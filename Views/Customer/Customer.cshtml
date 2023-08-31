@@ -1,7 +1,10 @@
 ﻿@using JTNForms.DataModels;
 @model Customer
 
-
+<div class="row" style="text-align:right;">
+    
+        @Html.ActionLink("View All Cusomers", "Index", "Customer")
+</div>
 <tr>
     <td>
         @Model.FirstName
@@ -65,3 +68,5 @@
         @Html.ActionLink("Add Issues", "AddIssues", "ReSalesOrder",  new {customerId=@Model.Id})
     </div>
 </div>
+
+

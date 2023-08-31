@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ClosedXML.Excel;
 using System.Text.RegularExpressions;
+using System.Security.AccessControl;
 
 namespace JTNForms.Controllers
 {
@@ -119,7 +120,7 @@ namespace JTNForms.Controllers
                                       Width = y.Width,
                                       ControlType = y.ControlType ?? "",
                                       ControlPosition = y.ControlPosition ?? "",
-                                      TotalPrice = Math.Round((decimal)((double)(y.BasePrice??0)* getArea((double)y.Width, (double)y.Height) / 1.5),2),
+                                      TotalPrice = GetPerTimeCost(y.BasePrice ?? 0, y.Width, y.Height) + GetCordlessOrMotorPrice(y.ControlType),
                                       IsItemSelection = y.IsItemSelected ?? false,
                                       NoOfPanels = y.NoOfPanels??0,
                                       IsNoValance = y.IsNoValance ?? false,
@@ -130,13 +131,27 @@ namespace JTNForms.Controllers
                                       OrderedHeight= (double)y.OrderedHeight,
                                       OrderedWidth= (double)y.OrderedWidth,
                                       Area =getArea((double)y.Width, (double)y.Height),
-                                      CordlessOrMotorPrice= GetCordlessOrMotorPrice(y.ControlType)
+                                      CordlessOrMotorPrice= GetCordlessOrMotorPrice(y.ControlType),
+                                      PricePerItem= GetPerTimeCost(y.BasePrice ?? 0, y.Width, y.Height) 
                                   }).ToList();
             }
             
             return lstRoomDetails;
         }
 
+        private  decimal GetPerTimeCost(decimal? BasePrice , decimal? width, decimal? Height)
+        {
+            var areaSqM = getArea((double)width, (double)Height);
+            if (areaSqM > 1.5)
+            {
+
+                return Math.Round((decimal)((double)(BasePrice ?? 0) * areaSqM / 1.5), 2);
+            }
+            else
+            {
+                return Math.Round(BasePrice ?? 0, 2);
+            }
+        }
         private int? GetCordlessOrMotorPrice(string ControlType)
         {
             return ControlType switch

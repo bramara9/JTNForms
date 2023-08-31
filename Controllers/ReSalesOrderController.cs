@@ -189,7 +189,7 @@ namespace JTNForms.Controllers
             if (!ModelState.IsValid)
             {
                 ViewBag.IssueDetails = details;
-                return View("Index");
+                return RedirectToAction("AddIssues", new { customerId = customerId });
             }
             details.Add(new IssuesModel { });
             TempData["IssueDetails"] = JsonConvert.SerializeObject(details);
