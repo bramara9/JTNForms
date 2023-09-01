@@ -74,7 +74,7 @@ namespace JTNForms.Controllers
 
             Spire.Xls.Workbook book = new Spire.Xls.Workbook();
             book.LoadFromStream(spreadsheetStream);
-            book.SaveToStream(stream1, FileFormat.PDF);
+            book.SaveToStream(stream1, FileFormat.Xlsb2007);
 
             //Response.Clear();
             //Response.Buffer = true;
@@ -84,8 +84,8 @@ namespace JTNForms.Controllers
             //Response.End();
 
 
-            // return new FileStreamResult(spreadsheetStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") { FileDownloadName = String.Concat(CustomerName.Where(c => !Char.IsWhiteSpace(c))) + ".xlsx" };
-            return new FileStreamResult(stream1, "application/pdf") { FileDownloadName = String.Concat(CustomerName.Where(c => !Char.IsWhiteSpace(c))) + ".pdf" };
+            return new FileStreamResult(spreadsheetStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") { FileDownloadName = String.Concat(CustomerName.Where(c => !Char.IsWhiteSpace(c))) + ".xlsx" };
+            //return new FileStreamResult(stream1, "application/pdf") { FileDownloadName = String.Concat(CustomerName.Where(c => !Char.IsWhiteSpace(c))) + ".pdf" };
         }
 
         [HttpPost]
