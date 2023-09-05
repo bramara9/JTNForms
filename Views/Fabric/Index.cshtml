@@ -1,7 +1,55 @@
-﻿
+﻿@model FabricModel
 @{
-    ViewData["Title"] = "Fabric";
+    var lstFbric = ViewBag.FabricDtls as List<FabricModel> ?? new List<FabricModel>();
+    var Catelog = ViewBag.CatelogType;
 }
+<form id="frmfileUpload" asp-controller="Faric" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group row" style="font:bold;font-family:Arial;text-decoration:underline;color:#0d6efd">
+        <h3>Fabric Details</h3>
 
-<h1>Index</h1>
+    </div>
+    <div class="form-group row">
+        <div class="col-lg-4">
+            <label asp-for="CatalogName" class="control-label"></label>
+            <select asp-for="CatalogName" required class="form-select">
 
+                @foreach (var typed in @Catelog)
+                {
+                    var seltedVal = (@typed.Value.Trim() == @Model.CatalogName?.Trim() ?? "") ? true : false;
+
+                    <option value="@typed.Value" selected="@seltedVal">@typed.Text</option>
+                }
+            </select>
+            <span asp-validation-for="CatalogName" class="text-danger"></span>
+        </div>
+        <div class="col-lg-4">
+            <label asp-for="FabricName" class="control-label"></label>
+            <input asp-for="FabricName" class="form-control" />
+            <span asp-validation-for="FabricName" class="text-danger"></span>
+        </div>
+        <div class="col-lg-4">
+            <label asp-for="BasicPrice" class="control-label"></label>
+            <input asp-for="BasicPrice" class="form-control" />
+            <span asp-validation-for="BasicPrice" class="text-danger"></span>
+        </div>
+
+    </div>
+    <div class="form-group row">
+        <div class="col-lg-4">
+            <label class="control-label">Upload File</label>
+            <input asp-for="File" class="form-control" />
+            <span asp-validation-for="File" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group" style="padding-bottom:10px;text-align:right">
+
+        <input id="btnFileUpload" type="submit" class="btn btn-primary" style="margin-left: 20px;" value="Save" asp-action="UploadFile" />
+    </div>
+    <br />
+    <br />
+
+
+    @Html.Partial("_AllFabricDetails",lstFbric)
+
+</form>

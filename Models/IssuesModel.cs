@@ -23,4 +23,15 @@ namespace JTNForms.Models
 
         public List<SelectListItem> lstWindowsName { get; set; }
     }
+
+    public class AllIssues {
+        public string? RoomName { get; set; }
+        public string? WindowName { get; set; }
+        public string? Notes { get; set; }
+
+        public int CustomerId { get; set; }
+        public string? Description { get; set; }
+        public string? CustomerName { get; set; }
+    }
+
 }

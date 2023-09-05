@@ -8,6 +8,7 @@ using JTNForms.Repos;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
 using ClosedXML.Excel;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace JTNForms.Controllers
 {
@@ -239,5 +240,42 @@ namespace JTNForms.Controllers
 
         //    return millimeter;
         //}
+
+        public IActionResult IssuesDetails()
+        {
+            List<SelectListItem> IssueTypes = new List<SelectListItem> {
+                new SelectListItem{ Text="Repair",Value="Repair"},
+                new SelectListItem{ Text="ReOrder",Value="ReOrder"},
+                };
+            ViewBag.IssueTypes = IssueTypes;
+            return View("IssuesDetails");
+
+        }
+
+
+        [HttpPost]
+        public IActionResult GetAllIssues(string typeOfIssue)
+        {
+            using (var Db = _dapperDbContext)
+            {
+
+                var lstIssueDetails = (from y in Db.Issues.Where(a => a.Resolution == typeOfIssue.Trim())
+                                       join w in Db.Windows on y.WindowId equals w.Id
+                                       join c in Db.Customers on y.CustomerId equals c.Id
+                                       select new AllIssues
+                                       {
+
+                                           CustomerId = y.CustomerId,
+                                           Description = y.Description,
+                                           Notes = y.Notes,
+                                           CustomerName = c.FirstName + " " + c.LastName,
+                                           WindowName = w.WindowName,
+                                           RoomName = w.RoomName
+
+                                       }).ToList();
+                return PartialView("_AllIssues", lstIssueDetails);
+            }
+
+        }
     }
 }

@@ -1,0 +1,54 @@
+﻿@{
+    var IssueType = ViewBag.IssueTypes;
+}
+
+
+<form id="frm" asp-controller="SalesOrder">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="sales" style="font:bold;font-family:Arial;text-decoration:underline;color:#0d6efd">
+        <h1>Issues</h1>
+    </div>
+    <div class="form-group row">
+        <div class="col-12 col-md-4">
+            <label class="form-check-label">Type Of Issue</label>
+        <select class="form-select" onchange="showIssueDetails(this)">
+            <option value="">Select</option>
+            @foreach (var typed in @IssueType)
+            {
+
+                <option value="@typed.Value">@typed.Text</option>
+            }
+        </select>
+        </div>
+    </div>
+    <br/>
+    <br/>
+
+    <div class="form-group row">
+        <div id="AllIssuesDetails"></div>
+    </div>
+    <script type="text/javascript">
+        function showIssueDetails(typeId){
+            var seletedTypeVal = $(typeId).val();
+            $('#AllIssuesDetails').empty();
+            $.ajax({
+                type: "POST",
+                url: '/SalesOrder/GetAllIssues',
+                data: { "typeOfIssue": seletedTypeVal },
+                dataType: "html",
+                async: false,              
+                success: function (response) {
+                    debugger
+                    $('#AllIssuesDetails').html(response);
+                },
+                error: function (xhr, textStatus, error) {
+                    debugger
+                    alert(xhr.statusText);
+                },
+                failure: function (response) {
+                    alert("failure " + response.responseText);
+                }
+            });
+        }
+    </script>
+</form>

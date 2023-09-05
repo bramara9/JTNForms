@@ -1,0 +1,57 @@
+﻿@model List<AllIssues>
+@{
+}
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+
+                <th>Room Name</th>
+                <th>Window Name</th>
+                <th>Description</th>
+                <th>Notes</th>
+                <th>Cusomer Name</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count()>0)
+            {
+                @for (int i = 0; i < Model.Count(); i++)
+                {
+
+                    <tr>
+
+                        <td>
+                            <label class="form-check-label" asp-for="@Model[i].RoomName">@Model[i].RoomName</label>
+                        </td>
+                        <td>
+                            <label class="form-check-label" asp-for="@Model[i].WindowName">@Model[i].WindowName</label>
+                        </td>
+                        <td>
+                            <label class="form-check-label" asp-for="@Model[i].Description">@Model[i].Description</label>
+                        </td>
+                        <td>
+                            <label class="form-check-label" asp-for="@Model[i].Notes">@Model[i].Notes</label>
+                        </td>
+                        <td>
+                            <label class="form-check-label" asp-for="@Model[i].CustomerName">@Model[i].CustomerName</label>
+                        </td>
+                        <td>
+                            <a asp-controller="Customer" asp-action="Customer" asp-route-id="@Model[i].CustomerId">View</a>
+                        </td>
+                    </tr>
+                }
+
+            }
+            else
+            {
+                <tr>
+                    <td>
+                        <h3>No Data!</h3>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

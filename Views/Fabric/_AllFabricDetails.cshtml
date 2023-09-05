@@ -1,0 +1,49 @@
+﻿@model List<FabricModel>
+@{
+}
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+
+                <th>Catalog Name</th>
+                <th>Fabric Name</th>
+                <th>Basic Price</th>
+                <th>File Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count() > 0)
+            {
+                @for (int i = 0; i < Model.Count(); i++)
+                {
+
+                    <tr>
+
+                        <td>
+                            <label class="form-check-label" asp-for="@Model[i].CatalogName">@Model[i].CatalogName</label>
+                        </td>
+                        <td>
+                            <label class="form-check-label" asp-for="@Model[i].FabricName">@Model[i].FabricName</label>
+                        </td>
+                        <td>
+                            <label class="form-check-label" asp-for="@Model[i].BasicPrice]">@Model[i].BasicPrice</label>
+                        </td>
+                        <td>
+                            <a asp-controller="Fabric" asp-action="Download" asp-route-Id="@Model[i].Id"> @Model[i].FileName</a>
+                          
+                        </td>
+                    </tr>
+                }
+
+            }
+            else
+            {
+                <tr><td>
+                <h3>No Data!</h3>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
