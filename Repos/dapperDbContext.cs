@@ -43,11 +43,6 @@ public partial class dapperDbContext : DbContext
             entity.Property(e => e.Zip).IsFixedLength();
         });
 
-        modelBuilder.Entity<Fabric>(entity =>
-        {
-            entity.Property(e => e.Image).IsFixedLength();
-        });
-
         modelBuilder.Entity<Issue>(entity =>
         {
             entity.Property(e => e.Id).ValueGeneratedOnAdd();

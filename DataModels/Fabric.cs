@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace JTNForms.DataModels;
 
-[Keyless]
 [Table("Fabric")]
 public partial class Fabric
 {
@@ -16,8 +15,14 @@ public partial class Fabric
     [StringLength(50)]
     public string FabricName { get; set; } = null!;
 
-    [MaxLength(1000)]
     public byte[]? Image { get; set; }
 
-    public int Price { get; set; }
+    [StringLength(50)]
+    public string? FabricType { get; set; }
+
+    [Key]
+    public int Id { get; set; }
+
+    [StringLength(250)]
+    public string? FileName { get; set; }
 }

@@ -6,7 +6,7 @@ namespace JTNForms.Models
     {
         public int? Id { get; set; }
         [Required]
-        public int BasicPrice { get; set; }
+        public string FabricType { get; set; }
         [Required]
         public string FabricName { get; set; }
         [Required]

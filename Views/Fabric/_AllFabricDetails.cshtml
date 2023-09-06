@@ -8,7 +8,7 @@
 
                 <th>Catalog Name</th>
                 <th>Fabric Name</th>
-                <th>Basic Price</th>
+                <th>Fabric Type</th>
                 <th>File Name</th>
             </tr>
         </thead>
@@ -27,7 +27,7 @@
                             <label class="form-check-label" asp-for="@Model[i].FabricName">@Model[i].FabricName</label>
                         </td>
                         <td>
-                            <label class="form-check-label" asp-for="@Model[i].BasicPrice]">@Model[i].BasicPrice</label>
+                            <label class="form-check-label" asp-for="@Model[i].FabricType">@Model[i].FabricType</label>
                         </td>
                         <td>
                             <a asp-controller="Fabric" asp-action="Download" asp-route-Id="@Model[i].Id"> @Model[i].FileName</a>

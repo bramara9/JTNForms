@@ -26,16 +26,21 @@ namespace JTNForms.Controllers
                 var lstFabricDetails = Db.Fabrics
                     .Select(a => new FabricModel
                     {
-                        // Id=a.Id,
-                        BasicPrice = a.Price,
+                        Id=a.Id,
+                        FabricType = a.FabricType,
                         CatalogName = a.CatalogName,
                         FabricName = a.FabricName,
-                        // FileName=a.FileName
+                        FileName=a.FileName
                     }).ToList();
 
                 ViewBag.FabricDtls = lstFabricDetails;
 
-                ViewBag.CatelogType =Db.LookUps.Where(x => x.Type.Trim() == "BlindType").Select(y => new SelectListItem()
+                ViewBag.CatelogType =Db.LookUps.Where(x => x.Type.Trim() == "CatalogName").Select(y => new SelectListItem()
+                {
+                    Value = y.Name,
+                    Text = y.Name
+                }).ToList();
+                ViewBag.FabricTypes = Db.LookUps.Where(x => x.Type.Trim() == "FabricType").Select(y => new SelectListItem()
                 {
                     Value = y.Name,
                     Text = y.Name
@@ -72,8 +77,8 @@ namespace JTNForms.Controllers
                     fabric.CatalogName = model.CatalogName;
                     fabric.FabricName = model.FabricName;
                     fabric.Image = fileBytes;
-                    fabric.Price = model.BasicPrice;
-                    //fabric.FileName = fileName;
+                    fabric.FileName = fileName;
+                    fabric.FabricType = model.FabricType;
                     Db.Fabrics.Add(fabric);
                     Db.SaveChanges();
                 }
@@ -86,9 +91,8 @@ namespace JTNForms.Controllers
         {
             using (var Db = _dapperPocDbContext)
             {
-                var fabric=Db.Fabrics.FirstOrDefault();
-                string fileName = "myfile.png";
-                return File(fabric.Image, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
+                var fabric = Db.Fabrics.FirstOrDefault(a=>a.Id==Id);
+                return File(fabric.Image, System.Net.Mime.MediaTypeNames.Application.Octet, fabric.FileName);
             }
         }
     }
