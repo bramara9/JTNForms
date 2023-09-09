@@ -19,6 +19,7 @@ namespace JTNForms.Models
         public IFormFile? File { get; set; }
         public string? FileName { get; set; }
         public List<SkuData>? lstSkuData { get; set; }
+        public Byte[]? FileBytes { get; set; }
     }
 
     public class SkuData {

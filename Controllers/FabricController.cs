@@ -34,7 +34,8 @@ namespace JTNForms.Controllers
                         CatalogName = a.CatalogName,
                         FabricName = a.FabricName,
                         FileName = a.FileName,
-                        FabricCode = a.FabricCode
+                        FabricCode = a.FabricCode,
+                        FileBytes = a.Image
                     }).ToList();
 
                 ViewBag.FabricDtls = lstFabricDetails;
@@ -144,7 +145,8 @@ namespace JTNForms.Controllers
                   CatalogName = a.CatalogName,
                   FabricName = a.FabricName,
                   FileName = a.FileName,
-                  FabricCode = a.FabricCode
+                  FabricCode = a.FabricCode,
+                  FileBytes = a.Image
               }).ToList();
 
                 // return Json(lstFabricDetails);
