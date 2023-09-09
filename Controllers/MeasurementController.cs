@@ -36,42 +36,45 @@ namespace JTNForms.Controllers
             ViewBag.userName = HttpContext.Session.GetString("username");
             if (tmpWindow.customerId <= 0 || customerId != tmpWindow.customerId || !string.IsNullOrWhiteSpace(coming))
             {
-                tmpWindow.customerId = customerId;
-
-                var result = (from c in _dapperPocDbContext.Customers.Where(a => a.Id == customerId)
-                              orderby c.Id
-                              select new Measurement
-                              {
-                                  customerId = c.Id,
-                                  IsInchOrMM = c.IsInchOrMm,
-
-                                  lstWindowDetails =
-                                  (from w in _dapperPocDbContext.Windows
-                                   where w.CustomerId == c.Id
-                                   select new WindowDetails
-                                   {
-                                       Id = w.Id,
-                                       Height = w.Height,
-                                       Width = w.Width,
-                                       Notes = w.Notes,
-                                       RoomName = w.RoomName,
-                                       WindowName = w.WindowName,
-
-
-                                   })
-                                   .ToList()
-                              }).FirstOrDefault();
-                if (result == null)
+                using (var Db = _dapperPocDbContext)
                 {
-                    result = new Measurement();
-                    result.customerId = customerId;
+                    tmpWindow.customerId = customerId;
+
+                    var result = (from c in Db.Customers.Where(a => a.Id == customerId)
+                                  orderby c.Id
+                                  select new Measurement
+                                  {
+                                      customerId = c.Id,
+                                      IsInchOrMM = c.IsInchOrMm,
+
+                                      lstWindowDetails =
+                                      (from w in Db.Windows
+                                       where w.CustomerId == c.Id
+                                       select new WindowDetails
+                                       {
+                                           Id = w.Id,
+                                           Height = w.Height,
+                                           Width = w.Width,
+                                           Notes = w.Notes,
+                                           RoomName = w.RoomName,
+                                           WindowName = w.WindowName,
+
+
+                                       })
+                                       .ToList()
+                                  }).FirstOrDefault();
+                    if (result == null)
+                    {
+                        result = new Measurement();
+                        result.customerId = customerId;
+                    }
+                    if (result.lstWindowDetails == null || result.lstWindowDetails.Count() == 0)
+                    {
+                        result.lstWindowDetails.Add(new WindowDetails { });
+                    }
+                    tmpWindow = result;
+                    ViewBag.JNTFDetails = result;
                 }
-                if (result.lstWindowDetails == null || result.lstWindowDetails.Count() == 0)
-                {
-                    result.lstWindowDetails.Add(new WindowDetails { });
-                }
-                tmpWindow = result;
-                ViewBag.JNTFDetails = result;
 
             }
             else
@@ -87,9 +90,12 @@ namespace JTNForms.Controllers
         {
             if (HttpContext.Session.GetString("username") == null)
             {
-                var customer = _dapperPocDbContext.Customers.FirstOrDefault(x => x.Id == customerId);
-                //TempData["username"] = customer.FirstName +" "+ customer.LastName;
-                HttpContext.Session.SetString("username", customer.FirstName + " " + customer.LastName);
+                using (var Db = _dapperPocDbContext)
+                {
+                    var customer = Db.Customers.FirstOrDefault(x => x.Id == customerId);
+                    //TempData["username"] = customer.FirstName +" "+ customer.LastName;
+                    HttpContext.Session.SetString("username", customer.FirstName + " " + customer.LastName);
+                }
             }
         }
 
@@ -174,9 +180,11 @@ namespace JTNForms.Controllers
         [HttpPost]
         public IActionResult AutoCompleteData(string prefix)
         {
-
-            var names = _dapperPocDbContext.LookUps.Where(x => x.Type.Trim() == "Room" && x.Name.ToLower().StartsWith(prefix.ToLower())).Select(y => y.Name).ToList();
-            return Json(names);
+            using (var Db = _dapperPocDbContext)
+            {
+                var names = Db.LookUps.Where(x => x.Type.Trim() == "Room" && x.Name.ToLower().StartsWith(prefix.ToLower())).Select(y => y.Name).ToList();
+                return Json(names);
+            }
         }
 
         [HttpPost]
@@ -189,43 +197,46 @@ namespace JTNForms.Controllers
             //}
             if (jntfModel != null && jntfModel.lstWindowDetails.Any())
             {
-                var customer = _dapperPocDbContext.Customers.First(c => c.Id == jntfModel.customerId);
-                customer.IsInchOrMm = jntfModel.IsInchOrMM;
-                var excludedBenCodes = jntfModel.lstWindowDetails.Select(x => x.Id).Distinct();
-                var deletedRows = _dapperPocDbContext.Windows.Where(b => !excludedBenCodes.Contains(b.Id) && b.CustomerId == jntfModel.customerId);
-                _dapperPocDbContext.Windows.RemoveRange(deletedRows);
-                //var rooms = jntfModel.lstWindowDetails.Select(a => a.RoomName.Trim()).Distinct();
-                foreach (var windowDtls in jntfModel.lstWindowDetails)
+                using (var Db = _dapperPocDbContext)
                 {
-
-                    var dbWindows = _dapperPocDbContext.Windows.Where(a => a.Id == windowDtls.Id).FirstOrDefault();
-                    if (dbWindows != null)
+                    var customer = Db.Customers.First(c => c.Id == jntfModel.customerId);
+                    customer.IsInchOrMm = jntfModel.IsInchOrMM;
+                    var excludedBenCodes = jntfModel.lstWindowDetails.Select(x => x.Id).Distinct();
+                    var deletedRows = Db.Windows.Where(b => !excludedBenCodes.Contains(b.Id) && b.CustomerId == jntfModel.customerId);
+                    Db.Windows.RemoveRange(deletedRows);
+                    //var rooms = jntfModel.lstWindowDetails.Select(a => a.RoomName.Trim()).Distinct();
+                    foreach (var windowDtls in jntfModel.lstWindowDetails)
                     {
-                        dbWindows.RoomName = windowDtls.RoomName;
-                        dbWindows.CustomerId = customer.Id;
-                        dbWindows.WindowName = windowDtls.WindowName;
-                        dbWindows.Height = windowDtls.Height;
-                        dbWindows.Width = windowDtls.Width;
-                        dbWindows.Notes = windowDtls.Notes;
-                        dbWindows.IsItemSelected = windowDtls.IsItemSelection;
-                        _dapperPocDbContext.Windows.Update(dbWindows);
-                    }
-                    else
-                    {
-                        Window tblWindow = new Window();
-                        tblWindow.CustomerId = customer.Id;
-                        tblWindow.RoomName = windowDtls.RoomName;
-                        tblWindow.WindowName = windowDtls.WindowName;
-                        tblWindow.Height = windowDtls.Height;
-                        tblWindow.Width = windowDtls.Width;
-                        tblWindow.Notes = windowDtls.Notes;
-                        tblWindow.IsItemSelected = windowDtls.IsItemSelection;
-                        _dapperPocDbContext.Windows.Add(tblWindow);
-                    }
+
+                        var dbWindows = Db.Windows.Where(a => a.Id == windowDtls.Id).FirstOrDefault();
+                        if (dbWindows != null)
+                        {
+                            dbWindows.RoomName = windowDtls.RoomName;
+                            dbWindows.CustomerId = customer.Id;
+                            dbWindows.WindowName = windowDtls.WindowName;
+                            dbWindows.Height = windowDtls.Height;
+                            dbWindows.Width = windowDtls.Width;
+                            dbWindows.Notes = windowDtls.Notes;
+                            dbWindows.IsItemSelected = windowDtls.IsItemSelection;
+                            Db.Windows.Update(dbWindows);
+                        }
+                        else
+                        {
+                            Window tblWindow = new Window();
+                            tblWindow.CustomerId = customer.Id;
+                            tblWindow.RoomName = windowDtls.RoomName;
+                            tblWindow.WindowName = windowDtls.WindowName;
+                            tblWindow.Height = windowDtls.Height;
+                            tblWindow.Width = windowDtls.Width;
+                            tblWindow.Notes = windowDtls.Notes;
+                            tblWindow.IsItemSelected = windowDtls.IsItemSelection;
+                            Db.Windows.Add(tblWindow);
+                        }
 
 
+                    }
+                    Db.SaveChanges();
                 }
-                _dapperPocDbContext.SaveChanges();
             }
             return RedirectToAction("RoomDetails", new { customerId = jntfModel.customerId });
 
