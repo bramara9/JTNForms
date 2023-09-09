@@ -2,6 +2,7 @@
 @{
     var cId = ViewBag.CutomerId;
     var BlindTypes = ViewBag.BlindTypes;
+    var CatalogTypes = ViewBag.CatalogTypes;
 }
 
 <div><b>User name : @ViewBag.userName </b></div>
@@ -11,6 +12,7 @@
     <table id="MultiAddUserTable" class="table">
         <tr>
             <th>Room Name</th>
+            <th>Catalog Name</th>
             <th>Fabric code</th>
             <th>Base price</th>
             <th>Blind type</th>
@@ -21,7 +23,10 @@
             {
                 <input type="hidden" class="form-control" id="ItemSsection" asp-for="@Model[i].IsItemSelection">
 
+                var CatalogId = "CatalogType" + @i;
 
+                var FabricId = "FabricName" + @i;
+                var BlindId = "BlindType" + @i;
                 <tr>
 
                     <td>
@@ -29,15 +34,37 @@
                         <input type="hidden" class="form-control" id="hdnRoomName" asp-for="@Model[i].RoomName">
                     </td>
                     <td>
-                        <input id="Text2" type="text" asp-for="@Model[i].FabricName" required class="form-control rounded" />
-                        <br /><span asp-validation-for="@Model[i].FabricName" class="text-danger"></span>
+                        <select asp-for="@Model[i].CatalogType" id="@CatalogId" required class="form-select" onchange="showFabricName(this)">
+                            <option value="">Select CatalogType</option>
+                        @foreach (var typed in @CatalogTypes)
+                        {
+                                var seltedVal = (@typed.Value.Trim() == @Model[i].CatalogType?.Trim()) ? true : false;
+
+                            <option value="@typed.Value" selected="@seltedVal">@typed.Text</option>
+                        }
+                    </select>
+                    <br />
+                        <span asp-validation-for="@Model[i].CatalogType" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <select asp-for="@Model[i].FabricName" id="@FabricId" required class="form-select" onchange="showBlindType(this)">
+                            <option value="">Select</option>
+                        @foreach (var typed in @Model[i].lstFabricNames)
+                        {
+                                var seltedVal = (@typed.Value.Trim() == @Model[i].FabricName?.Trim()) ? true : false;
+
+                            <option value="@typed.Value" selected="@seltedVal">@typed.Text</option>
+                        }
+                    </select>
+                    <br />
+                        <span asp-validation-for="@Model[i].FabricName" class="text-danger"></span>
                     </td>
                     <td>
                         <input id="Text3" type="text" asp-for="@Model[i].BasePrice" required class="form-control rounded" />
                         <br /> <span asp-validation-for="@Model[i].BasePrice" class="text-danger"></span>
                     </td>
                     <td>
-                        <select asp-for="@Model[i].BlindType" required class="form-select">
+                        <select id ="@BlindId" asp-for="@Model[i].BlindType" required class="form-select">
                             <option value="">Select BlindType</option>
                             @foreach (var typed in @BlindTypes)
                             {
@@ -64,6 +91,33 @@
             <input id="btnSaveWindow" type="submit" class="btn btn-primary" value="Save And Next" asp-action="SaveRoomDetails" asp-route-customerId=@cId />
         </div>
     </div>
+    <script type="text/javascript">
+        function showFabricName(element) {
+            var seletedTypeVal = $(element).val();
+            // alert(seletedTypeVal);
+             $('#' + element.id.replace('CatalogType', 'FabricName')).empty().append(new Option('Select', ''));
+            $.ajax({
+                url: '/Measurement/GetFabricNameByCatalogId',
+                data: { "CatalogId": seletedTypeVal },
+                dataType: "json",
+                type: "GET",
+                async:false,
+                success: function (data) {
+                    //debugger
+                     for (var i = 0; i < data.length; i++) {
+                        var opt = new Option(data[i].text, data[i].value);
+                        $('#' + element.id.replace('CatalogType', 'FabricName')).append(opt);
 
+                    }
+                },
+                error: function (xhr, textStatus, error) {
+                    alert(xhr.statusText);
+                },
+                failure: function (response) {
+                    alert("failure " + response.responseText);
+                }
+            });
+        }
+    </script>
     
 </form>

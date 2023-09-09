@@ -81,16 +81,16 @@
                 <tr style="width:100%">
 
                     <td style="width:15%">
-                        <select asp-for="@Model[i].WindowId" id="@RoomId" class="form-select" onchange="showWindowName(this)">
+                        <select asp-for="@Model[i].RoomName" id="@RoomId" class="form-select" onchange="showWindowName(this)">
                             <option value="">Select</option>
                             @foreach (var typed in @RoomTypes)
                             {
-                                var seltedVal = (@typed.Value == Convert.ToString(@Model[i].WindowId)) ? true : false;
+                                var seltedVal = (@typed.Value == @Model[i].RoomName) ? true : false;
 
                                 <option value="@typed.Value" selected="@seltedVal">@typed.Text</option>
                             }
                         </select>
-                        <br /><span asp-validation-for="@Model[i].WindowId" class="text-danger"></span>
+                        <br /><span asp-validation-for="@Model[i].RoomName" class="text-danger"></span>
 
                     </td>
                     <td style ="width:15%">
@@ -156,7 +156,7 @@
             $('#' + element.id.replace('RoomName', 'WindowName')).empty().append(new Option('Select', ''));
             $.ajax({
                 url: '/ReSalesOrder/GetWindowsDataByWindowsId',
-                data: { "windowId": seletedTypeVal },
+                data: { "roomName": seletedTypeVal },
                 dataType: "json",
                 type: "POST",
                 success: function (data) {

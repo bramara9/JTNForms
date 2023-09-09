@@ -4,7 +4,7 @@
     var Catelog = ViewBag.CatelogType;
     var FabricTypes = ViewBag.FabricTypes;
 }
-<form id="frmfileUpload" asp-controller="Faric" method="post" enctype="multipart/form-data">
+<form id="fileUploadForm" asp-controller="Faric" method="post" enctype="multipart/form-data">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="form-group row" style="font:bold;font-family:Arial;text-decoration:underline;color:#0d6efd">
         <h3>Fabric Details</h3>
@@ -14,7 +14,7 @@
         <div class="col-lg-4">
             <label asp-for="CatalogName" class="control-label"></label>
             <select asp-for="CatalogName" required class="form-select">
-            <option value="">Select</option>
+                <option value="">Select</option>
                 @foreach (var typed in @Catelog)
                 {
                     var seltedVal = (@typed.Value.Trim() == @Model.CatalogName?.Trim() ?? "") ? true : false;
@@ -30,9 +30,18 @@
             <span asp-validation-for="FabricName" class="text-danger"></span>
         </div>
         <div class="col-lg-4">
+            <label asp-for="FabricCode" class="control-label"></label>
+            <input asp-for="FabricCode" class="form-control" />
+            <span asp-validation-for="FabricCode" class="text-danger"></span>
+        </div>
+
+
+    </div>
+    <div class="form-group row">
+        <div class="col-lg-4">
             <label asp-for="FabricType" class="control-label"></label>
-           <select asp-for="FabricType" required class="form-select">
-             <option value="">Select</option>
+            <select asp-for="FabricType" required class="form-select" onchange="showSKUS(this)">
+                <option value="">Select</option>
                 @foreach (var typed in @FabricTypes)
                 {
                     var seltedVal = (@typed.Value.Trim() == @Model.FabricType?.Trim() ?? "") ? true : false;
@@ -42,23 +51,280 @@
             </select>
             <span asp-validation-for="FabricType" class="text-danger"></span>
         </div>
-
-    </div>
-    <div class="form-group row">
         <div class="col-lg-4">
             <label class="control-label">Upload File</label>
             <input asp-for="File" class="form-control" />
             <span asp-validation-for="File" class="text-danger"></span>
         </div>
     </div>
+    <div class="form-group row">
+        <div id="divSKUS" style="display:none">
+            <span style="color:red;font-weight:bold">SKU's</span>
+            <table id="divRollerRomexVerticalPanel" style="display:none">
+                <tbody></tbody>
+            </table>
+            <table id="divRomanCurtain" style="display:none">
+                <tbody></tbody>
+            </table>
+            <table id="divOthers" style="display:none">
+                <tbody>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
     <div class="form-group" style="padding-bottom:10px;text-align:right">
 
-        <input id="btnFileUpload" type="submit" class="btn btn-primary" style="margin-left: 20px;" value="Save" asp-action="UploadFile" />
+        <input id="btnFileUpload" type="button" class="btn btn-primary" style="margin-left: 20px;" value="Save" />
     </div>
     <br />
     <br />
 
+    <div id="divViewFabricDetails">
+        @Html.Partial("_AllFabricDetails",lstFbric)
+    </div>
 
-    @Html.Partial("_AllFabricDetails",lstFbric)
+    <div class="modal fade" id="modelFabricSKU">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">SKU Details</h4>
+                    <button type="button" class="close" onclick="hideModel()">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div id="divSKUDataBind">
+                    </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="hideModel()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 </form>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+<script type="text/javascript">
+    //$("#fileUploadForm").validate();
+    $(document).ready(function () {
+        $("#divSKUS").hide();
+        //$("form").submit(function (e) {
+        //
+        //    e.preventDefault(); // Prevent the default form submission
+
+        //    if ($(this).valid()) {
+        //        // Form is valid, perform your submission logic
+        //        // You can use AJAX to send data to the server, for example.
+        //    }
+        //});
+        $('#btnFileUpload').click(function (e) {
+            e.preventDefault(); // Prevent the default link behavior
+
+            var form = $("form"); // Select your form
+            if (form.valid()) {
+                // Form is valid, you can take further action here
+
+                // Form is valid, perform your submission logic
+                // You can use AJAX to send data to the server, for example.
+
+                var formData = new FormData($('#fileUploadForm')[0]);
+                formData.append('FabricType', $('#FabricType').val());
+                formData.append('FabricCode', $('#FabricCode').val());
+                formData.append('CatalogName', $('#CatalogName').val());
+                formData.append('FabricName', $('#FabricName').val());
+
+                var skuData = []; // Initialize an empty array to store the text box values
+                if ($('#FabricType').val().toLowerCase().indexOf('roller/romex/vertical/panel') !== -1) {
+                    $("#divRollerRomexVerticalPanel tbody tr").each(function () {
+                        var row = $(this);
+                        var type = row.find("td:eq(0)").text(); // Get the text of the first <td> element
+                        var price = row.find("td:eq(1) input.textbox").val(); // Get the text of the third <td> element
+
+                        // Push the text values into the array
+                        skuData.push({ BlindType: type, Price: price });
+                    });
+                }
+                else if ($('#FabricType').val().toLowerCase().indexOf('roman/curtain') !== -1) {
+                    $("#divRomanCurtain tbody tr").each(function () {
+                        var row = $(this);
+                        //debugger
+                        var type = row.find("td:eq(0)").text(); // Get the text of the first <td> element
+                        var price = row.find("td:eq(1) input.textbox").val(); // Get the text of the third <td> element
+
+                        // Push the text values into the array
+                        skuData.push({ BlindType: type, Price: price });
+                    });
+                }
+                else {
+                    $("#divOthers tbody tr").each(function () {
+                        var row = $(this);
+                        var type = row.find("td:eq(0)").text(); // Get the text of the first <td> element
+                        var price = row.find("td:eq(1) input.textbox").val(); // Get the text of the third <td> element
+
+                        // Push the text values into the array
+                        skuData.push({ BlindType: type, Price: price });
+                    });
+                }
+                //debugger
+                formData.append('FileName', JSON.stringify(skuData));
+                $.ajax({
+                    url: '/Fabric/UploadFile',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    async: false,
+                    success: function (response, textStatus, xhr) {
+                        if (xhr.status === 200) {
+                            alert("Data saved successfully.");
+                            //$('input[type=text]').focus(function () {
+                            //    $(this).val('');
+                            //});
+                            $('#fileUploadForm')[0].reset();
+                            getFabricDetails();
+                            $("#divSKUS").hide();
+                            // Handle the success response here
+                        }
+                        else {
+                            alert("Data unsaved.");
+                        }
+                    },
+                    error: function (error) {
+                        // Handle the error response here
+                        alert("failure " + response.responseText);
+                    }
+                });
+            } else {
+                // Form is not valid, display validation errors
+                alert("Form has validation errors. Please correct them.");
+            }
+
+        });
+    });
+    function getFabricDetails() {
+        $.ajax({
+            url: '/Fabric/ViewFabricDtls',
+            type: 'GET',
+            processData: false,
+            contentType: false,
+            async: false,
+            success: function (response) {
+                $("#divViewFabricDetails").empty();
+                $("#divViewFabricDetails").html(response);
+                // Handle the success response here
+            },
+            error: function (error) {
+                // Handle the error response here
+                alert("failure " + response.responseText);
+            }
+        });
+    }
+
+    function showSKUS(element) {
+        $("#divSKUS").show();
+        var seletedTypeVal = $(element).val();
+        if (seletedTypeVal.toLowerCase().indexOf('roller/romex/vertical/panel') !== -1) {
+            $("#divRollerRomexVerticalPanel").show();
+            $("#divRomanCurtain").hide();
+            $("#divOthers").hide();
+            var tbody = $('#divRollerRomexVerticalPanel tbody'),
+                reservations = ["ReservNum", "Guest Name"];
+            $.each(reservations, function (i, reservation) {
+                var tr = $('<tr>' +
+                    '<td><label id="lblOthers" class= "control-label" >' + reservations[i] + '</label>' + " : " + ' </td>' +
+                    '<td> <input id="txtOther' + i + '" name="txtOther' + i + '" type = "text" required class= "form-control textbox" data-val="true" data-val-required="Required." /> <br/><span  class="text-danger" data-valmsg-for="txtOther' + i + '" data-valmsg-replace="true"></span></td>' +
+
+                    '</tr>');
+
+                tbody.append(tr);
+            });
+        }
+        else if (seletedTypeVal.toLowerCase().indexOf('roman/curtain') !== -1) {
+            $("#divRollerRomexVerticalPanel").hide();
+            $("#divRomanCurtain").show();
+            $("#divOthers").hide();
+            var tbody = $('#divRomanCurtain tbody'),
+                reservations = ["Roman", "Curtain"];
+            $.each(reservations, function (i, reservation) {
+                var tr = $('<tr>' +
+                    '<td><label id="lblOthers" class= "control-label">' + reservations[i] + '</label> ' + " : " + '  </td> ' +
+                    '<td> <input id="txtOther' + i + '" name="txtOther' + i + '" type = "text" required class= "form-control textbox" data-val="true" data-val-required="Required." /> <br/><span  class="text-danger" data-valmsg-for="txtOther' + i + '" data-valmsg-replace="true"></span></td>' +
+                    '</tr>');
+
+                tbody.append(tr);
+            });
+        }
+        else {
+            $("#divRollerRomexVerticalPanel").hide();
+            $("#divRomanCurtain").hide();
+            $("#divOthers").show();
+            var tbody = $('#divOthers tbody');
+            var tr = $('<tr>' +
+                '<td><label id="lblOthers" class= "control-label">' + seletedTypeVal + '</label> ' + " : " + ' </td>' +
+                '<td> <input id="txtOther' + i + '" name="txtOther' + i + '" type = "text" required class= "form-control textbox" data-val="true" data-val-required="Required." /> <br/><span  class="text-danger" data-valmsg-for="txtOther' + i + '" data-valmsg-replace="true"></span></td>' +
+
+                '</tr>');
+
+            tbody.append(tr);
+
+
+
+        }
+    }
+    function OpenSKUData(idVal) {
+        $("#modelFabricSKU").find('#divSKUDataBind').empty();
+        $.ajax({
+            url: '/Fabric/ViewFabricSKUDtls?id=' + idVal,
+            type: 'GET',
+            processData: false,
+            contentType: false,
+            async: false,
+            success: function (data) {
+                //debugger
+                if (data != null &&  data.length > 0) {
+                    // Create a table element and set its class
+                    var table = $("<table>").addClass("table");
+
+                    // Create the table header row
+                    var thead = $("<thead>").appendTo(table);
+                    var headerRow = $("<tr>").appendTo(thead);
+                    headerRow.append($("<th>").text("Blind Type"));
+                    headerRow.append($("<th>").text("Price"));
+
+                    // Create the table body and add rows with data
+                    var tbody = $("<tbody>").appendTo(table);
+                    $.each(data, function (index, item) {
+                        var row = $("<tr>").appendTo(tbody);
+                        row.append($("<td>").text(item.blindType));
+                        row.append($("<td>").text(item.price));
+                        // Add more cells for additional columns if needed
+                    });
+
+                    // Append the table to the container di
+                    $("#modelFabricSKU").find('#divSKUDataBind').html(table);
+                }
+                else {
+                    $("#modelFabricSKU").find('#divSKUDataBind').html("No Data");
+                }
+                $("#modelFabricSKU").modal('show');
+            },
+            error: function (error) {
+                // Handle the error response here
+                alert("failure " + response.responseText);
+            }
+        });
+
+    }
+    function hideModel() {
+        $("#modelFabricSKU").modal('hide');
+    }
+</script>

@@ -12,7 +12,7 @@ namespace JTNForms.Models
         public decimal? RepairId { get; set; }
         [Required]
         public int WindowId { get; set; }
-        public string? WindowName { get; set; }
+        public string? RoomName { get; set; }
         public string? Notes { get; set; }
 
         public int IndexVal { get; set; }

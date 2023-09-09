@@ -10,6 +10,7 @@ using NuGet.Packaging;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using DocumentFormat.OpenXml.Office2010.Excel;
+using System.Web.Helpers;
 
 namespace JTNForms.Controllers
 {
@@ -29,7 +30,7 @@ namespace JTNForms.Controllers
             _dapperPocDbContext = dapperDbContext;
         }
 
-        public IActionResult Index(int customerId,string coming=null)
+        public IActionResult Index(int customerId, string coming = null)
         {
             SetUserName(customerId);
             ViewBag.userName = HttpContext.Session.GetString("username");
@@ -191,7 +192,7 @@ namespace JTNForms.Controllers
                 var customer = _dapperPocDbContext.Customers.First(c => c.Id == jntfModel.customerId);
                 customer.IsInchOrMm = jntfModel.IsInchOrMM;
                 var excludedBenCodes = jntfModel.lstWindowDetails.Select(x => x.Id).Distinct();
-                var deletedRows = _dapperPocDbContext.Windows.Where(b => !excludedBenCodes.Contains(b.Id) && b.CustomerId== jntfModel.customerId);
+                var deletedRows = _dapperPocDbContext.Windows.Where(b => !excludedBenCodes.Contains(b.Id) && b.CustomerId == jntfModel.customerId);
                 _dapperPocDbContext.Windows.RemoveRange(deletedRows);
                 //var rooms = jntfModel.lstWindowDetails.Select(a => a.RoomName.Trim()).Distinct();
                 foreach (var windowDtls in jntfModel.lstWindowDetails)
@@ -229,7 +230,7 @@ namespace JTNForms.Controllers
             return RedirectToAction("RoomDetails", new { customerId = jntfModel.customerId });
 
         }
-      
+
         public IActionResult RoomDetails(int customerId)
         {
             SetUserName(customerId);
@@ -237,14 +238,15 @@ namespace JTNForms.Controllers
             List<WindowDetails> lstRoomDetails = new List<WindowDetails>();
             lstRoomDetails = GetRoomDetails(customerId);
             lstRoomDetails = (from room in lstRoomDetails.GroupBy(a => a.RoomName.Trim())
-                             select new WindowDetails() {
-                                 RoomName = room.FirstOrDefault().RoomName,
-                                 BlindType=room.FirstOrDefault()?.BlindType,
-                                 BasePrice=room.FirstOrDefault()?.BasePrice,
-                                 FabricName=room.FirstOrDefault()?.FabricName,
-                                 IsItemSelection=room.FirstOrDefault()?.IsItemSelection ?? false
+                              select new WindowDetails()
+                              {
+                                  RoomName = room.FirstOrDefault().RoomName,
+                                  BlindType = room.FirstOrDefault()?.BlindType,
+                                  BasePrice = room.FirstOrDefault()?.BasePrice,
+                                  FabricName = room.FirstOrDefault()?.FabricName,
+                                  IsItemSelection = room.FirstOrDefault()?.IsItemSelection ?? false
 
-                             }).ToList();
+                              }).ToList();
             ViewBag.CutomerId = customerId;
             return View(lstRoomDetails);
 
@@ -262,11 +264,12 @@ namespace JTNForms.Controllers
 
                 foreach (var roomDtls in roomDetails)
                 {
-                   
+
                     var result = Db.Windows.Where(a => a.RoomName.Trim() == roomDtls.RoomName.Trim());
                     (from room in result
                      select room).ToList().ForEach((room) =>
                      {
+                         room.CatalogName = roomDtls.CatalogType;
                          room.FabricName = roomDtls.FabricName;
                          room.BasePrice = roomDtls.BasePrice;
                          room.BlindType = roomDtls.BlindType;
@@ -276,7 +279,7 @@ namespace JTNForms.Controllers
 
                      });
                     Db.Windows.UpdateRange(result);
-                    
+
                 }
                 Db.SaveChanges();
             }
@@ -328,7 +331,7 @@ namespace JTNForms.Controllers
             return View("WindowDetails", lstRoomDetails);
         }
         [HttpPost]
-        public IActionResult SaveWindowDetails(List<RoomDetails> roomDetails, Int32 customerId,string viewName)
+        public IActionResult SaveWindowDetails(List<RoomDetails> roomDetails, Int32 customerId, string viewName)
         {
             using (var Db = _dapperPocDbContext)
             {
@@ -359,7 +362,8 @@ namespace JTNForms.Controllers
                 }
                 Db.SaveChanges();
             }
-            if (viewName == "Invoice") {
+            if (viewName == "Invoice")
+            {
                 return RedirectToAction("Index", "Invoice", new { customerId = customerId });
             }
             else
@@ -394,7 +398,8 @@ namespace JTNForms.Controllers
                                       Notes = y.Notes,
                                       Is2In1 = y.Is2In1,
                                       IsNeedExtension = y.IsNeedExtension,
-                                      StackType = y.StackType
+                                      StackType = y.StackType,
+                                      CatalogName=y.CatalogName
 
                                   }).AsEnumerable().Select(y => new WindowDetails
                                   {
@@ -408,19 +413,25 @@ namespace JTNForms.Controllers
                                       Height = y.Height,
                                       Width = y.Width,
                                       ControlType = y.ControlType,
-                                      ControlPosition = y.ControlPosition ,
+                                      ControlPosition = y.ControlPosition,
                                       TotalPrice = y.TotalPrice,
                                       IsItemSelection = y.IsItemSelected ?? false,
-                                      NoOfPanels = y.NoOfPanels??0,
+                                      NoOfPanels = y.NoOfPanels ?? 0,
                                       IsNoValance = y.IsNoValance ?? false,
                                       Notes = y.Notes,
                                       Is2In1 = y.Is2In1 ?? false,
                                       IsNeedExtension = y.IsNeedExtension ?? false,
-                                      StackType = y.StackType
-
+                                      StackType = y.StackType,
+                                      CatalogType = y.CatalogName,
+                                      lstFabricNames= GetFabricNamesByCateLogName(y.StackType).ToList()
                                   }).ToList();
 
                 ViewBag.BlindTypes = Db.LookUps.Where(x => x.Type.Trim() == "BlindType").Select(y => new SelectListItem()
+                {
+                    Value = y.Name,
+                    Text = y.Name
+                }).ToList();
+                ViewBag.CatalogTypes = Db.LookUps.Where(x => x.Type.Trim() == "CatalogName").Select(y => new SelectListItem()
                 {
                     Value = y.Name,
                     Text = y.Name
@@ -431,62 +442,62 @@ namespace JTNForms.Controllers
 
         private List<RoomDetails> GetWindowDetails(int cutomerId)
         {
-            List<RoomDetails> lstRoomDetails=new List<RoomDetails>();
+            List<RoomDetails> lstRoomDetails = new List<RoomDetails>();
             using (var Db = _dapperPocDbContext)
             {
-                List<WindowDetails>  lstWindowDetails = (from y in Db.Windows.Where(a => a.CustomerId == cutomerId)
-                                  select new
-                                  {
-                                      BasePrice = y.BasePrice,
-                                      BlindType = y.BlindType,
-                                      RoomName = y.RoomName,
-                                      Id = y.Id,
-                                      FabricName = y.FabricName,
-                                      WindowName = y.WindowName,
-                                      Height = y.Height,
-                                      Width = y.Width,
-                                      ControlType = y.ControlType,
-                                      ControlPosition = y.Option,
-                                      TotalPrice = y.TotalPrice,
-                                      IsItemSelected = y.IsItemSelected,
-                                      NoOfPanels = y.NoOfPanels,
-                                      IsNoValance = y.IsNoValance,
-                                      Notes = y.Notes,
-                                      Is2In1 = y.Is2In1,
-                                      IsNeedExtension = y.IsNeedExtension,
-                                      StackType = y.StackType
+                List<WindowDetails> lstWindowDetails = (from y in Db.Windows.Where(a => a.CustomerId == cutomerId)
+                                                        select new
+                                                        {
+                                                            BasePrice = y.BasePrice,
+                                                            BlindType = y.BlindType,
+                                                            RoomName = y.RoomName,
+                                                            Id = y.Id,
+                                                            FabricName = y.FabricName,
+                                                            WindowName = y.WindowName,
+                                                            Height = y.Height,
+                                                            Width = y.Width,
+                                                            ControlType = y.ControlType,
+                                                            ControlPosition = y.Option,
+                                                            TotalPrice = y.TotalPrice,
+                                                            IsItemSelected = y.IsItemSelected,
+                                                            NoOfPanels = y.NoOfPanels,
+                                                            IsNoValance = y.IsNoValance,
+                                                            Notes = y.Notes,
+                                                            Is2In1 = y.Is2In1,
+                                                            IsNeedExtension = y.IsNeedExtension,
+                                                            StackType = y.StackType
 
 
-                                  }).AsEnumerable().Select(y => new WindowDetails
-                                  {
+                                                        }).AsEnumerable().Select(y => new WindowDetails
+                                                        {
 
-                                      BasePrice = y.BasePrice,
-                                      BlindType = y.BlindType,
-                                      RoomName = y.RoomName.Trim(),
-                                      Id = y.Id,
-                                      FabricName = y.FabricName,
-                                      WindowName = y.WindowName,
-                                      Height = y.Height,
-                                      Width = y.Width,
-                                      ControlType = y.ControlType ?? "",
-                                      ControlPosition = y.ControlPosition ?? "",
-                                      TotalPrice = y.TotalPrice,
-                                      IsItemSelection = y.IsItemSelected ?? false,
-                                      NoOfPanels = y.NoOfPanels??0,
-                                      IsNoValance = y.IsNoValance ?? false,
-                                      Notes = y.Notes,
-                                      Is2In1 = y.Is2In1 ?? false,
-                                      IsNeedExtension = y.IsNeedExtension?? false,
-                                      StackType = y.StackType ?? ""
+                                                            BasePrice = y.BasePrice,
+                                                            BlindType = y.BlindType,
+                                                            RoomName = y.RoomName.Trim(),
+                                                            Id = y.Id,
+                                                            FabricName = y.FabricName,
+                                                            WindowName = y.WindowName,
+                                                            Height = y.Height,
+                                                            Width = y.Width,
+                                                            ControlType = y.ControlType ?? "Stainless Steel Beaded Loop",
+                                                            ControlPosition = y.ControlPosition ?? "Right",
+                                                            TotalPrice = y.TotalPrice,
+                                                            IsItemSelection = y.IsItemSelected ?? false,
+                                                            NoOfPanels = y.NoOfPanels ?? 0,
+                                                            IsNoValance = y.IsNoValance ?? false,
+                                                            Notes = y.Notes,
+                                                            Is2In1 = y.Is2In1 ?? false,
+                                                            IsNeedExtension = y.IsNeedExtension ?? false,
+                                                            StackType = y.StackType ?? ""
 
-                                  }).ToList();
+                                                        }).ToList();
 
                 var details = (from room in lstWindowDetails.GroupBy(a => a.RoomName.Trim())
-                                  select new 
-                                  {
-                                      RoomName = room.Key
-                                  }).ToList();
-                foreach(var room in details)
+                               select new
+                               {
+                                   RoomName = room.Key
+                               }).ToList();
+                foreach (var room in details)
                 {
                     RoomDetails rDetails = new RoomDetails()
                     {
@@ -497,7 +508,7 @@ namespace JTNForms.Controllers
                         Fabric = lstWindowDetails.Where(a => a.RoomName == room.RoomName).FirstOrDefault().FabricName,
                     };
                     lstRoomDetails.Add(rDetails);
-                        
+
                 }
 
                 ViewBag.ControlTypes = Db.LookUps.Where(x => x.Type.Trim() == "ControlType").Select(y => new SelectListItem()
@@ -518,6 +529,26 @@ namespace JTNForms.Controllers
             }
             return lstRoomDetails;
 
+        }
+        [HttpGet]
+        public IActionResult GetFabricNameByCatalogId(string CatalogId)
+        {
+            var result = GetFabricNamesByCateLogName(CatalogId);
+                return Json(result);
+            
+
+        }
+
+        private IList<SelectListItem> GetFabricNamesByCateLogName(string catalogName)
+        {
+            using (var Db = _dapperPocDbContext)
+            {
+                var result =
+                (from y in Db.Fabrics.Where(a => a.CatalogName == catalogName)
+                 select new SelectListItem
+                 { Value = y.FabricName, Text = y.FabricName }).ToList();
+                return result;
+            }
         }
 
     }

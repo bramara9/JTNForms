@@ -103,7 +103,7 @@
 
                         <tr>
                             <td>
-                                <label class="form-check-label" asp-for="@Model[i].RoomName">@Model[i].RoomName</label>
+                                <label class="form-check-label" id="@("roomName"+i)">@Model[i].RoomName</label>
                                 <input type="hidden" class="form-control" id="hdnRoomName" asp-for="@Model[i].RoomName">
 
                             </td>
@@ -123,23 +123,15 @@
 
                             </td>
                             <td>
-                                <input id="Text2" type="text" asp-for="@Model[i].FabricName" required class="form-control rounded" />
-                                <br /><span asp-validation-for="@Model[i].FabricName" class="text-danger"></span>
+                                  <label class="form-check-label" asp-for="@Model[i].FabricName">@Model[i].FabricName</label>
+                                <input type="hidden" class="form-control" id="hdnFabricName" asp-for="@Model[i].FabricName">
 
                             </td>
                             <td>
+                                  <label class="form-check-label" asp-for="@Model[i].BlindType">@Model[i].BlindType</label>
+                                <input type="hidden" class="form-control" id="hdnBlindType" asp-for="@Model[i].BlindType">
 
-
-                                <select asp-for="@Model[i].BlindType" required class="form-select">
-                                    <option value="">Select BlindType</option>
-                                    @foreach (var typed in @BlindTypes)
-                                    {
-                                        var seltedVal = (@typed.Value.Trim() == @Model[i].BlindType?.Trim()) ? true : false;
-
-                                        <option value="@typed.Value" selected="@seltedVal">@typed.Text</option>
-                                    }
-                                </select>
-                                <br /><span asp-validation-for="@Model[i].BlindType" class="text-danger"></span>
+                              
 
                             </td>
                             <td>

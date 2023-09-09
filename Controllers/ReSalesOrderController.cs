@@ -28,7 +28,8 @@ namespace JTNForms.Controllers
         public IActionResult Index(int customerId)
         {
             ViewBag.CutomerId = customerId;
-            var CustomerName = HttpContext.Session.GetString("username");
+            SetUserName(customerId);
+            ViewBag.userName = HttpContext.Session.GetString("username");
             List<WindowDetails> lstRoomDetails;
 
             using (var Db = _dapperPocDbContext)
@@ -123,7 +124,7 @@ namespace JTNForms.Controllers
             {
                 var RoomDetails = (from y in Db.Windows.Where(a => a.CustomerId == customerId)
                                    select new SelectListItem
-                                   { Value = Convert.ToString(y.Id), Text = y.RoomName }).ToList();
+                                   { Value = y.RoomName, Text = y.RoomName }).Distinct().ToList();
                 ViewBag.RoomTypes = RoomDetails;
                 List<SelectListItem> IssueTypes = new List<SelectListItem> {
                 new SelectListItem{ Text="Repair",Value="Repair"},
@@ -137,7 +138,7 @@ namespace JTNForms.Controllers
                     var ResaleOrderDtls = JsonConvert.DeserializeObject<List<IssuesModel>>(TempData["IssueDetails"].ToString());
                     ResaleOrderDtls.ForEach((room) =>
                      {
-                         room.lstWindowsName = (from y in Db.Windows.Where(a => a.Id == room.WindowId)
+                         room.lstWindowsName = (from y in Db.Windows.Where(a => a.RoomName == room.RoomName)
                                                 select new SelectListItem
                                                 { Value = Convert.ToString(y.Id), Text = y.WindowName }).ToList();
 
@@ -161,15 +162,22 @@ namespace JTNForms.Controllers
 
                                    }).AsEnumerable().Select(issues => new IssuesModel()
                                    {
-                                       lstWindowsName = (from y in Db.Windows.Where(a => a.Id == issues.WindowId)
-                                                         select new SelectListItem
-                                                         { Value = Convert.ToString(y.Id), Text = y.WindowName }).ToList(),
+
                                        Description = issues.Description,
                                        RepairId = issues.RepairId,
                                        IssueType = issues.IssueType,
                                        Notes = issues.Notes,
-                                       WindowId = issues.WindowId
+                                       WindowId = issues.WindowId,
+                                       RoomName = Db.Windows.Where(a => a.Id == issues.WindowId).FirstOrDefault()?.RoomName
                                    }).ToList();
+                        details.ToList().ForEach(a =>
+                        {
+                            a.lstWindowsName = (from y in Db.Windows.Where(x => x.RoomName == a.RoomName)
+                                                select new SelectListItem
+                                                { Value = Convert.ToString(y.Id), Text = y.WindowName }).ToList();
+                        });
+
+
 
                     }
 
@@ -219,11 +227,11 @@ namespace JTNForms.Controllers
         }
 
         [HttpPost]
-        public IActionResult GetWindowsDataByWindowsId(int windowId)
+        public IActionResult GetWindowsDataByWindowsId(string roomName)
         {
             using (var Db = _dapperPocDbContext)
             {
-                var RoomDetails = (from y in Db.Windows.Where(a => a.Id == windowId)
+                var RoomDetails = (from y in Db.Windows.Where(a => a.RoomName == roomName)
                                    select new SelectListItem
                                    { Value = Convert.ToString(y.Id), Text = y.WindowName }).ToList();
 
@@ -303,21 +311,21 @@ namespace JTNForms.Controllers
                     tblWindow.FabricName = reOrder.FabricName;
                     tblWindow.BlindType = reOrder.BlindType;
                     tblWindow.NoOfPanels = reOrder.NoOfPanels;
-                    tblWindow.ControlType= reOrder.ControlType;
+                    tblWindow.ControlType = reOrder.ControlType;
                     tblWindow.Option = reOrder.ControlPosition;
                     tblWindow.StackType = reOrder.StackType;
-                    tblWindow.Is2In1= reOrder.Is2In1;
-                    tblWindow.IsNoValance= reOrder.IsNoValance;
-                    tblWindow.IsNeedExtension= reOrder.IsNeedExtension; 
+                    tblWindow.Is2In1 = reOrder.Is2In1;
+                    tblWindow.IsNoValance = reOrder.IsNoValance;
+                    tblWindow.IsNeedExtension = reOrder.IsNeedExtension;
                     tblWindow.OrderedWidth = (decimal)GetOrderedWidth(customer.IsInchOrMm, reOrder.Width);
-                    tblWindow.OrderedHeight = (decimal)GetOrderedHeight(customer.IsInchOrMm,reOrder.Height);
+                    tblWindow.OrderedHeight = (decimal)GetOrderedHeight(customer.IsInchOrMm, reOrder.Height);
                     tblWindow.Notes = reOrder.Notes;
                     _dapperPocDbContext.ReorderWindows.Add(tblWindow);
 
                 }
                 _dapperPocDbContext.SaveChanges();
-               result= downloadRESalesOrder(customerId);
-             
+                result = downloadRESalesOrder(customerId);
+
             }
 
             if (result != null)
@@ -334,7 +342,7 @@ namespace JTNForms.Controllers
                 var details = (from y in Db.Windows
                                join
                                x in Db.ReorderWindows on y.Id equals x.WindowId
-                               where y.CustomerId == customerId && y.ReOrdered==true
+                               where y.CustomerId == customerId && y.ReOrdered == true
                                select new
                                {
                                    BasePrice = y.BasePrice,
@@ -416,7 +424,7 @@ namespace JTNForms.Controllers
                 System.IO.Stream spreadsheetStream = new System.IO.MemoryStream();
                 wbook.SaveAs(spreadsheetStream);
                 spreadsheetStream.Position = 0;
-                 return new FileStreamResult(spreadsheetStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") { FileDownloadName = String.Concat(CustomerName.Where(c => !Char.IsWhiteSpace(c))) + "_ReOrder.xlsx" };
+                return new FileStreamResult(spreadsheetStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") { FileDownloadName = String.Concat(CustomerName.Where(c => !Char.IsWhiteSpace(c))) + "_ReOrder.xlsx" };
 
             }
         }

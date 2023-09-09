@@ -2,14 +2,17 @@
 @{
 }
 <div class="table-responsive">
-    <table class="table">
+    <table id="tblFabricDetails" class="display nowrap" style="width:100%">
         <thead>
             <tr>
 
                 <th>Catalog Name</th>
                 <th>Fabric Name</th>
+                <th>Fabric Code</th>
                 <th>Fabric Type</th>
+                <th>View SKU's</th>
                 <th>File Name</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -21,17 +24,27 @@
                     <tr>
 
                         <td>
-                            <label class="form-check-label" asp-for="@Model[i].CatalogName">@Model[i].CatalogName</label>
+                            <label class="form-check-label" id="@("lblCName" + i)">@Model[i].CatalogName</label>
                         </td>
                         <td>
-                            <label class="form-check-label" asp-for="@Model[i].FabricName">@Model[i].FabricName</label>
+                            <label class="form-check-label" id="@("lblFName" + i)">@Model[i].FabricName</label>
                         </td>
                         <td>
-                            <label class="form-check-label" asp-for="@Model[i].FabricType">@Model[i].FabricType</label>
+                            <label class="form-check-label" id="@("lblFCName" + i)">@Model[i].FabricCode</label>
                         </td>
                         <td>
-                            <a asp-controller="Fabric" asp-action="Download" asp-route-Id="@Model[i].Id"> @Model[i].FileName</a>
+                            <label class="form-check-label" id="@("lblFTName" + i)">@Model[i].FabricType</label>
+                        </td>
+                        <td>
+                            <a href="#" id="@("lblSKU" + i)" onclick="OpenSKUData(@Model[i].Id)">View SKU's</a>
+                        </td>
+                        <td>
+                            <a asp-controller="Fabric" id="@("lblDName" + i)" asp-action="Download" asp-route-Id="@Model[i].Id"> @Model[i].FileName</a>
                           
+                        </td>
+                        <td>
+                            <button type="submit" id="@("lblDelete" + i)" class="btn btn-danger" asp-action="Delete" formnovalidate asp-route-Id="@Model[i].Id"><img src="~/img/trash3.svg" alt="Delete" />  </button>
+
                         </td>
                     </tr>
                 }
@@ -39,11 +52,31 @@
             }
             else
             {
-                <tr><td>
-                <h3>No Data!</h3>
+                <tr>
+                    <td>
+                        <h3>No Data!</h3>
                     </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var table = $('#tblFabricDetails').DataTable({
+            bSort: false,
+            "fixedHeader": true,
+            "responsive": true,
+            "paging": true,
+            bFilter: true,
+
+        });
+    });
+</script>

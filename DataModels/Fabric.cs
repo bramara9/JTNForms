@@ -25,4 +25,8 @@ public partial class Fabric
 
     [StringLength(250)]
     public string? FileName { get; set; }
+
+    [StringLength(10)]
+    [Unicode(false)]
+    public string? FabricCode { get; set; }
 }

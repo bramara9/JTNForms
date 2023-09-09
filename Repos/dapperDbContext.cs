@@ -26,6 +26,8 @@ public partial class dapperDbContext : DbContext
 
     public virtual DbSet<ReorderWindow> ReorderWindows { get; set; }
 
+    public virtual DbSet<Sku> Skus { get; set; }
+
     public virtual DbSet<Window> Windows { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -72,6 +74,11 @@ public partial class dapperDbContext : DbContext
             entity.HasOne(d => d.Window).WithMany(p => p.ReorderWindows)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__ReorderWi__Windo__4BAC3F29");
+        });
+
+        modelBuilder.Entity<Sku>(entity =>
+        {
+            entity.Property(e => e.BlindType).IsFixedLength();
         });
 
         modelBuilder.Entity<Window>(entity =>

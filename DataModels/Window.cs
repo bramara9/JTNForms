@@ -70,6 +70,10 @@ public partial class Window
 
     public bool? ReOrdered { get; set; }
 
+    [StringLength(10)]
+    [Unicode(false)]
+    public string? CatalogName { get; set; }
+
     [InverseProperty("Window")]
     public virtual ICollection<Issue> Issues { get; set; } = new List<Issue>();
 
