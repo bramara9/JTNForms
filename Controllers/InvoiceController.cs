@@ -11,7 +11,7 @@ namespace JTNForms.Controllers
 {
     public class InvoiceController : Controller
     {
-        public dapperDbContext _dapperDbContext = new dapperDbContext();
+        public readonly dapperDbContext _dapperDbContext;
         public InvoiceController(dapperDbContext dapperDbContext)
         {
             _dapperDbContext = dapperDbContext;
@@ -81,9 +81,8 @@ namespace JTNForms.Controllers
         {
             List<WindowDetails> lstRoomDetails;
 
-            using ( var Db = _dapperDbContext)
-            {
-                lstRoomDetails = (from y in Db.Windows.Where(a => a.CustomerId == customerId && a.IsItemSelected==true)
+           
+                lstRoomDetails = (from y in _dapperDbContext.Windows.Where(a => a.CustomerId == customerId && a.IsItemSelected==true)
                                   select new
                                   {
                                       BasePrice = y.BasePrice,
@@ -134,7 +133,7 @@ namespace JTNForms.Controllers
                                       CordlessOrMotorPrice= GetCordlessOrMotorPrice(y.ControlType),
                                       PricePerItem= GetPerTimeCost(y.BasePrice ?? 0, y.Width, y.Height) 
                                   }).ToList();
-            }
+            
             
             return lstRoomDetails;
         }

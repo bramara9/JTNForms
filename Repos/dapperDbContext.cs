@@ -31,7 +31,11 @@ public partial class dapperDbContext : DbContext
     public virtual DbSet<Window> Windows { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("name=DefaultConnection");
+    {
+        if (!optionsBuilder.IsConfigured)
+        {  optionsBuilder.UseSqlServer("name=DefaultConnection");
+        }
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

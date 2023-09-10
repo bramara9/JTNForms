@@ -17,11 +17,11 @@ namespace JTNForms.Controllers
     public class ReSalesOrderController : Controller
     {
         public static List<IssuesModel> details = new List<IssuesModel> { new IssuesModel { } };
-        public dapperDbContext _dapperPocDbContext = new dapperDbContext();
+        public readonly dapperDbContext _dapperDbContext;
 
         public ReSalesOrderController(dapperDbContext dapperDbContext)
         {
-            _dapperPocDbContext = dapperDbContext;
+            _dapperDbContext = dapperDbContext;
         }
 
         // GET: ReSalesOrderController
@@ -32,83 +32,81 @@ namespace JTNForms.Controllers
             ViewBag.userName = HttpContext.Session.GetString("username");
             List<WindowDetails> lstRoomDetails;
 
-            using (var Db = _dapperPocDbContext)
+            var customer = _dapperDbContext.Customers.FirstOrDefault(x => x.Id == customerId);
+
+            lstRoomDetails = (from y in _dapperDbContext.Windows
+                              join
+                              x in _dapperDbContext.Issues on y.Id equals x.WindowId
+                              where y.CustomerId == customerId && x.Resolution == "ReOrder"
+                              select new
+                              {
+                                  BasePrice = y.BasePrice,
+                                  BlindType = y.BlindType,
+                                  RoomName = y.RoomName,
+                                  Id = y.Id,
+                                  FabricName = y.FabricName,
+                                  WindowName = y.WindowName,
+                                  Height = y.Height,
+                                  Width = y.Width,
+                                  ControlType = y.ControlType,
+                                  ControlPosition = y.Option,
+                                  TotalPrice = y.TotalPrice,
+                                  IsItemSelected = y.IsItemSelected,
+                                  NoOfPanels = y.NoOfPanels,
+                                  IsNoValance = y.IsNoValance,
+                                  Notes = x.Notes,
+                                  Is2In1 = y.Is2In1,
+                                  IsNeedExtension = y.IsNeedExtension,
+                                  StackType = y.StackType,
+                                  OrderedWidth = y.OrderedWidth,
+                                  OrderedHeight = y.OrderedHeight
+
+                              }).AsEnumerable().Select(y => new WindowDetails
+                              {
+
+                                  BasePrice = y.BasePrice,
+                                  BlindType = y.BlindType,
+                                  RoomName = y.RoomName,
+                                  Id = y.Id,
+                                  FabricName = y.FabricName,
+                                  WindowName = y.WindowName,
+                                  Height = y.Height,
+                                  Width = y.Width,
+                                  ControlType = y.ControlType ?? "",
+                                  ControlPosition = y.ControlPosition ?? "",
+                                  TotalPrice = y.TotalPrice,
+                                  IsItemSelection = y.IsItemSelected ?? false,
+                                  NoOfPanels = y.NoOfPanels ?? 0,
+                                  IsNoValance = y.IsNoValance ?? false,
+                                  Notes = y.Notes,
+                                  Is2In1 = y.Is2In1 ?? false,
+                                  IsNeedExtension = y.IsNeedExtension ?? false,
+                                  StackType = y.StackType ?? "",
+                                  OrderedHeight = (double)y.OrderedHeight,
+                                  OrderedWidth = (double)y.OrderedWidth,
+                              }).ToList();
+
+            ViewBag.BlindTypes = _dapperDbContext.LookUps.Where(x => x.Type.Trim() == "BlindType").Select(y => new SelectListItem()
             {
-                var customer = Db.Customers.FirstOrDefault(x => x.Id == customerId);
+                Value = y.Name,
+                Text = y.Name
+            }).ToList();
+            ViewBag.ControlTypes = _dapperDbContext.LookUps.Where(x => x.Type.Trim() == "ControlType").Select(y => new SelectListItem()
+            {
+                Value = y.Name,
+                Text = y.Name
+            }).ToList();
+            ViewBag.ControlPositions = _dapperDbContext.LookUps.Where(x => x.Type.Trim() == "ControlPosition").Select(y => new SelectListItem()
+            {
+                Value = y.Name,
+                Text = y.Name
+            }).ToList();
+            ViewBag.StackTypes = _dapperDbContext.LookUps.Where(x => x.Type.Trim() == "Stack").Select(y => new SelectListItem()
+            {
+                Value = y.Name,
+                Text = y.Name
+            }).ToList();
 
-                lstRoomDetails = (from y in Db.Windows
-                                  join
-                                  x in Db.Issues on y.Id equals x.WindowId
-                                  where y.CustomerId == customerId && x.Resolution == "ReOrder"
-                                  select new
-                                  {
-                                      BasePrice = y.BasePrice,
-                                      BlindType = y.BlindType,
-                                      RoomName = y.RoomName,
-                                      Id = y.Id,
-                                      FabricName = y.FabricName,
-                                      WindowName = y.WindowName,
-                                      Height = y.Height,
-                                      Width = y.Width,
-                                      ControlType = y.ControlType,
-                                      ControlPosition = y.Option,
-                                      TotalPrice = y.TotalPrice,
-                                      IsItemSelected = y.IsItemSelected,
-                                      NoOfPanels = y.NoOfPanels,
-                                      IsNoValance = y.IsNoValance,
-                                      Notes = x.Notes,
-                                      Is2In1 = y.Is2In1,
-                                      IsNeedExtension = y.IsNeedExtension,
-                                      StackType = y.StackType,
-                                      OrderedWidth = y.OrderedWidth,
-                                      OrderedHeight = y.OrderedHeight
-
-                                  }).AsEnumerable().Select(y => new WindowDetails
-                                  {
-
-                                      BasePrice = y.BasePrice,
-                                      BlindType = y.BlindType,
-                                      RoomName = y.RoomName,
-                                      Id = y.Id,
-                                      FabricName = y.FabricName,
-                                      WindowName = y.WindowName,
-                                      Height = y.Height,
-                                      Width = y.Width,
-                                      ControlType = y.ControlType ?? "",
-                                      ControlPosition = y.ControlPosition ?? "",
-                                      TotalPrice = y.TotalPrice,
-                                      IsItemSelection = y.IsItemSelected ?? false,
-                                      NoOfPanels = y.NoOfPanels ?? 0,
-                                      IsNoValance = y.IsNoValance ?? false,
-                                      Notes = y.Notes,
-                                      Is2In1 = y.Is2In1 ?? false,
-                                      IsNeedExtension = y.IsNeedExtension ?? false,
-                                      StackType = y.StackType ?? "",
-                                      OrderedHeight = (double)y.OrderedHeight,
-                                      OrderedWidth = (double)y.OrderedWidth,
-                                  }).ToList();
-
-                ViewBag.BlindTypes = Db.LookUps.Where(x => x.Type.Trim() == "BlindType").Select(y => new SelectListItem()
-                {
-                    Value = y.Name,
-                    Text = y.Name
-                }).ToList();
-                ViewBag.ControlTypes = Db.LookUps.Where(x => x.Type.Trim() == "ControlType").Select(y => new SelectListItem()
-                {
-                    Value = y.Name,
-                    Text = y.Name
-                }).ToList();
-                ViewBag.ControlPositions = Db.LookUps.Where(x => x.Type.Trim() == "ControlPosition").Select(y => new SelectListItem()
-                {
-                    Value = y.Name,
-                    Text = y.Name
-                }).ToList();
-                ViewBag.StackTypes = Db.LookUps.Where(x => x.Type.Trim() == "Stack").Select(y => new SelectListItem()
-                {
-                    Value = y.Name,
-                    Text = y.Name
-                }).ToList();
-            }
 
 
             return View(lstRoomDetails);
@@ -120,71 +118,69 @@ namespace JTNForms.Controllers
             ViewBag.userName = HttpContext.Session.GetString("username");
             ViewBag.CutomerId = customerId;
 
-            using (var Db = _dapperPocDbContext)
-            {
-                var RoomDetails = (from y in Db.Windows.Where(a => a.CustomerId == customerId)
-                                   select new SelectListItem
-                                   { Value = y.RoomName, Text = y.RoomName }).Distinct().ToList();
-                ViewBag.RoomTypes = RoomDetails;
-                List<SelectListItem> IssueTypes = new List<SelectListItem> {
+            var RoomDetails = (from y in _dapperDbContext.Windows.Where(a => a.CustomerId == customerId)
+                               select new SelectListItem
+                               { Value = y.RoomName, Text = y.RoomName }).Distinct().ToList();
+            ViewBag.RoomTypes = RoomDetails;
+            List<SelectListItem> IssueTypes = new List<SelectListItem> {
                 new SelectListItem{ Text="Repair",Value="Repair"},
                 new SelectListItem{ Text="ReOrder",Value="ReOrder"},
                 };
-                ViewBag.IssueTypes = IssueTypes;
+            ViewBag.IssueTypes = IssueTypes;
 
 
-                if (coming == "Add")
-                {
-                    var ResaleOrderDtls = JsonConvert.DeserializeObject<List<IssuesModel>>(TempData["IssueDetails"].ToString());
-                    ResaleOrderDtls.ForEach((room) =>
-                     {
-                         room.lstWindowsName = (from y in Db.Windows.Where(a => a.RoomName == room.RoomName)
-                                                select new SelectListItem
-                                                { Value = Convert.ToString(y.Id), Text = y.WindowName }).ToList();
+            if (coming == "Add")
+            {
+                var ResaleOrderDtls = JsonConvert.DeserializeObject<List<IssuesModel>>(TempData["IssueDetails"].ToString());
+                ResaleOrderDtls.ForEach((room) =>
+                 {
+                     room.lstWindowsName = (from y in _dapperDbContext.Windows.Where(a => a.RoomName == room.RoomName)
+                                            select new SelectListItem
+                                            { Value = Convert.ToString(y.Id), Text = y.WindowName }).ToList();
 
-                     });
-                    ViewBag.IssueDetails = ResaleOrderDtls;
-                }
-                else
-                {
-                    var dbIssues = _dapperPocDbContext.Issues.Where(a => a.CustomerId == customerId).ToList();
-                    if (dbIssues != null && dbIssues.Any())
-                    {
-                        details = (from issues in dbIssues
-                                   select new
-                                   {
-                                       Description = issues.Description,
-                                       RepairId = issues.Id,
-                                       IssueType = issues.Resolution,
-                                       Notes = issues.Notes,
-                                       WindowId = issues.WindowId
-
-
-                                   }).AsEnumerable().Select(issues => new IssuesModel()
-                                   {
-
-                                       Description = issues.Description,
-                                       RepairId = issues.RepairId,
-                                       IssueType = issues.IssueType,
-                                       Notes = issues.Notes,
-                                       WindowId = issues.WindowId,
-                                       RoomName = Db.Windows.Where(a => a.Id == issues.WindowId).FirstOrDefault()?.RoomName
-                                   }).ToList();
-                        details.ToList().ForEach(a =>
-                        {
-                            a.lstWindowsName = (from y in Db.Windows.Where(x => x.RoomName == a.RoomName)
-                                                select new SelectListItem
-                                                { Value = Convert.ToString(y.Id), Text = y.WindowName }).ToList();
-                        });
-
-
-
-                    }
-
-                    ViewBag.IssueDetails = details;
-
-                }
+                 });
+                ViewBag.IssueDetails = ResaleOrderDtls;
             }
+            else
+            {
+                var dbIssues = _dapperDbContext.Issues.Where(a => a.CustomerId == customerId).ToList();
+                if (dbIssues != null && dbIssues.Any())
+                {
+                    details = (from issues in dbIssues
+                               select new
+                               {
+                                   Description = issues.Description,
+                                   RepairId = issues.Id,
+                                   IssueType = issues.Resolution,
+                                   Notes = issues.Notes,
+                                   WindowId = issues.WindowId
+
+
+                               }).AsEnumerable().Select(issues => new IssuesModel()
+                               {
+
+                                   Description = issues.Description,
+                                   RepairId = issues.RepairId,
+                                   IssueType = issues.IssueType,
+                                   Notes = issues.Notes,
+                                   WindowId = issues.WindowId,
+                                   RoomName = _dapperDbContext.Windows.Where(a => a.Id == issues.WindowId).FirstOrDefault()?.RoomName
+                               }).ToList();
+                    details.ToList().ForEach(a =>
+                    {
+                        a.lstWindowsName = (from y in _dapperDbContext.Windows.Where(x => x.RoomName == a.RoomName)
+                                            select new SelectListItem
+                                            { Value = Convert.ToString(y.Id), Text = y.WindowName }).ToList();
+                    });
+
+
+
+                }
+
+                ViewBag.IssueDetails = details;
+
+            }
+
 
             ViewBag.CutomerId = customerId;
             return View();
@@ -220,7 +216,7 @@ namespace JTNForms.Controllers
         {
             if (HttpContext.Session.GetString("username") == null)
             {
-                var customer = _dapperPocDbContext.Customers.FirstOrDefault(x => x.Id == customerId);
+                var customer = _dapperDbContext.Customers.FirstOrDefault(x => x.Id == customerId);
                 //TempData["username"] = customer.FirstName +" "+ customer.LastName;
                 HttpContext.Session.SetString("username", customer.FirstName + " " + customer.LastName);
             }
@@ -229,14 +225,13 @@ namespace JTNForms.Controllers
         [HttpPost]
         public IActionResult GetWindowsDataByWindowsId(string roomName)
         {
-            using (var Db = _dapperPocDbContext)
-            {
-                var RoomDetails = (from y in Db.Windows.Where(a => a.RoomName == roomName)
-                                   select new SelectListItem
-                                   { Value = Convert.ToString(y.Id), Text = y.WindowName }).ToList();
 
-                return Json(RoomDetails);
-            }
+            var RoomDetails = (from y in _dapperDbContext.Windows.Where(a => a.RoomName == roomName)
+                               select new SelectListItem
+                               { Value = Convert.ToString(y.Id), Text = y.WindowName }).ToList();
+
+            return Json(RoomDetails);
+
         }
 
         [HttpPost]
@@ -246,12 +241,12 @@ namespace JTNForms.Controllers
             if (details != null && details.Any())
             {
                 var excludedissues = details.Select(x => x.RepairId).Distinct();
-                var deletedRows = _dapperPocDbContext.Issues.Where(b => !excludedissues.Contains(b.Id) && b.CustomerId == customerId);
-                _dapperPocDbContext.Issues.RemoveRange(deletedRows);
+                var deletedRows = _dapperDbContext.Issues.Where(b => !excludedissues.Contains(b.Id) && b.CustomerId == customerId);
+                _dapperDbContext.Issues.RemoveRange(deletedRows);
                 foreach (var reOrder in details)
                 {
 
-                    var dbIssues = _dapperPocDbContext.Issues.Where(a => a.Id == reOrder.RepairId).FirstOrDefault();
+                    var dbIssues = _dapperDbContext.Issues.Where(a => a.Id == reOrder.RepairId).FirstOrDefault();
                     if (dbIssues != null)
                     {
                         dbIssues.WindowId = reOrder.WindowId;
@@ -259,7 +254,7 @@ namespace JTNForms.Controllers
                         dbIssues.Notes = reOrder.Notes;
                         dbIssues.Resolution = reOrder.IssueType;
                         dbIssues.CustomerId = customerId;
-                        _dapperPocDbContext.Issues.Update(dbIssues);
+                        _dapperDbContext.Issues.Update(dbIssues);
                     }
                     else
                     {
@@ -269,12 +264,12 @@ namespace JTNForms.Controllers
                         Issues.Notes = reOrder.Notes;
                         Issues.Resolution = reOrder.IssueType;
                         Issues.CustomerId = customerId;
-                        _dapperPocDbContext.Issues.Add(Issues);
+                        _dapperDbContext.Issues.Add(Issues);
                     }
 
 
                 }
-                _dapperPocDbContext.SaveChanges();
+                _dapperDbContext.SaveChanges();
             }
             if (details.Where(a => a.IssueType == "ReOrder").Count() > 0)
             {
@@ -291,18 +286,18 @@ namespace JTNForms.Controllers
         public IActionResult SaveReOrderDetails(List<WindowDetails> details, int customerId)
         {
             FileStreamResult result = null;
-            var customer = _dapperPocDbContext.Customers.First(c => c.Id == customerId);
+            var customer = _dapperDbContext.Customers.First(c => c.Id == customerId);
             if (details != null && details.Any())
             {
 
                 foreach (var reOrder in details)
                 {
 
-                    var dbWindow = _dapperPocDbContext.Windows.Where(a => a.Id == reOrder.Id).FirstOrDefault();
+                    var dbWindow = _dapperDbContext.Windows.Where(a => a.Id == reOrder.Id).FirstOrDefault();
                     if (dbWindow != null)
                     {
                         dbWindow.ReOrdered = true;
-                        _dapperPocDbContext.Windows.Update(dbWindow);
+                        _dapperDbContext.Windows.Update(dbWindow);
                     }
 
                     ReorderWindow tblWindow = new ReorderWindow();
@@ -320,10 +315,10 @@ namespace JTNForms.Controllers
                     tblWindow.OrderedWidth = (decimal)GetOrderedWidth(customer.IsInchOrMm, reOrder.Width);
                     tblWindow.OrderedHeight = (decimal)GetOrderedHeight(customer.IsInchOrMm, reOrder.Height);
                     tblWindow.Notes = reOrder.Notes;
-                    _dapperPocDbContext.ReorderWindows.Add(tblWindow);
+                    _dapperDbContext.ReorderWindows.Add(tblWindow);
 
                 }
-                _dapperPocDbContext.SaveChanges();
+                _dapperDbContext.SaveChanges();
                 result = downloadRESalesOrder(customerId);
 
             }
@@ -337,7 +332,7 @@ namespace JTNForms.Controllers
 
         public FileStreamResult downloadRESalesOrder(int customerId)
         {
-            using (var Db = _dapperPocDbContext)
+            using (var Db = _dapperDbContext)
             {
                 var details = (from y in Db.Windows
                                join

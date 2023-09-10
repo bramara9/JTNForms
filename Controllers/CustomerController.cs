@@ -9,7 +9,7 @@ namespace JTNForms.Controllers
 {
     public class CustomerController : Controller
     {
-        public dapperDbContext dapperPocDbContext = new dapperDbContext();
+        public readonly dapperDbContext dapperPocDbContext;
 
         public CustomerController(dapperDbContext dapperDbContext)
         {

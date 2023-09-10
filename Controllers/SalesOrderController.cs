@@ -15,7 +15,7 @@ namespace JTNForms.Controllers
     public class SalesOrderController : Controller
     {
 
-        public dapperDbContext _dapperDbContext = new dapperDbContext();
+        public readonly dapperDbContext _dapperDbContext;
         public SalesOrderController(dapperDbContext dapperDbContext)
         {
             _dapperDbContext = dapperDbContext;
@@ -112,59 +112,58 @@ namespace JTNForms.Controllers
         {
             List<WindowDetails> lstRoomDetails;
 
-            using (var Db = _dapperDbContext)
-            {
-                var customer = _dapperDbContext.Customers.FirstOrDefault(x => x.Id == customerId);
 
-                lstRoomDetails = (from y in Db.Windows.Where(a => a.CustomerId == customerId && a.IsItemSelected == true)
-                                  select new
-                                  {
-                                      BasePrice = y.BasePrice,
-                                      BlindType = y.BlindType,
-                                      RoomName = y.RoomName,
-                                      Id = y.Id,
-                                      FabricName = y.FabricName,
-                                      WindowName = y.WindowName,
-                                      Height = y.Height,
-                                      Width = y.Width,
-                                      ControlType = y.ControlType,
-                                      ControlPosition = y.Option,
-                                      TotalPrice = y.TotalPrice,
-                                      IsItemSelected = y.IsItemSelected,
-                                      NoOfPanels = y.NoOfPanels,
-                                      IsNoValance = y.IsNoValance,
-                                      Notes = y.Notes,
-                                      Is2In1 = y.Is2In1,
-                                      IsNeedExtension = y.IsNeedExtension,
-                                      StackType = y.StackType,
-                                      OrderedWidth = y.OrderedWidth,
-                                      OrderedHeight = y.OrderedHeight
+            var customer = _dapperDbContext.Customers.FirstOrDefault(x => x.Id == customerId);
 
-                                  }).AsEnumerable().Select(y => new WindowDetails
-                                  {
+            lstRoomDetails = (from y in _dapperDbContext.Windows.Where(a => a.CustomerId == customerId && a.IsItemSelected == true)
+                              select new
+                              {
+                                  BasePrice = y.BasePrice,
+                                  BlindType = y.BlindType,
+                                  RoomName = y.RoomName,
+                                  Id = y.Id,
+                                  FabricName = y.FabricName,
+                                  WindowName = y.WindowName,
+                                  Height = y.Height,
+                                  Width = y.Width,
+                                  ControlType = y.ControlType,
+                                  ControlPosition = y.Option,
+                                  TotalPrice = y.TotalPrice,
+                                  IsItemSelected = y.IsItemSelected,
+                                  NoOfPanels = y.NoOfPanels,
+                                  IsNoValance = y.IsNoValance,
+                                  Notes = y.Notes,
+                                  Is2In1 = y.Is2In1,
+                                  IsNeedExtension = y.IsNeedExtension,
+                                  StackType = y.StackType,
+                                  OrderedWidth = y.OrderedWidth,
+                                  OrderedHeight = y.OrderedHeight
 
-                                      BasePrice = y.BasePrice,
-                                      BlindType = y.BlindType,
-                                      RoomName = y.RoomName,
-                                      Id = y.Id,
-                                      FabricName = y.FabricName,
-                                      WindowName = y.WindowName,
-                                      Height = y.Height,
-                                      Width = y.Width,
-                                      ControlType = y.ControlType ?? "",
-                                      ControlPosition = y.ControlPosition ?? "",
-                                      TotalPrice = y.TotalPrice,
-                                      IsItemSelection = y.IsItemSelected ?? false,
-                                      NoOfPanels = y.NoOfPanels ?? 0,
-                                      IsNoValance = y.IsNoValance ?? false,
-                                      Notes = y.Notes,
-                                      Is2In1 = y.Is2In1 ?? false,
-                                      IsNeedExtension = y.IsNeedExtension ?? false,
-                                      StackType = y.StackType ?? "",
-                                      OrderedHeight = (double)y.OrderedHeight,
-                                      OrderedWidth = (double)y.OrderedWidth,
-                                  }).ToList();
-            }
+                              }).AsEnumerable().Select(y => new WindowDetails
+                              {
+
+                                  BasePrice = y.BasePrice,
+                                  BlindType = y.BlindType,
+                                  RoomName = y.RoomName,
+                                  Id = y.Id,
+                                  FabricName = y.FabricName,
+                                  WindowName = y.WindowName,
+                                  Height = y.Height,
+                                  Width = y.Width,
+                                  ControlType = y.ControlType ?? "",
+                                  ControlPosition = y.ControlPosition ?? "",
+                                  TotalPrice = y.TotalPrice,
+                                  IsItemSelection = y.IsItemSelected ?? false,
+                                  NoOfPanels = y.NoOfPanels ?? 0,
+                                  IsNoValance = y.IsNoValance ?? false,
+                                  Notes = y.Notes,
+                                  Is2In1 = y.Is2In1 ?? false,
+                                  IsNeedExtension = y.IsNeedExtension ?? false,
+                                  StackType = y.StackType ?? "",
+                                  OrderedHeight = (double)y.OrderedHeight,
+                                  OrderedWidth = (double)y.OrderedWidth,
+                              }).ToList();
+
 
             return lstRoomDetails;
         }
@@ -172,21 +171,20 @@ namespace JTNForms.Controllers
         [HttpPost]
         public IActionResult SaveSalesOrderedData(WindowDetails windowDtls)
         {
-            using (var Db = _dapperDbContext)
+
+
+            var result = _dapperDbContext.Windows.Where(a => a.Id == windowDtls.Id).FirstOrDefault();
+            if (result != null)
             {
 
-                var result = Db.Windows.Where(a => a.Id == windowDtls.Id).FirstOrDefault();
-                if (result != null)
-                {
+                result.OrderedWidth = (decimal)(windowDtls.OrderedWidth ?? 0);
+                result.OrderedHeight = (decimal)(windowDtls.OrderedHeight ?? 0);
 
-                    result.OrderedWidth = (decimal)(windowDtls.OrderedWidth ?? 0);
-                    result.OrderedHeight = (decimal)(windowDtls.OrderedHeight ?? 0);
-
-                    Db.Windows.Update(result);
-                }
-
-                Db.SaveChanges();
+                _dapperDbContext.Windows.Update(result);
             }
+
+            _dapperDbContext.SaveChanges();
+
 
             return Ok();
 
@@ -195,13 +193,12 @@ namespace JTNForms.Controllers
         [HttpPost]
         public IActionResult OrderNowData(List<WindowDetails> lstwindowDtls, int customerId)
         {
-            using (var Db = _dapperDbContext)
-            {
-                var result = Db.Windows.Where(a => a.CustomerId == customerId).ToList();
-                result.ForEach(c => c.Ordered = true);
-                Db.Windows.UpdateRange(result);
-                Db.SaveChanges();
-            }
+
+            var result = _dapperDbContext.Windows.Where(a => a.CustomerId == customerId).ToList();
+            result.ForEach(c => c.Ordered = true);
+            _dapperDbContext.Windows.UpdateRange(result);
+            _dapperDbContext.SaveChanges();
+
 
             return RedirectToAction("Index", "SalesOrder", new { customerId = customerId });
 
@@ -256,25 +253,23 @@ namespace JTNForms.Controllers
         [HttpPost]
         public IActionResult GetAllIssues(string typeOfIssue)
         {
-            using (var Db = _dapperDbContext)
-            {
 
-                var lstIssueDetails = (from y in Db.Issues.Where(a => a.Resolution == typeOfIssue.Trim())
-                                       join w in Db.Windows on y.WindowId equals w.Id
-                                       join c in Db.Customers on y.CustomerId equals c.Id
-                                       select new AllIssues
-                                       {
+            var lstIssueDetails = (from y in _dapperDbContext.Issues.Where(a => a.Resolution == typeOfIssue.Trim())
+                                   join w in _dapperDbContext.Windows on y.WindowId equals w.Id
+                                   join c in _dapperDbContext.Customers on y.CustomerId equals c.Id
+                                   select new AllIssues
+                                   {
 
-                                           CustomerId = y.CustomerId,
-                                           Description = y.Description,
-                                           Notes = y.Notes,
-                                           CustomerName = c.FirstName + " " + c.LastName,
-                                           WindowName = w.WindowName,
-                                           RoomName = w.RoomName
+                                       CustomerId = y.CustomerId,
+                                       Description = y.Description,
+                                       Notes = y.Notes,
+                                       CustomerName = c.FirstName + " " + c.LastName,
+                                       WindowName = w.WindowName,
+                                       RoomName = w.RoomName
 
-                                       }).ToList();
-                return PartialView("_AllIssues", lstIssueDetails);
-            }
+                                   }).ToList();
+            return PartialView("_AllIssues", lstIssueDetails);
+
 
         }
     }

@@ -1,5 +1,6 @@
 using JTNForms.Repos;
 using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 builder.Services.AddDbContext<dapperDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+               sqlServerOptionsAction: sqlOptions =>
+               {
+                   sqlOptions.EnableRetryOnFailure();
+               });
 });
 builder.Services.AddMvc().AddViewOptions(options =>
 {
