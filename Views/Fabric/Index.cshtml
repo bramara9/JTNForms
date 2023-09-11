@@ -53,8 +53,11 @@
         </div>
         <div class="col-lg-4">
             <label class="control-label">Upload File</label>
-            <input asp-for="File" class="form-control" />
+            <input asp-for="File" id="fileInput" class="form-control" />
             <span asp-validation-for="File" class="text-danger"></span>
+        </div>
+        <div class="col-lg-4">
+            <img id="previewImage" src="/img/no-preview.jpeg" alt="Preview" width="100px" height="100px">
         </div>
     </div>
     <div class="form-group row">
@@ -117,6 +120,25 @@
     //$("#fileUploadForm").validate();
     $(document).ready(function () {
         $("#divSKUS").hide();
+        $("#fileInput").on("change", function (e) {
+            var file = e.target.files[0]; // Get the selected file
+            if (file) {
+                // Create a FileReader
+                var reader = new FileReader();
+
+                // Define the onload event handler for the reader
+                reader.onload = function (e) {
+                    // Set the src attribute of the image preview to the data URL
+                    $("#previewImage").attr("src", e.target.result);
+                };
+
+                // Read the file as a data URL (base64)
+                reader.readAsDataURL(file);
+            } else {
+                // Clear the image preview if no file is selected
+                $("#previewImage").attr("src", "/img/no-preview.jpeg");
+            }
+        });
         //$("form").submit(function (e) {
         //
         //    e.preventDefault(); // Prevent the default form submission
@@ -146,7 +168,7 @@
                 if ($('#FabricType').val().toLowerCase().indexOf('roller/romex/vertical/panel') !== -1) {
                     $("#divRollerRomexVerticalPanel tbody tr").each(function () {
                         var row = $(this);
-                        var type = row.find("td:eq(0)").text(); // Get the text of the first <td> element
+                        var type = row.find("td:eq(0) label").text(); // Get the text of the first <td> element
                         var price = row.find("td:eq(1) input.textbox").val(); // Get the text of the third <td> element
 
                         // Push the text values into the array
@@ -157,7 +179,7 @@
                     $("#divRomanCurtain tbody tr").each(function () {
                         var row = $(this);
                         //debugger
-                        var type = row.find("td:eq(0)").text(); // Get the text of the first <td> element
+                        var type = row.find("td:eq(0) label").text(); // Get the text of the first <td> element
                         var price = row.find("td:eq(1) input.textbox").val(); // Get the text of the third <td> element
 
                         // Push the text values into the array
@@ -167,7 +189,7 @@
                 else {
                     $("#divOthers tbody tr").each(function () {
                         var row = $(this);
-                        var type = row.find("td:eq(0)").text(); // Get the text of the first <td> element
+                        var type = row.find("td:eq(0) label").text(); // Get the text of the first <td> element
                         var price = row.find("td:eq(1) input.textbox").val(); // Get the text of the third <td> element
 
                         // Push the text values into the array
@@ -236,8 +258,10 @@
             $("#divRollerRomexVerticalPanel").show();
             $("#divRomanCurtain").hide();
             $("#divOthers").hide();
-            var tbody = $('#divRollerRomexVerticalPanel tbody'),
-                reservations = ["Roller Shade", "Romex Shade", "Vertical Blind", "Panel Shade"];
+            reservations = [];
+            $('#divRollerRomexVerticalPanel tbody').empty();
+            var tbody = $('#divRollerRomexVerticalPanel tbody');
+            reservations = ["Roller Shade", "Romex Shade", "Vertical Blind", "Panel Shade"];
             $.each(reservations, function (i, reservation) {
                 var tr = $('<tr>' +
                     '<td><label id="lblOthers" class= "control-label" >' + reservations[i] + '</label>' + " : " + ' </td>' +
@@ -252,8 +276,10 @@
             $("#divRollerRomexVerticalPanel").hide();
             $("#divRomanCurtain").show();
             $("#divOthers").hide();
-            var tbody = $('#divRomanCurtain tbody'),
-                reservations = ["Roman", "Curtain"];
+            reservations = [];
+            $('#divRomanCurtain tbody').empty();
+            var tbody = $('#divRomanCurtain tbody');
+            reservations = ["Roman", "Curtain"];
             $.each(reservations, function (i, reservation) {
                 var tr = $('<tr>' +
                     '<td><label id="lblOthers" class= "control-label">' + reservations[i] + '</label> ' + " : " + '  </td> ' +
@@ -267,10 +293,11 @@
             $("#divRollerRomexVerticalPanel").hide();
             $("#divRomanCurtain").hide();
             $("#divOthers").show();
+            $('#divOthers tbody').empty();
             var tbody = $('#divOthers tbody');
             var tr = $('<tr>' +
                 '<td><label id="lblOthers" class= "control-label">' + seletedTypeVal + '</label> ' + " : " + ' </td>' +
-                '<td> <input id="txtOther' + i + '" name="txtOther' + i + '" type = "text" required class= "form-control textbox" data-val="true" data-val-required="Required." /> <br/><span  class="text-danger" data-valmsg-for="txtOther' + i + '" data-valmsg-replace="true"></span></td>' +
+                '<td> <input id="txtOther" name="txtOther" type = "text" required class= "form-control textbox" data-val="true" data-val-required="Required." /> <br/><span  class="text-danger" data-valmsg-for="txtOther" data-valmsg-replace="true"></span></td>' +
 
                 '</tr>');
 
@@ -290,7 +317,7 @@
             async: false,
             success: function (data) {
                 //debugger
-                if (data != null &&  data.length > 0) {
+                if (data != null && data.length > 0) {
                     // Create a table element and set its class
                     var table = $("<table>").addClass("table");
 

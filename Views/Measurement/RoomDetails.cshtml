@@ -1,7 +1,7 @@
 ﻿@model List<WindowDetails>
 @{
     var cId = ViewBag.CutomerId;
-    var BlindTypes = ViewBag.BlindTypes;
+   // var BlindTypes = ViewBag.BlindTypes;
     var CatalogTypes = ViewBag.CatalogTypes;
 }
 
@@ -13,8 +13,8 @@
         <tr>
             <th>Room Name</th>
             <th>Catalog Name</th>
-            <th>Fabric code</th>
-            <th>Base price</th>
+            <th>Fabric Name</th>
+            @*<th>Base price</th>*@
             <th>Blind type</th>
         </tr>
         @if (Model != null)
@@ -59,14 +59,14 @@
                     <br />
                         <span asp-validation-for="@Model[i].FabricName" class="text-danger"></span>
                     </td>
-                    <td>
+                  @*  <td>
                         <input id="Text3" type="text" asp-for="@Model[i].BasePrice" required class="form-control rounded" />
                         <br /> <span asp-validation-for="@Model[i].BasePrice" class="text-danger"></span>
-                    </td>
+                    </td>*@
                     <td>
                         <select id ="@BlindId" asp-for="@Model[i].BlindType" required class="form-select">
                             <option value="">Select BlindType</option>
-                            @foreach (var typed in @BlindTypes)
+                            @foreach (var typed in @Model[i].lstBlindTypes)
                             {
                                 var seltedVal = (@typed.Value.Trim() == @Model[i].BlindType?.Trim()) ? true : false;
 
@@ -107,6 +107,32 @@
                      for (var i = 0; i < data.length; i++) {
                         var opt = new Option(data[i].text, data[i].value);
                         $('#' + element.id.replace('CatalogType', 'FabricName')).append(opt);
+
+                    }
+                },
+                error: function (xhr, textStatus, error) {
+                    alert(xhr.statusText);
+                },
+                failure: function (response) {
+                    alert("failure " + response.responseText);
+                }
+            });
+        }
+        function showBlindType(element) {
+            var seletedTypeVal = $(element).val();
+            // alert(seletedTypeVal);
+            $('#' + element.id.replace('FabricName', 'BlindType')).empty().append(new Option('Select', ''));
+            $.ajax({
+                url: '/Measurement/GetBlindTypeByFabric',
+                data: { "fabricName": seletedTypeVal },
+                dataType: "json",
+                type: "GET",
+                async: false,
+                success: function (data) {
+                    //debugger
+                    for (var i = 0; i < data.length; i++) {
+                        var opt = new Option(data[i].text, data[i].value);
+                        $('#' + element.id.replace('FabricName', 'BlindType')).append(opt);
 
                     }
                 },

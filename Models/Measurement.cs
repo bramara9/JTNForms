@@ -24,6 +24,7 @@ namespace JTNForms.Models
         public WindowDetails()
         {
             lstFabricNames = new List<SelectListItem>();
+            lstBlindTypes = new List<SelectListItem>();
         }
         public int Id { get; set; }
         [Required]
@@ -66,7 +67,8 @@ namespace JTNForms.Models
         public int? CordlessOrMotorPrice { get; set; }
         public string? CatalogType { get; set; }
         public List<SelectListItem>? lstFabricNames { get; set; }
-        
+        public List<SelectListItem>? lstBlindTypes { get; set; }
+
     }
 
     public class RoomDetails

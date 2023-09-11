@@ -14,7 +14,7 @@ public partial class Sku
 
     public int? FabricId { get; set; }
 
-    [StringLength(10)]
+    [StringLength(50)]
     public string? BlindType { get; set; }
 
     public int? Price { get; set; }

@@ -11,75 +11,76 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using System.Web.Helpers;
+using System.Net;
 
 namespace JTNForms.Controllers
 {
     public class MeasurementController : Controller
     {
 
-        public static List<WindowDetails> details = new List<WindowDetails> { new WindowDetails { } };
+        //public static List<WindowDetails> details = new List<WindowDetails> { new WindowDetails { } };
         public readonly dapperDbContext Db;
 
-        public static Measurement tmpWindow = new Measurement
-        {
-            lstWindowDetails = details
-        };
+        //public static Measurement tmpWindow = new Measurement
+        //{
+        //    lstWindowDetails = details
+        //};
 
         public MeasurementController(dapperDbContext dapperDbContext)
         {
             Db = dapperDbContext;
         }
 
-        public IActionResult Index(int customerId, string coming = null)
+        public IActionResult Index(int customerId)
         {
             SetUserName(customerId);
             ViewBag.userName = HttpContext.Session.GetString("username");
-            if (tmpWindow.customerId <= 0 || customerId != tmpWindow.customerId || !string.IsNullOrWhiteSpace(coming))
+            //if (tmpWindow.customerId <= 0 || customerId != tmpWindow.customerId || !string.IsNullOrWhiteSpace(coming))
+            //{
+
+            //tmpWindow.customerId = customerId;
+
+            var result = (from c in Db.Customers.Where(a => a.Id == customerId)
+                          orderby c.Id
+                          select new Measurement
+                          {
+                              customerId = c.Id,
+                              IsInchOrMM = c.IsInchOrMm,
+
+                              lstWindowDetails =
+                              (from w in Db.Windows
+                               where w.CustomerId == c.Id
+                               select new WindowDetails
+                               {
+                                   Id = w.Id,
+                                   Height = w.Height,
+                                   Width = w.Width,
+                                   Notes = w.Notes,
+                                   RoomName = w.RoomName,
+                                   WindowName = w.WindowName,
+
+
+                               })
+                               .ToList()
+                          }).FirstOrDefault();
+            if (result == null)
             {
-
-                tmpWindow.customerId = customerId;
-
-                var result = (from c in Db.Customers.Where(a => a.Id == customerId)
-                              orderby c.Id
-                              select new Measurement
-                              {
-                                  customerId = c.Id,
-                                  IsInchOrMM = c.IsInchOrMm,
-
-                                  lstWindowDetails =
-                                  (from w in Db.Windows
-                                   where w.CustomerId == c.Id
-                                   select new WindowDetails
-                                   {
-                                       Id = w.Id,
-                                       Height = w.Height,
-                                       Width = w.Width,
-                                       Notes = w.Notes,
-                                       RoomName = w.RoomName,
-                                       WindowName = w.WindowName,
-
-
-                                   })
-                                   .ToList()
-                              }).FirstOrDefault();
-                if (result == null)
-                {
-                    result = new Measurement();
-                    result.customerId = customerId;
-                }
-                if (result.lstWindowDetails == null || result.lstWindowDetails.Count() == 0)
-                {
-                    result.lstWindowDetails.Add(new WindowDetails { });
-                }
-                tmpWindow = result;
-                ViewBag.JNTFDetails = result;
-
-
+                result = new Measurement();
+                result.customerId = customerId;
             }
-            else
+            if (result.lstWindowDetails == null || result.lstWindowDetails.Count() == 0)
             {
-                ViewBag.JNTFDetails = tmpWindow;
+                result.lstWindowDetails.Add(new WindowDetails { });
             }
+            //tmpWindow = result;
+            ViewBag.JNTFDetails = result;
+
+
+            //}
+            //else
+            //{
+            //    ViewBag.JNTFDetails = tmpWindow;
+            //}
 
 
             return View("Index");
@@ -97,83 +98,83 @@ namespace JTNForms.Controllers
             }
         }
 
-        [HttpPost]
-        public IActionResult Add(Measurement window)
-        {
-            //var userId = TempData["username"]?.ToString();
-            //TempData.Keep();
-            //var customerId = Convert.ToInt32(TempData["CustomerId"]??0);
-            ViewBag.userName = HttpContext.Session.GetString("username");
-            if (!ModelState.IsValid)
-            {
-                ViewBag.JNTFDetails = tmpWindow;
-                return View("Index");
-            }
-            window.lstWindowDetails.Add(new WindowDetails { });
-            tmpWindow = window;
-            return RedirectToAction("Index", new { customerId = window.customerId });
-        }
+        //[HttpPost]
+        //public IActionResult Add(Measurement window)
+        //{
+        //    //var userId = TempData["username"]?.ToString();
+        //    //TempData.Keep();
+        //    //var customerId = Convert.ToInt32(TempData["CustomerId"]??0);
+        //    ViewBag.userName = HttpContext.Session.GetString("username");
+        //    if (!ModelState.IsValid)
+        //    {
+        //        ViewBag.JNTFDetails = tmpWindow;
+        //        return View("Index");
+        //    }
+        //    window.lstWindowDetails.Add(new WindowDetails { });
+        //    tmpWindow = window;
+        //    return RedirectToAction("Index", new { customerId = window.customerId });
+        //}
 
 
-        [HttpPost]
-        public IActionResult Copy(Measurement window, Int32 id)
-        {
-            //var userId = TempData["username"]?.ToString();
-            //TempData.Keep();
-            ViewBag.userName = HttpContext.Session.GetString("username");
-            if (!ModelState.IsValid)
-            {
-                ViewBag.JNTFDetails = tmpWindow;
-                return RedirectToAction("Index");
-            }
-            WindowDetails wDetails = new WindowDetails { };
-            if (window.lstWindowDetails.Any())
-            {
-                var windowDetails = window.lstWindowDetails.FirstOrDefault(a => a.IndexVal == id);
-                wDetails = new WindowDetails()
-                {
-                    BasePrice = windowDetails.BasePrice,
-                    BlindType = windowDetails.BlindType,
-                    RoomName = windowDetails.RoomName,
-                    FabricName = windowDetails.FabricName,
-                    WindowName = windowDetails.WindowName,
-                    Height = windowDetails.Height,
-                    Width = windowDetails.Width,
-                    ControlType = windowDetails.ControlType,
-                    ControlPosition = windowDetails.ControlPosition,
-                    TotalPrice = windowDetails.TotalPrice,
-                    IsItemSelection = windowDetails.IsItemSelection,
-                    NoOfPanels = windowDetails.NoOfPanels,
-                    IsNoValance = windowDetails.IsNoValance,
-                    Notes = windowDetails.Notes,
-                    Is2In1 = windowDetails.Is2In1,
-                    IsNeedExtension = windowDetails.IsNeedExtension,
-                    StackType = windowDetails.StackType
-                };
+        //[HttpPost]
+        //public IActionResult Copy(Measurement window, Int32 id)
+        //{
+        //    //var userId = TempData["username"]?.ToString();
+        //    //TempData.Keep();
+        //    ViewBag.userName = HttpContext.Session.GetString("username");
+        //    if (!ModelState.IsValid)
+        //    {
+        //        ViewBag.JNTFDetails = tmpWindow;
+        //        return RedirectToAction("Index");
+        //    }
+        //    WindowDetails wDetails = new WindowDetails { };
+        //    if (window.lstWindowDetails.Any())
+        //    {
+        //        var windowDetails = window.lstWindowDetails.FirstOrDefault(a => a.IndexVal == id);
+        //        wDetails = new WindowDetails()
+        //        {
+        //            BasePrice = windowDetails.BasePrice,
+        //            BlindType = windowDetails.BlindType,
+        //            RoomName = windowDetails.RoomName,
+        //            FabricName = windowDetails.FabricName,
+        //            WindowName = windowDetails.WindowName,
+        //            Height = windowDetails.Height,
+        //            Width = windowDetails.Width,
+        //            ControlType = windowDetails.ControlType,
+        //            ControlPosition = windowDetails.ControlPosition,
+        //            TotalPrice = windowDetails.TotalPrice,
+        //            IsItemSelection = windowDetails.IsItemSelection,
+        //            NoOfPanels = windowDetails.NoOfPanels,
+        //            IsNoValance = windowDetails.IsNoValance,
+        //            Notes = windowDetails.Notes,
+        //            Is2In1 = windowDetails.Is2In1,
+        //            IsNeedExtension = windowDetails.IsNeedExtension,
+        //            StackType = windowDetails.StackType
+        //        };
 
-                window.lstWindowDetails.Add(wDetails);
-            }
-            else
-            {
-                window.lstWindowDetails.Add(wDetails);
-            }
-            tmpWindow = window;
-            return RedirectToAction("Index", new { customerId = window.customerId });
-        }
+        //        window.lstWindowDetails.Add(wDetails);
+        //    }
+        //    else
+        //    {
+        //        window.lstWindowDetails.Add(wDetails);
+        //    }
+        //    tmpWindow = window;
+        //    return RedirectToAction("Index", new { customerId = window.customerId });
+        //}
 
-        [HttpPost]
-        public IActionResult Delete(Measurement window, Int32 id)
-        {
-            ViewBag.userName = HttpContext.Session.GetString("username");
+        //[HttpPost]
+        //public IActionResult Delete(Measurement window, Int32 id)
+        //{
+        //    ViewBag.userName = HttpContext.Session.GetString("username");
 
-            if (window.lstWindowDetails.Any())
-            {
-                window.lstWindowDetails.Remove(window.lstWindowDetails.FirstOrDefault(a => a.IndexVal == id));
-            }
-            tmpWindow = window;
-            //return RedirectToAction("Index");
-            return RedirectToAction("Index", new { customerId = window.customerId });
-        }
+        //    if (window.lstWindowDetails.Any())
+        //    {
+        //        window.lstWindowDetails.Remove(window.lstWindowDetails.FirstOrDefault(a => a.IndexVal == id));
+        //    }
+        //    tmpWindow = window;
+        //    //return RedirectToAction("Index");
+        //    return RedirectToAction("Index", new { customerId = window.customerId });
+        //}
 
         [HttpPost]
         public IActionResult AutoCompleteData(string prefix)
@@ -233,8 +234,8 @@ namespace JTNForms.Controllers
                 Db.SaveChanges();
 
             }
-            return RedirectToAction("RoomDetails", new { customerId = jntfModel.customerId });
-
+            // return RedirectToAction("RoomDetails", new { customerId = jntfModel.customerId });
+            return StatusCode((int)HttpStatusCode.OK, "OK");
         }
 
         public IActionResult RoomDetails(int customerId)
@@ -426,14 +427,15 @@ namespace JTNForms.Controllers
                                   IsNeedExtension = y.IsNeedExtension ?? false,
                                   StackType = y.StackType,
                                   CatalogType = y.CatalogName,
-                                  lstFabricNames = GetFabricNamesByCateLogName(y.StackType).ToList()
+                                  lstFabricNames = GetFabricNamesByCateLogName(y.CatalogName).ToList(),
+                                  lstBlindTypes=GetBlindTypeByFabricName(y.FabricName).ToList()
                               }).ToList();
 
-            ViewBag.BlindTypes = Db.LookUps.Where(x => x.Type.Trim() == "BlindType").Select(y => new SelectListItem()
-            {
-                Value = y.Name,
-                Text = y.Name
-            }).ToList();
+            //ViewBag.BlindTypes = Db.LookUps.Where(x => x.Type.Trim() == "BlindType").Select(y => new SelectListItem()
+            //{
+            //    Value = y.Name,
+            //    Text = y.Name
+            //}).ToList();
             ViewBag.CatalogTypes = Db.LookUps.Where(x => x.Type.Trim() == "CatalogName").Select(y => new SelectListItem()
             {
                 Value = y.Name,
@@ -548,6 +550,30 @@ namespace JTNForms.Controllers
             (from y in Db.Fabrics.Where(a => a.CatalogName == catalogName)
              select new SelectListItem
              { Value = y.FabricName, Text = y.FabricName }).ToList();
+            return result;
+
+        }
+
+        [HttpGet]
+        public IActionResult GetBlindTypeByFabric(string fabricName)
+        {
+            var result = GetBlindTypeByFabricName(fabricName);
+            return Json(result);
+
+
+        }
+
+        private IList<SelectListItem> GetBlindTypeByFabricName(string fabricName)
+        {
+            List<SelectListItem> result = new List<SelectListItem>();
+            var fabric = Db.Fabrics.Where(a => a.CatalogName == fabricName).FirstOrDefault();
+            if (fabric != null)
+            {
+                result =
+                (from y in Db.Skus.Where(a => a.FabricId == fabric.Id)
+                 select new SelectListItem
+                 { Value = y.BlindType, Text = y.BlindType }).ToList();
+            }
             return result;
 
         }

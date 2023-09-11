@@ -8,83 +8,44 @@
         MaxRow = Model.lstWindowDetails.Count() - 1;
     }
 }
-
 <div><b>User name : @ViewBag.userName</b></div>
-<form id="frm" asp-controller="Measurement">
+<form id="frm">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" class="form-control" id="customerId" asp-for="@Model.customerId">
 
     <div class="form-group row">
         <div class="col-lg-4">
-            <label asp-for="@Model.IsInchOrMM" class="control-label"></label>
+            <labelb id="lblSelectRbl" asp-for="@Model.IsInchOrMM" class="control-label"></labelb>
             <br />
             <div class="form-check form-check-inline">
-                <input class="form-check-input" required asp-for="@Model.IsInchOrMM" type="radio" value="true" />
-                <label class="form-check-label" asp-for="@Model.IsInchOrMM">Inch</label>
+                <input class="form-check-input" required id="rblInch" name="rblInchMM" asp-for="@Model.IsInchOrMM" type="radio" value="true" />
+                <label class="form-check-label">Inch</label>
             </div>
             <div class="form-check form-check-inline">
-                <input class="form-check-input" required asp-for="@Model.IsInchOrMM" type="radio" value="false" />
-                <label class="form-check-label" asp-for="@Model.IsInchOrMM">MM</label>
+                <input class="form-check-input" required id="rblMM" name="rblInchMM" asp-for="@Model.IsInchOrMM" type="radio" value="false" />
+                <label class="form-check-label">MM</label>
             </div>
             <span asp-validation-for="IsInchOrMM" class="text-danger"></span>
         </div>
     </div>
-    <table id="MultiAddUserTable" class="table">
-        <tr>
-            <th>Room Name</th>
-            <th>Window Name</th>
-            <th>Width</th>
-            <th>Height</th>
-            <th>Notes</th>
-            <th>Action</th>
-        </tr>
-        @if (Model != null)
-        {
-            @for (int i = 0; i < Model.lstWindowDetails.Count(); i++)
-            {
-                <input type="hidden" class="form-control" id="IndexVal" asp-for="@Model.lstWindowDetails[i].IndexVal" value="@i">
-       
-                <input type="hidden" class="form-control" id="WindowId" asp-for="@Model.lstWindowDetails[i].Id">
-                <input type="hidden" class="form-control" id="ItemSsection" asp-for="@Model.lstWindowDetails[i].IsItemSelection">
+    <div class="table-responsive">
+        <table id="MultiAddUserTable" class="table" style="width:100%">
+            <thead>
                 <tr>
-
-                    <td>
-                        <input class="activeVersion_@i  form-control rounded" id="Text1" type="text" asp-for="@Model.lstWindowDetails[i].RoomName" />
-                            <br /><span asp-validation-for="@Model.lstWindowDetails[i].RoomName" class="text-danger"></span>
-                       
-                    </td>
-                    <td>
-                        <input id="Text2" type="text" asp-for="@Model.lstWindowDetails[i].WindowName" class="form-control rounded" />
-                        <br /><span asp-validation-for="@Model.lstWindowDetails[i].WindowName" class="text-danger"></span>
-                    </td>
-                    <td>
-                        <input id="Text3" type="text" asp-for="@Model.lstWindowDetails[i].Width" class="form-control rounded" />
-                        <br /> <span asp-validation-for="@Model.lstWindowDetails[i].Width" class="text-danger"></span>
-                    </td>
-                    <td>
-                        <input id="Text4" type="text" asp-for="@Model.lstWindowDetails[i].Height" class="form-control rounded" />
-                        <br /> <span asp-validation-for="@Model.lstWindowDetails[i].Height" class="text-danger"></span>
-                    </td>
-                    <td>
-                        <input id="Text5" type="text" asp-for="@Model.lstWindowDetails[i].Notes" class="form-control rounded" />
-                    </td>
-                    <td>
-                        <button type="submit" class="btn btn-danger" asp-action="Delete" formnovalidate asp-route-id="@i"><img src="~/img/trash3.svg" alt="Delete" />  </button>
-
-
-                        @if (@i == @MaxRow)
-                        {
-                            <button type="submit" class="btn btn-primary" asp-action="Copy" asp-route-id="@i"><img src="~/img/c-circle.svg" alt="Copy" /> </button>
-
-                        }
-                    </td>
+                    <th>Room Name<span style="color:red">*</span></th>
+                    <th>Window Name<span style="color:red">*</span></th>
+                    <th>Width<span style="color:red">*</span></th>
+                    <th>Height<span style="color:red">*</span></th>
+                    <th>Notes</th>
+                    <th>Action</th>
                 </tr>
-            }
-        }
-    </table>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
     <div class="form-group row" style="text-align:right;padding-bottom:20px;">
-        <input id="btnAdd" type="submit" class="btn btn-dark" value="Add" asp-action="Add" />
-
+        <input id="btnAdd" type="button" class="btn btn-dark" value="Add" />
     </div>
 
     <div class="row">
@@ -93,9 +54,264 @@
 
         </div>
         <div class="col-12 col-md-6" style="text-align:right;">
-            <input id="btnSave" type="submit" class="btn btn-primary" value="Save And Next" asp-action="Save" />
+            <input id="btnSave" type="button" class="btn btn-primary" value="Save And Next" />
         </div>
     </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script type="text/javascript">
+        var rowIndex = 0;
+        $(document).ready(function () {
+            $('*[class^="activeVersion"]').autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/Measurement/AutoCompleteData',
+                        data: { "Prefix": request.term },
+                        dataType: "json",
+                        type: "POST",
+                        success: function (data) {
+                            //debugger;
+                            response($.map(data, function (item) {
+                                return { label: item, value: item };
+                            }))
+                        },
+                        messages: {
+                            noResults: "", results: ""
+                        },
+                        error: function (xhr, textStatus, error) {
+                            alert(xhr.statusText);
+                        },
+                        failure: function (response) {
+                            alert("failure " + response.responseText);
+                        }
+                    });
+                },
+                minLength: 1
+            });
+            //var table = $('#MultiAddUserTable').DataTable({
+            //    bSort: false,
+            //    "fixedHeader": true,
+            //    responsive: true,
+            //    "paging": false,
+            //    bFilter: false,
+            //    "info": false,
 
-    
+            //});
+        @foreach (var item in Model.lstWindowDetails)
+        {
+            <text>
+                                                                                                                                                                                            var newRow = $("<tr>");
+                var cols = "";
+
+                cols += '<td> <input  id = "txtIndex' + rowIndex + '" class="windowsIDIndex" type = "hidden"   value = "' + rowIndex + '" /><input  id = "txtId' + rowIndex + '" type = "hidden" class="windowsID"   value = "@item.Id" />';
+                cols += '<input  id = "txtIsItemSelection' + rowIndex + '" type = "hidden" class="windowsSeletedItemID"   value = "@item.IsItemSelection" />';
+                cols += '<input class="activeVersion_' + rowIndex + '  form-control rounded roomclass"  data-val="true" data-val-required="Required."  id="txtRoom' + rowIndex + '" name="txtRoom' + rowIndex + '" type="text"   value="@item.RoomName"/><br/><span  class="text-danger" data-valmsg-for="txtRoom' + rowIndex + '" data-valmsg-replace="true"></span></td > ';
+                cols += '<td> <input id="txtWindow' + rowIndex + '" name="txtWindow' + rowIndex + '" type="text" data-val="true" data-val-required="Required."  class="form-control rounded windowclass"   value="@item.WindowName"/><br/><span  class="text-danger" data-valmsg-for="txtWindow' + rowIndex + '" data-valmsg-replace="true"></span> </td > ';
+                cols += '<td><input id="txtWidth' + rowIndex + '" name="txtWidth' + rowIndex + '" type="text" data-val="true" data-val-required="Required."  class="form-control rounded widthclass"  value="@item.Width"/> <br/><span  class="text-danger" data-valmsg-for="txtWidth' + rowIndex + '" data-valmsg-replace="true"></span></td > ';
+                cols += '<td><input id="txtHeigh' + rowIndex + '" name="txtHeigh' + rowIndex + '" type="text" data-val="true" data-val-required="Required."  class="form-control rounded heightclass"  value="@item.Height"/><br/><span  class="text-danger" data-valmsg-for="txtHeigh' + rowIndex + '" data-valmsg-replace="true"></span></td > ';
+                cols += '<td><input id="txtNotes' + rowIndex + '" name="txtNotes' + rowIndex + '" type="text" class="form-control rounded noteclass"  value="@item.Notes" /></td>';
+                cols += '<td><button type="button" class="btn btn-danger deleteRow"  formnovalidate><img src="/img/trash3.svg" alt="Delete" /> </button>';
+                cols += '<button type="button" class="btn btn-primary copyRow" ><img src="/img/c-circle.svg" alt="Copy" /> </button></td>';
+                newRow.append(cols);
+                $("table tbody").append(newRow);
+                rowIndex++;
+            </text>
+
+        }
+
+                $("#btnAdd").click(function (e) {
+                    e.preventDefault(); // Prevent the default link behavior
+
+                    var form = $("form"); // Select your form
+                    if (form.valid()) {
+                        var index = $("table tbody tr").length + 1;
+                        //debugger
+                        var newRow = $("<tr>");
+                        var cols = "";
+
+                        cols += '<td>   <input  id = "txtIndex' + index + '" class="windowsIDIndex" type = "hidden"   value = "' + index + '" /> <input  id = "txtId' + index + '" type = "hidden" class="windowsID"   value = "0" /><input  id = "txtIsItemSelection' + index + '" type = "hidden" class="windowsSeletedItemID"   value ="true" />';
+                        cols += ' <input class="activeVersion_' + index + ' form-control rounded roomclass" required data-val="true" data-val-required="Required."  id="txtRoom' + index + '" name="txtRoom' + index + '" type="text"  /><br/><span  class="text-danger" data-valmsg-for="txtRoom' + index + '" data-valmsg-replace="true"></span></td > ';
+                        cols += '<td> <input id="txtWindow' + index + '" name="txtWindow' + index + '" type="text" required data-val="true" data-val-required="Required."   class="form-control rounded windowclass" /><br/><span  class="text-danger" data-valmsg-for="txtWindow' + index + '" data-valmsg-replace="true"></span></td> ';
+                        cols += '<td><input id="txtWidth' + index + '" name="txtWidth' + index + '" type="text" required data-val="true" data-val-required="Required."   class="form-control rounded widthclass"/><br/><span  class="text-danger" data-valmsg-for="txtWidth' + index + '" data-valmsg-replace="true"></span></td> ';
+                        cols += '<td><input id="txtHeigh' + index + '" name="txtHeigh' + index + '" type="text" required data-val="true" data-val-required="Required."  class="form-control rounded heightclass"/><br/><span  class="text-danger" data-valmsg-for="txtHeigh' + index + '" data-valmsg-replace="true"></span></td> ';
+                        cols += '<td><input id="txtNotes' + index + '" name="txtNotes' + index + '" type="text" required class="form-control rounded noteclass" /></td>';
+                        cols += '<td><button type="button" class="btn btn-danger deleteRow"  formnovalidate> <img src="/img/trash3.svg" alt="Delete" /></button> <button type="button" class="btn btn-primary copyRow"><img src="/img/c-circle.svg" alt="Copy" /> </button></td>';
+
+                        newRow.append(cols);
+                        $("table tbody").append(newRow);
+                        $('*[class^="activeVersion"]').autocomplete({
+                            source: function (request, response) {
+                                $.ajax({
+                                    url: '/Measurement/AutoCompleteData',
+                                    data: { "Prefix": request.term },
+                                    dataType: "json",
+                                    type: "POST",
+                                    success: function (data) {
+                                        //debugger;
+                                        response($.map(data, function (item) {
+                                            return { label: item, value: item };
+                                        }))
+                                    },
+                                    messages: {
+                                        noResults: "", results: ""
+                                    },
+                                    error: function (xhr, textStatus, error) {
+                                        alert(xhr.statusText);
+                                    },
+                                    failure: function (response) {
+                                        alert("failure " + response.responseText);
+                                    }
+                                });
+                            },
+                            minLength: 1
+                        });
+                    }
+                });
+
+            $(document).on("click", ".deleteRow", function (e) {
+                //currentScrollTop = $(window).scrollTop();
+                $(this).closest("tr").remove();
+                //e.preventDefault();
+                //$('#MultiAddUserTable').DataTable().rows($(this).closest("tr")).remove().draw(false);
+                //var row = table.row($(this).parents('tr'));
+                //row.remove().draw({ draw: false }); // Remove the row from the DataTable
+
+
+
+                //// Restore the scroll position after a short delay (adjust the delay time if needed)
+                //setTimeout(function () {
+                //    $(window).scrollTop(currentScrollTop);
+                //}, 100);
+            });
+            $(document).on("click", ".copyRow", function (e) {
+                e.preventDefault();// Prevent the default link behavior
+
+                var form = $("form"); // Select your form
+                if (form.valid()) {
+                    // $(this).closest("tr").remove();
+                    var roomVal = $(this).closest('tr').find('.roomclass').val();
+                    var windowval = $(this).closest('tr').find('.windowclass').val();
+                    var widthval = $(this).closest('tr').find('.widthclass').val();
+                    var heightval = $(this).closest('tr').find('.heightclass').val();
+                    var noteval = $(this).closest('tr').find('.noteclass').val();
+                    if (typeof noteval === 'undefined' || noteval === null || noteval === undefined) {
+                        noteval = "";
+                    }
+                    var indexCopy = $("table tbody tr").length + 1;
+                    //debugger
+                    var copyRow = $("<tr>");
+                    var cols = "";
+
+                    cols += '<td>   <input  id = "txtIndex' + indexCopy + '" class="windowsIDIndex" type = "hidden"   value = "' + indexCopy + '" /> <input  id = "txtId' + indexCopy + '" type = "hidden"  class="windowsID"  value = "0" /><input  id = "txtIsItemSelection' + indexCopy + '" type = "hidden" class="windowsSeletedItemID"   value ="true" />';
+                    cols += '<input class="activeVersion_' + indexCopy + ' form-control rounded roomclass" required data-val="true" data-val-required="Required."  id="txtRoom' + indexCopy + '" name="txtRoom' + indexCopy + '" type="text"  value="' + roomVal + '"/><br/><span  class="text-danger" data-valmsg-for="txtRoom' + indexCopy + '" data-valmsg-replace="true"></span></td > ';
+                    cols += '<td> <input id="txtWindow' + indexCopy + '" name="txtWindow' + indexCopy + '" type="text" required data-val="true" data-val-required="Required."  class="form-control rounded windowclass" value="' + windowval + '" /><br/><span  class="text-danger" data-valmsg-for="txtWindow' + indexCopy + '" data-valmsg-replace="true"></span></td > ';
+                    cols += '<td><input id="txtWidth' + indexCopy + '" name="txtWidth' + indexCopy + '" type="text" required data-val="true" data-val-required="Required."   class="form-control rounded widthclass" value="' + widthval + '"/><br/><span  class="text-danger" data-valmsg-for="txtWidth' + indexCopy + '" data-valmsg-replace="true"></span></td > ';
+                    cols += '<td><input id="txtHeigh' + indexCopy + '" name="txtHeigh' + indexCopy + '" type="text" required data-val="true" data-val-required="Required."  class="form-control rounded heightclass" value="' + heightval + '"/><br/><span  class="text-danger" data-valmsg-for="txtHeigh' + indexCopy + '" data-valmsg-replace="true"></span></td > ';
+                    cols += '<td><input id="txtNotes' + indexCopy + '" name="txtNotes' + indexCopy + '" type="text"  class="form-control rounded noteclass" value="' + noteval + '"/></td>';
+                    cols += '<td><button type="button" class="btn btn-danger deleteRow" formnovalidate><img src="/img/trash3.svg" alt="Delete" />  </button> <button type="button" class="btn btn-primary copyRow" ><img src="/img/c-circle.svg" alt="Copy" /> </button></td>';
+                    copyRow.append(cols);
+                    $("table tbody").append(copyRow);
+                    $('*[class^="activeVersion"]').autocomplete({
+                        source: function (request, response) {
+                            $.ajax({
+                                url: '/Measurement/AutoCompleteData',
+                                data: { "Prefix": request.term },
+                                dataType: "json",
+                                type: "POST",
+                                success: function (data) {
+                                    //debugger;
+                                    response($.map(data, function (item) {
+                                        return { label: item, value: item };
+                                    }))
+                                },
+                                messages: {
+                                    noResults: "", results: ""
+                                },
+                                error: function (xhr, textStatus, error) {
+                                    alert(xhr.statusText);
+                                },
+                                failure: function (response) {
+                                    alert("failure " + response.responseText);
+                                }
+                            });
+                        },
+                        minLength: 1
+                    });
+                }
+            });
+
+
+
+            $(document).on("click", "#btnSave", function (e) {
+
+                var form = $("form"); // Select your form
+                if (form.valid()) {
+                    var selectedValue = $("input[name='rblInchMM']:checked").val();
+                    if (typeof selectedValue === 'undefined' || selectedValue === null || selectedValue === undefined) {
+                        selectedValue = true;
+                    }
+                    var jntfModel = {
+                        IsInchOrMM: selectedValue,
+                        customerId: $("#customerId").val(),
+                        lstWindowDetails: []
+                    };
+                    var rowData = [];
+                    $("#MultiAddUserTable tbody tr").each(function () {
+                        var IndexVal = $(this).find("td:eq(0) input.windowsIDIndex").val(); // Get data from the first column
+                        var Id = $(this).find("td:eq(0) input.windowsID").val();
+                        var IsItemSelection = $(this).find("td:eq(0) input.windowsSeletedItemID").val();
+                        var RoomName = $(this).find("td:eq(0) input.roomclass").val();
+                        var WindowName = $(this).find("td:eq(1) input.windowclass").val(); // Get data from the second column
+                        var Width = $(this).find("td:eq(2) input.widthclass").val();
+                        var Height = $(this).find("td:eq(3) input.heightclass").val();
+                        var Notes = $(this).find("td:eq(4) input.noteclass").val();
+                        if (typeof Notes === 'undefined' || Notes === null || Notes === undefined) {
+                            Notes = "";
+                        } if (typeof IsItemSelection === 'undefined' || IsItemSelection === null || IsItemSelection === undefined) {
+                            IsItemSelection = true;
+                        }
+                        if (typeof Id === 'undefined' || Id === null || Id === undefined) {
+                            Id = "0";
+                        }
+                        
+                        jntfModel.lstWindowDetails.push({ IndexVal: IndexVal, Id: Id, IsItemSelection: IsItemSelection, RoomName: RoomName, WindowName: WindowName, Width: Width, Height: Height, Notes: Notes });
+                    });
+
+
+                    // Send the data to the controller using an AJAX POST request
+                    $.ajax({
+                        url: "/Measurement/Save", // Replace with your controller and action names
+                        data: {
+                            "jntfModel": jntfModel
+                        },                     
+
+                        type: "POST",
+                        async: false,
+                        success: function (response, textStatus, xhr) {
+                            if (xhr.status === 200) {
+                                alert("Data saved successfully.");
+                                // Handle the response from the server, if needed
+                                var url = "/Measurement/RoomDetails?customerId=" + $("#customerId").val();
+
+                                // Redirect to the hardcoded URL
+                                window.location.href = url;
+                            }
+                            else {
+                                alert("Data unsaved.");
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            alert("AJAX Error: " + error);
+                        }
+                    });
+                }
+                else {
+                    alert("Form has validation errors. Please correct them.");
+                    
+                }
+            });
+        });
+    </script>
+
 </form>
