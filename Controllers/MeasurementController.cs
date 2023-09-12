@@ -245,14 +245,23 @@ namespace JTNForms.Controllers
             List<WindowDetails> lstRoomDetails = new List<WindowDetails>();
             lstRoomDetails = GetRoomDetails(customerId);
             lstRoomDetails = (from room in lstRoomDetails.GroupBy(a => a.RoomName.Trim())
-                              select new WindowDetails()
+                              select new 
                               {
                                   RoomName = room.FirstOrDefault().RoomName,
                                   BlindType = room.FirstOrDefault()?.BlindType,
-                                  BasePrice = room.FirstOrDefault()?.BasePrice,
+                                  CatalogName = room.FirstOrDefault()?.CatalogType,
                                   FabricName = room.FirstOrDefault()?.FabricName,
-                                  IsItemSelection = room.FirstOrDefault()?.IsItemSelection ?? false
+                                  IsItemSelection = room.FirstOrDefault()?.IsItemSelection ?? false,
 
+
+                              }).AsEnumerable().Select( room => new WindowDetails{
+                                  RoomName = room.RoomName,
+                                  BlindType = room.BlindType,
+                                  CatalogType = room.CatalogName,
+                                  FabricName = room.FabricName,
+                                  IsItemSelection = room.IsItemSelection,
+                                  lstFabricNames = GetFabricNamesByCateLogName(room.CatalogName).ToList(),
+                                  lstBlindTypes = GetBlindTypeByFabricName(room.CatalogName, room.FabricName).ToList()
                               }).ToList();
             ViewBag.CutomerId = customerId;
             return View(lstRoomDetails);
@@ -426,9 +435,7 @@ namespace JTNForms.Controllers
                                   Is2In1 = y.Is2In1 ?? false,
                                   IsNeedExtension = y.IsNeedExtension ?? false,
                                   StackType = y.StackType,
-                                  CatalogType = y.CatalogName,
-                                  lstFabricNames = GetFabricNamesByCateLogName(y.CatalogName).ToList(),
-                                  lstBlindTypes=GetBlindTypeByFabricName(y.FabricName).ToList()
+                                  CatalogType = y.CatalogName
                               }).ToList();
 
             //ViewBag.BlindTypes = Db.LookUps.Where(x => x.Type.Trim() == "BlindType").Select(y => new SelectListItem()
@@ -555,18 +562,18 @@ namespace JTNForms.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetBlindTypeByFabric(string fabricName)
+        public IActionResult GetBlindTypeByFabric(string cateLogName, string fabricName)
         {
-            var result = GetBlindTypeByFabricName(fabricName);
+            var result = GetBlindTypeByFabricName(cateLogName,fabricName);
             return Json(result);
 
 
         }
 
-        private IList<SelectListItem> GetBlindTypeByFabricName(string fabricName)
+        private IList<SelectListItem> GetBlindTypeByFabricName(string cateLogName,string fabricName)
         {
             List<SelectListItem> result = new List<SelectListItem>();
-            var fabric = Db.Fabrics.Where(a => a.CatalogName == fabricName).FirstOrDefault();
+            var fabric = Db.Fabrics.Where(a => a.CatalogName == cateLogName && a.FabricName == fabricName).FirstOrDefault();
             if (fabric != null)
             {
                 result =

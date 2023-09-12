@@ -21,6 +21,7 @@
         {
             @for (int i = 0; i < Model.Count(); i++)
             {
+                var fabricNames= @Model[i].lstFabricNames;
                 <input type="hidden" class="form-control" id="ItemSsection" asp-for="@Model[i].IsItemSelection">
 
                 var CatalogId = "CatalogType" + @i;
@@ -48,8 +49,8 @@
                     </td>
                     <td>
                         <select asp-for="@Model[i].FabricName" id="@FabricId" required class="form-select" onchange="showBlindType(this)">
-                            <option value="">Select</option>
-                        @foreach (var typed in @Model[i].lstFabricNames)
+                            <option value="">Select Fabric</option>
+                            @foreach (var typed in @fabricNames)
                         {
                                 var seltedVal = (@typed.Value.Trim() == @Model[i].FabricName?.Trim()) ? true : false;
 
@@ -120,11 +121,12 @@
         }
         function showBlindType(element) {
             var seletedTypeVal = $(element).val();
+            var catelogname = $('#' + element.id.replace('FabricName', 'CatalogType')).val();
             // alert(seletedTypeVal);
             $('#' + element.id.replace('FabricName', 'BlindType')).empty().append(new Option('Select', ''));
             $.ajax({
                 url: '/Measurement/GetBlindTypeByFabric',
-                data: { "fabricName": seletedTypeVal },
+                data: { "cateLogName": catelogname, "fabricName": seletedTypeVal },
                 dataType: "json",
                 type: "GET",
                 async: false,
