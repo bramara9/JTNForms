@@ -62,7 +62,7 @@
 </div>
 <div class="row">
     <div class="col-12 col-md-6">
-        @Html.ActionLink("Add Measurement", "Index", "Measurement",  new {customerId=@Model.Id})
+        @Html.ActionLink("Add Measurement", "RoomDetails", "Measurement",  new {customerId=@Model.Id})
     </div>
     <div class="col-12 col-md-6" style="text-align:right;">
         @Html.ActionLink("Add Issues", "AddIssues", "ReSalesOrder",  new {customerId=@Model.Id})

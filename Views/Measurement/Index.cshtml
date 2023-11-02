@@ -135,7 +135,7 @@
                         cols += '<td> <input id="txtWindow' + index + '" name="txtWindow' + index + '" type="text" required data-val="true" data-val-required="Required."   class="form-control rounded windowclass" /><br/><span  class="text-danger" data-valmsg-for="txtWindow' + index + '" data-valmsg-replace="true"></span></td> ';
                         cols += '<td><input id="txtWidth' + index + '" name="txtWidth' + index + '" type="text" required data-val="true" data-val-required="Required."   class="form-control rounded widthclass"/><br/><span  class="text-danger" data-valmsg-for="txtWidth' + index + '" data-valmsg-replace="true"></span></td> ';
                         cols += '<td><input id="txtHeigh' + index + '" name="txtHeigh' + index + '" type="text" required data-val="true" data-val-required="Required."  class="form-control rounded heightclass"/><br/><span  class="text-danger" data-valmsg-for="txtHeigh' + index + '" data-valmsg-replace="true"></span></td> ';
-                        cols += '<td><input id="txtNotes' + index + '" name="txtNotes' + index + '" type="text" required class="form-control rounded noteclass" /></td>';
+                        cols += '<td><input id="txtNotes' + index + '" name="txtNotes' + index + '" type="text" class="form-control rounded noteclass" /></td>';
                         cols += '<td><button type="button" class="btn btn-danger deleteRow"  formnovalidate> <img src="/img/trash3.svg" alt="Delete" /></button> <button type="button" class="btn btn-primary copyRow"><img src="/img/c-circle.svg" alt="Copy" /> </button></td>';
 
                         newRow.append(cols);
@@ -292,7 +292,7 @@
                             if (xhr.status === 200) {
                                 alert("Data saved successfully.");
                                 // Handle the response from the server, if needed
-                                var url = "/Measurement/RoomDetails?customerId=" + $("#customerId").val();
+                                var url = "/Measurement/WindowDetails?customerId=" + $("#customerId").val();
 
                                 // Redirect to the hardcoded URL
                                 window.location.href = url;

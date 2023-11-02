@@ -31,7 +31,7 @@ namespace JTNForms.Controllers
             Db = dapperDbContext;
         }
 
-        public IActionResult Index(int customerId)
+        public IActionResult Measurement(int customerId)
         {
             SetUserName(customerId);
             ViewBag.userName = HttpContext.Session.GetString("username");
@@ -299,7 +299,7 @@ namespace JTNForms.Controllers
             Db.SaveChanges();
 
 
-            return RedirectToAction("WindowDetails", new { customerId = customerId });
+            return RedirectToAction("Measurement", new { customerId = customerId });
 
         }
 
