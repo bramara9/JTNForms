@@ -109,7 +109,7 @@ namespace JTNForms.Controllers
                                   }).AsEnumerable().Select(y => new WindowDetails
                                   {
 
-                                      BasePrice = 1, // y.BasePrice,
+                                      BasePrice = y.BasePrice,
                                       BlindType = y.BlindType,
                                       RoomName = y.RoomName,
                                       Id = y.Id,
