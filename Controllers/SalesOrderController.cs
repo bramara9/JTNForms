@@ -46,6 +46,16 @@ namespace JTNForms.Controllers
             ws.Cell("G3").Value = DateTime.Now.ToString("dd/MM/yyyy");
             foreach (var windows in details)
             {
+                var notes1 = "";
+                if (windows.Is2In1)
+                {
+                    notes1 = "2In1 Blind";
+                }
+                if (windows.IsNeedExtension)
+                {
+                    notes1 += "Send extention brackets";
+                }
+
                 ws.Cell("A" + dataStartVal).Value = InsexVal;
                 ws.Cell("B" + dataStartVal).Value = windows.RoomName;
                 ws.Cell("C" + dataStartVal).Value = windows.BlindType;
@@ -57,11 +67,11 @@ namespace JTNForms.Controllers
                 ws.Cell("I" + dataStartVal).Value = 1;
                 ws.Cell("L" + dataStartVal).Value = windows.TotalPrice;
                 ws.Cell("M" + dataStartVal).Value = (windows.IsNoValance ? "CLASSIC" : "EVO");
-                ws.Cell("N" + dataStartVal).Value = (windows.ControlType.Contains("Stainless Steel Beaded Loop") || windows.ControlType.Contains("Cordless")) ? windows.ControlPosition : windows.ControlType;
+                ws.Cell("N" + dataStartVal).Value =  (windows.ControlType.Contains("Stainless Steel Beaded Loop") ? windows.ControlPosition : windows.ControlType);
                 ws.Cell("O" + dataStartVal).Value = "child safety";
                 ws.Cell("AA" + dataStartVal).Value = windows.NoOfPanels == 0 ? "" : windows.NoOfPanels;
                 ws.Cell("AB" + dataStartVal).Value = windows.StackType;
-                ws.Cell("AD" + dataStartVal).Value = (windows.Is2In1 ? "2In1 Blind" : "-");
+                ws.Cell("AD" + dataStartVal).Value = windows.Notes + "; " + notes1;
                 dataStartVal++;
                 InsexVal++;
             }

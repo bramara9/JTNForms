@@ -62,7 +62,16 @@
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
     <script type="text/javascript">
         var rowIndex = 0;
-        $(document).ready(function () {
+
+        function sync(index) {
+            var n1 = document.getElementById('txtRoom' + index);
+            var n2 = document.getElementById('txtWindow' + index);
+            n2.value = n1.value;
+        }
+
+
+        $(document).ready(function () {        
+
             $('*[class^="activeVersion"]').autocomplete({
                 source: function (request, response) {
                     $.ajax({
@@ -106,7 +115,7 @@
 
                 cols += '<td> <input  id = "txtIndex' + rowIndex + '" class="windowsIDIndex" type = "hidden"   value = "' + rowIndex + '" /><input  id = "txtId' + rowIndex + '" type = "hidden" class="windowsID"   value = "@item.Id" />';
                 cols += '<input  id = "txtIsItemSelection' + rowIndex + '" type = "hidden" class="windowsSeletedItemID"   value = "@item.IsItemSelection" />';
-                cols += '<input class="activeVersion_' + rowIndex + '  form-control rounded roomclass"  data-val="true" data-val-required="Required."  id="txtRoom' + rowIndex + '" name="txtRoom' + rowIndex + '" type="text"   value="@item.RoomName"/><br/><span  class="text-danger" data-valmsg-for="txtRoom' + rowIndex + '" data-valmsg-replace="true"></span></td > ';
+                cols += '<input class="activeVersion_' + rowIndex + '  form-control rounded roomclass"   data-val="true" data-val-required="Required."  id="txtRoom' + rowIndex + '" name="txtRoom' + rowIndex + '" onkeyup = "sync(' + rowIndex + ')"    type="text"   value="@item.RoomName"/><br/><span  class="text-danger" data-valmsg-for="txtRoom' + rowIndex + '" data-valmsg-replace="true"></span></td > ';
                 cols += '<td> <input id="txtWindow' + rowIndex + '" name="txtWindow' + rowIndex + '" type="text" data-val="true" data-val-required="Required."  class="form-control rounded windowclass"   value="@item.WindowName"/><br/><span  class="text-danger" data-valmsg-for="txtWindow' + rowIndex + '" data-valmsg-replace="true"></span> </td > ';
                 cols += '<td><input id="txtWidth' + rowIndex + '" name="txtWidth' + rowIndex + '" type="text" data-val="true" data-val-required="Required."  class="form-control rounded widthclass"  value="@item.Width"/> <br/><span  class="text-danger" data-valmsg-for="txtWidth' + rowIndex + '" data-valmsg-replace="true"></span></td > ';
                 cols += '<td><input id="txtHeigh' + rowIndex + '" name="txtHeigh' + rowIndex + '" type="text" data-val="true" data-val-required="Required."  class="form-control rounded heightclass"  value="@item.Height"/><br/><span  class="text-danger" data-valmsg-for="txtHeigh' + rowIndex + '" data-valmsg-replace="true"></span></td > ';
@@ -131,7 +140,7 @@
                         var cols = "";
 
                         cols += '<td>   <input  id = "txtIndex' + index + '" class="windowsIDIndex" type = "hidden"   value = "' + index + '" /> <input  id = "txtId' + index + '" type = "hidden" class="windowsID"   value = "0" /><input  id = "txtIsItemSelection' + index + '" type = "hidden" class="windowsSeletedItemID"   value ="true" />';
-                        cols += ' <input class="activeVersion_' + index + ' form-control rounded roomclass" required data-val="true" data-val-required="Required."  id="txtRoom' + index + '" name="txtRoom' + index + '" type="text"  /><br/><span  class="text-danger" data-valmsg-for="txtRoom' + index + '" data-valmsg-replace="true"></span></td > ';
+                        cols += ' <input class="activeVersion_' + index + ' form-control rounded roomclass" required data-val="true" data-val-required="Required."  id="txtRoom' + index + '" onkeyup="sync(' +  index + ')"  name="txtRoom' + index + '" type="text"  /><br/><span  class="text-danger" data-valmsg-for="txtRoom' + index + '" data-valmsg-replace="true"></span></td > ';
                         cols += '<td> <input id="txtWindow' + index + '" name="txtWindow' + index + '" type="text" required data-val="true" data-val-required="Required."   class="form-control rounded windowclass" /><br/><span  class="text-danger" data-valmsg-for="txtWindow' + index + '" data-valmsg-replace="true"></span></td> ';
                         cols += '<td><input id="txtWidth' + index + '" name="txtWidth' + index + '" type="text" required data-val="true" data-val-required="Required."   class="form-control rounded widthclass"/><br/><span  class="text-danger" data-valmsg-for="txtWidth' + index + '" data-valmsg-replace="true"></span></td> ';
                         cols += '<td><input id="txtHeigh' + index + '" name="txtHeigh' + index + '" type="text" required data-val="true" data-val-required="Required."  class="form-control rounded heightclass"/><br/><span  class="text-danger" data-valmsg-for="txtHeigh' + index + '" data-valmsg-replace="true"></span></td> ';
@@ -184,6 +193,7 @@
                 //    $(window).scrollTop(currentScrollTop);
                 //}, 100);
             });
+
             $(document).on("click", ".copyRow", function (e) {
                 e.preventDefault();// Prevent the default link behavior
 
@@ -311,6 +321,8 @@
                     
                 }
             });
+
+           
         });
     </script>
 

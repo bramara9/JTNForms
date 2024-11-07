@@ -131,12 +131,12 @@
                 type: "GET",
                 async: false,
                 success: function (data) {
-                    //debugger
                     for (var i = 0; i < data.length; i++) {
                         var opt = new Option(data[i].text, data[i].value);
                         $('#' + element.id.replace('FabricName', 'BlindType')).append(opt);
-
                     }
+                    if(data.length ==1)
+                    $('#' + element.id.replace('FabricName', 'BlindType')).val(data[0].value);
                 },
                 error: function (xhr, textStatus, error) {
                     alert(xhr.statusText);

@@ -326,10 +326,10 @@ namespace JTNForms.Controllers
             millimeter = (double)(width ?? 0);
             millimeter = Math.Round(millimeter) switch
             {
-                < 900 => millimeter - 6,
-                > 900 and < 1500 => millimeter - 7,
-                > 900 and < 1800 => millimeter - 8,
-                > 1800 => millimeter - 9,
+                < 900 => millimeter - 5,
+                > 900 and < 1500 => millimeter - 5,
+                > 900 and < 1800 => millimeter - 5,
+                > 1800 => millimeter - 5,
                 _ => 0
             };
 
